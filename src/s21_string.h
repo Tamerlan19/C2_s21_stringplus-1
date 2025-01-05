@@ -1,5 +1,6 @@
 #ifndef STR_LIB_H
 #define STR_LIB_H
+#define NULL ((void *)0) //macros for NULL
 
 int s21_strlen(const char *str);
 int s21_strcmp(const char* str1, const char* str2);

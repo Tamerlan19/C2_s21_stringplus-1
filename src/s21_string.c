@@ -1,5 +1,5 @@
-#include <stdio.h>
-
+// #include <stdio.h>
+#include "s21_string.h"
 /**
  TODO: Part 1. string.h Functions
  - Оформи решение как статическую библиотеку с названием s21_string.a (с
@@ -45,7 +45,7 @@ number errnum and returns a pointer to an error message string. You need to
 declare macros containing arrays of error messages for mac and linux operating
 systems. Error descriptions are available in the original library. Checking the
 current OS is carried out using directives.
- - [ ] 	size_t s21_strlen(const char *str)	Computes the length of the
+ - [x] 	size_t s21_strlen(const char *str)	Computes the length of the
 string str up to but not including the terminating null character.
  - [ ] 	char *s21_strpbrk(const char *str1, const char *str2)	Finds the first
 character in the string str1 that matches any character specified in str2.

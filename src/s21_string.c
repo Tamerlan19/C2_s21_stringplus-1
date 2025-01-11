@@ -1,5 +1,6 @@
 // #include <stdio.h>
 #include "s21_string.h"
+#include <stdarg.h>
 /**
  TODO: Part 1. string.h Functions
  - Оформи решение как статическую библиотеку с названием s21_string.a (с

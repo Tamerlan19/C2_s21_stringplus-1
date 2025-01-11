@@ -4,14 +4,14 @@
 
 //Data type size_t
 #ifdef _WIN64
-    typedef unsigned long long size_t;  // 64-bit Windows
+    typedef unsigned long size_t;  // 64-bit Windows
 #elif __x86_64__ || __ppc64__ || __aarch64__
-    typedef unsigned long long size_t;  // 64-bitLinux/macOS
+    typedef unsigned long size_t;  // 64-bitLinux/macOS
 #else
     typedef unsigned int size_t;        // 32-bit
 #endif
 
-int s21_strlen(const char *str);
+size_t s21_strlen(const char *str);
 int s21_strcmp(const char* str1, const char* str2);
 char *s21_strcpy(char *dest, const char *src);
 char *s21_strcat(char *destination, const char *append);

@@ -9,6 +9,7 @@ START_TEST(test_s21_strlen) {
   ck_assert_int_eq(s21_strlen("0987654321"), 10);
   ck_assert_int_eq(s21_strlen("\n"), strlen("\n"));
   ck_assert_int_eq(s21_strlen("\0"), strlen("\0"));
+  ck_assert_int_eq(s21_strlen(""), strlen(""));
   ck_assert_int_eq(
       s21_strlen(
           "                                                              "),

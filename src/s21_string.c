@@ -101,8 +101,8 @@ TODO: Part 4. Дополнительно. Реализация функции ss
 модификаторов и типов преобразования).
 */
 
-int s21_strlen(const char *str) {
-  int len = 0;
+size_t s21_strlen(const char *str) {
+  size_t len = 0;
 
   for (; *(str + len); len++)
     ;

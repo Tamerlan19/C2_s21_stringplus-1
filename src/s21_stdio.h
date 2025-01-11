@@ -6,7 +6,7 @@ struct Specifiers
     char flag;
     int width;
     int precision;
-    int length;
+    char length;
     char specifier;
 };
 

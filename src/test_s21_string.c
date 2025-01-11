@@ -1,6 +1,7 @@
 #include "s21_string.h"
 #include <check.h>
 #include <string.h>
+#include <stdio.h>
 
 START_TEST(test_s21_strlen) {
   ck_assert_int_eq(s21_strlen("Hello"), 5);
@@ -27,36 +28,6 @@ START_TEST(test_s21_strcmp) {
 }
 END_TEST
 
-Suite *s21_string_suite(void) {
-  Suite *s;
-  TCase *tc_core;
-
-  s = suite_create("s21_string");
-  tc_core = tcase_create("Core");
-
-  tcase_add_test(tc_core, test_s21_strlen);
-  tcase_add_test(tc_core, test_s21_strcmp);
-
-  suite_add_tcase(s, tc_core);
-
-  return s;
-}
-
-int main(void) {
-  int number_failed;
-  Suite *s;
-  SRunner *sr;
-
-  s = s21_string_suite();
-  sr = srunner_create(s);
-
-  srunner_run_all(sr, CK_NORMAL);
-  number_failed = srunner_ntests_failed(sr);
-  srunner_free(sr);
-
-  return (number_failed == 0) ? 0 : 1;
-}
-
 START_TEST(test_s21_sprintf_с) {
   char buff[70] = {0};
   char s21_buff[70] = {0};
@@ -80,3 +51,38 @@ START_TEST(test_s21_sprintf_с) {
   ck_assert_str_eq(buff, s21_buff);
 }
 END_TEST
+
+
+Suite *s21_string_suite(void) {
+  Suite *s;
+  TCase *tc_core;
+
+  s = suite_create("s21_string");
+  tc_core = tcase_create("Core");
+
+  tcase_add_test(tc_core, test_s21_strlen);
+  tcase_add_test(tc_core, test_s21_strcmp);
+
+  tcase_add_test(tc_core, test_s21_sprintf_с);
+
+  suite_add_tcase(s, tc_core);
+
+  return s;
+}
+
+int main(void) {
+  int number_failed;
+  Suite *s;
+  SRunner *sr;
+
+  s = s21_string_suite();
+  sr = srunner_create(s);
+
+  srunner_run_all(sr, CK_NORMAL);
+  number_failed = srunner_ntests_failed(sr);
+  srunner_free(sr);
+
+  return (number_failed == 0) ? 0 : 1;
+}
+
+

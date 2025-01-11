@@ -56,3 +56,27 @@ int main(void) {
 
   return (number_failed == 0) ? 0 : 1;
 }
+
+START_TEST(test_s21_sprintf_с) {
+  char buff[70] = {0};
+  char s21_buff[70] = {0};
+
+  int x6 = 12345;
+  char *format_string3 = "%+.*d\n";
+  ck_assert_int_eq(s21_sprintf(s21_buff, format_string3, 8, 4, x6),
+                   sprintf(buff, format_string3, 8, 4, x6));
+  ck_assert_str_eq(buff, s21_buff);
+
+  short x7 = -32768;
+  char *format_string4 = "%hd\n";
+  ck_assert_int_eq(s21_sprintf(s21_buff, format_string4, x7),
+                   sprintf(buff, format_string4, x7));
+  ck_assert_str_eq(buff, s21_buff);
+
+  float x8 = 123.456;
+  char *format_string5 = "% 010.2f\n";
+  ck_assert_int_eq(s21_sprintf(s21_buff, format_string5, x8),
+                   sprintf(buff, format_string5, x8));
+  ck_assert_str_eq(buff, s21_buff);
+}
+END_TEST

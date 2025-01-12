@@ -10,7 +10,7 @@ struct Specifiers
     char specifier;
 };
 
-struct Specifiers parse_specifiers(const char *format);
+struct Specifiers parse_specifiers(const char *format, const char mode);
 int is_digit(char c);
 // int s21_sprintf(const char *str, const char *format, ...);
 int s21_sscanf(const char *str, const char *format, ...);

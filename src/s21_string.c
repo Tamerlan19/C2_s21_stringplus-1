@@ -110,6 +110,14 @@ size_t s21_strlen(const char *str){
   return len;
 }
 
+
+/**
+* @brief Finds the first occurrence of a character in a string.
+*
+* @param str The string to search.
+* @param ch The character to find.
+* @return A pointer to the first occurrence of the character in the string, or NULL if the character is not found.
+*/
 int s21_strncmp(const char *str1, const char *str2, size_t n)
 {
     int rtn = 0;

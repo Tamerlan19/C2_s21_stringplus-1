@@ -3,6 +3,10 @@
 #include <stdarg.h>
 #include <string.h>
 #include <stdlib.h>
+#include <wchar.h>
+#include <locale.h>
+// #include <windows.h>
+#define UNICODE 
 
 /**
  TODO:    
@@ -75,47 +79,55 @@ int main(){
     sscanf("5.47", "%f", &f);
     printf("RESULT sscanf=%f\n",f);
 
+//[%[флаги][ширина][.точность][длина]спецификатор
 //%[*][ширина][длина]спецификатор
+//%[*|5][h|l|L][]
     char buf[200];
-    memset(buf, 0, sizeof(str));
-    s21_sscanf("Test47! string 1", "%5Ls", buf);
-    printf("RESULT s21_sscanf=%s\n",buf);
+    char *fmt="%Ls";
+    char *sr="Tes555t 47! string 1";
     memset(buf, 0, sizeof(buf));
-    sscanf("Test47! string 1", "%s", buf);
-    printf("RESULT sscanf=%s\n",buf);
+    s21_sscanf(sr, fmt, buf);
+    printf("RESULT s21_sscanf=%s|\n",buf);
+    memset(buf, 0, sizeof(buf));
+    sscanf(sr, fmt, buf);
+    printf("RESULT sscanf=%s|\n",buf);
+    
+    // setlocale(LC_ALL, "");  // Устанавливаем локаль для поддержки широких символов
+    // wchar_t bufw[200];
+    // char *fmtw="%ls";
+    // char *srw="ЦTes555t 47! string 1";
+    // // wchar_t srw2[100];
+    // memset(bufw, 0, sizeof(bufw));
+    // s21_sscanf(srw, fmtw, bufw);
+    // wprintf(L"RESULT s21_sscanf=%ls|\n",bufw);
+    // memset(bufw, 0, sizeof(bufw));
+    // sscanf(srw, fmtw, bufw);
+    // printf("RESULT sscanf=%ls|\n",bufw);
+    // printf("\n");
+    // wprintf(L"Hello, world\n");
 
-
-    size_t size = 8300000;
-    char *strt = (char *)malloc(size);  // Выделяем память в куче
-    if (strt == NULL) {
-        perror("Failed to allocate memory");
-        return 1;
-    }
-
-    memset(strt, 'A', size - 1);  // Заполняем буфер символами 'A'
-    strt[size - 1] = '\0';  // Добавляем завершающий нулевой символ
-
-    size_t len = strlen(strt);  // Корректное вычисление длины
-    printf("Length: %zu\n", len);
-
-    free(strt);  // Освобождаем память
-
+    // printf("\n");
+    // fflush(stdout); 
 
     return 0;
-
 }
 
-struct Specifiers parse_specifiers(const char *format){
+struct Specifiers parse_specifiers(const char *format, const char mode){
     struct Specifiers st_spec={0};
         format++;
         //Flags
-        if(*(format) == '+' || *(format) == '-' ||  *(format) == ' ' ||  *(format) == '#' ||  *(format) == '0'){
+        if (mode=='p' && (*(format) == '+' || *(format) == '-' ||  *(format) == ' ' ||  *(format) == '#' ||  *(format) == '0')){
             st_spec.flag = *(format);
             printf("DEBUG: FLAGS=%c\n",st_spec.flag);
             format++;
         }
+        // if (mode=='s' && (*(format) == '*' )){
+        //     st_spec.flag = *(format);
+        //     printf("DEBUG: FLAGS=%c\n",st_spec.flag);
+        //     format++;
+        // }
         //Width
-        if(is_digit(*(format)) || *(format) == '*'){   
+        if((is_digit(*(format))) || *(format) == '*'){   
             st_spec.width=0;
             if (*(format) == '*')
                 st_spec.width=-1;
@@ -193,7 +205,7 @@ int s21_sscanf(const char *str, const char *format, ...){
     while (*fmt)
     {
         if(*fmt == '%'){
-            st_spec = parse_specifiers(fmt);
+            st_spec = parse_specifiers(fmt, 's');
             printf("\n!!! Flag=%c, Width=%i, Length=%c, Precision=%i, Specifiers=%c\n",st_spec.flag,st_spec.width,st_spec.length,st_spec.precision,st_spec.specifier);
             
             if(st_spec.specifier == 'c'){
@@ -255,27 +267,42 @@ int s21_sscanf(const char *str, const char *format, ...){
                     printf("DEBUG: Digit=%f\n",result);
                 }
 
-            }else if(st_spec.specifier == 's'){
+            }else if(st_spec.specifier == 's' && st_spec.length!='L'){
                 char *ch = va_arg(args, char*);
-                // *ch = result; 
-
                 int i=0;
-                //char result[sizeof(ch)];
-
-                while ((*p!=' ')){
-                    *ch = *p;
-                    // result[i] = *p;
+                printf("Size=%ld\n",strlen(str));
+                int width = st_spec.width;
+                if (width == 0){
+                    width = strlen(str);
+                }
+                while (*p!=' ' && i<(width)){
+                    if(width>0)
+                        *ch = *p;
                     p++;
                     ch++;
-                    // result++;
                     i++;
                 }
-                if (i>0){
-                    //    p++;
-                    printf("DEBUG: String=%s\n",ch);
+                *ch = '\0';
+
+            
+            }else if(st_spec.specifier == 's' && st_spec.length=='L'){
+                wchar_t *ch = va_arg(args, wchar_t*);
+                int i=0;
+                printf("Size=%ld\n",strlen(str));
+                int width = st_spec.width;
+                if (width == 0){
+                    width = strlen(str);
                 }
+                while (*p!=' ' && i<(width)){
+                    if(width>0)
+                        *ch = *p;
+                    p++;
+                    ch++;
+                    i++;
+                }
+                *ch = L'\0';
 
-
+                    
             } else if(st_spec.specifier == '%'){
                 printf("DEBUG: Char=%c\n",*p);
                 p++;

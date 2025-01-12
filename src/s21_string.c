@@ -33,7 +33,7 @@ argument str.
  - [ ] char *s21_strncat(char *dest, const char *src, size_t n)	Appends the
 string pointed to, by src to the end of the string pointed to, by dest up to n
 characters long.
- - [ ] char *s21_strchr(const char *str, int c)	Searches for the first
+ - [x] char *s21_strchr(const char *str, int c)	Searches for the first
 occurrence of the character c (an unsigned char) in the string pointed to, by
 the argument str.
  - [x] int s21_strncmp(const char *str1, const char *str2, size_t n)	Compares
@@ -163,13 +163,20 @@ char *s21_strcat(char *destination, const char *append) {
   return destination;
 }
 
-char *s21_strchr(char *str, int ch) {
+/**
+* @brief Finds the first occurrence of a character in a string.
+*
+* @param str The string to search.
+* @param ch The character to find.
+* @return A pointer to the first occurrence of the character in the string, or NULL if the character is not found.
+*/
+char *s21_strchr(const char *str, int ch) {
   char *rtn = NULL;
   if (str != NULL) {
-    for (; *str && *str != ch; str++) {
+    for (; *str!='\0' && *str != ch; str++) {
     }
-    if (*str != '\0')
-      rtn = str;
+    if (*str == ch)
+      rtn = (char*) str;
   }
   return rtn;
 }

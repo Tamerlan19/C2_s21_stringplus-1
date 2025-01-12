@@ -2,6 +2,7 @@
 #include <check.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 START_TEST(test_s21_strlen) {
   ck_assert_int_eq(s21_strlen("Hello"), 5);
@@ -14,8 +15,76 @@ START_TEST(test_s21_strlen) {
       s21_strlen(
           "                                                              "),
       strlen("                                                              "));
+      const char *str;
+
+    str = "";
+    ck_assert_uint_eq(s21_strlen(str), strlen(str));
+
+    str = "Hello, World!";
+    ck_assert_uint_eq(s21_strlen(str), strlen(str));
+
+    str = "A";
+    ck_assert_uint_eq(s21_strlen(str), strlen(str));
+
+    str = "   ";
+    ck_assert_uint_eq(s21_strlen(str), strlen(str));
+
+    str = "\t\n\r";
+    ck_assert_uint_eq(s21_strlen(str), strlen(str));
+
+    str = "Hello\0World";
+    ck_assert_uint_eq(s21_strlen(str), strlen(str));
+
+    //Very long string with many characters.";
+    unsigned int size = 429496729; //4294967295
+    char *l_str = (char *)malloc(size);  // Выделяем память в куче
+    if (l_str == NULL) {
+        perror("Failed to allocate memory");
+    }else {
+    memset(l_str, 'A', size - 1);  // Заполняем буфер символами 'A'
+    l_str[size - 1] = '\0';  // Добавляем завершающий нулевой символ
+    ck_assert_uint_eq(s21_strlen(l_str), strlen(l_str));
+    free(l_str);
+    }
 }
 END_TEST
+
+START_TEST(test_s21_strncmp) {
+    // Сценарий 1: Сравнение одинаковых строк
+    const char *str1 = "Hello";
+    const char *str2 = "Hello";
+    ck_assert_int_eq(s21_strncmp(str1, str2, 5), strncmp(str1, str2, 5));
+
+    str1 = "Hello";
+    str2 = "World";
+    ck_assert_int_eq(s21_strncmp(str1, str2, 5), strncmp(str1, str2, 5));
+
+    str1 = "World";
+    str2 = "Hello";
+    ck_assert_int_eq(s21_strncmp(str1, str2, 5), strncmp(str1, str2, 5));
+
+    str1 = "Hello";
+    str2 = "Hell";
+    ck_assert_int_eq(s21_strncmp(str1, str2, 4), strncmp(str1, str2, 4));
+
+    str1 = "Hello";
+    str2 = "World";
+    ck_assert_int_eq(s21_strncmp(str1, str2, 0), strncmp(str1, str2, 0));
+
+    str1 = "Hello";
+    str2 = "Hell";
+    ck_assert_int_eq(s21_strncmp(str1, str2, 6), strncmp(str1, str2, 6));
+
+    str1 = "";
+    str2 = "";
+    ck_assert_int_eq(s21_strncmp(str1, str2, 1), strncmp(str1, str2, 1));
+
+    str1 = "hello";
+    str2 = "HELLO";
+    ck_assert_int_eq(s21_strncmp(str1, str2, 5), strncmp(str1, str2, 5));
+}
+END_TEST
+
 
 START_TEST(test_s21_strcmp) {
   ck_assert_int_eq(s21_strcmp("Hello world", "Hello world"),
@@ -62,6 +131,7 @@ Suite *s21_string_suite(void) {
   tc_core = tcase_create("Core");
 
   tcase_add_test(tc_core, test_s21_strlen);
+  tcase_add_test(tc_core, test_s21_strncmp);
   tcase_add_test(tc_core, test_s21_strcmp);
 
   tcase_add_test(tc_core, test_s21_sprintf_с);
@@ -73,6 +143,7 @@ Suite *s21_string_suite(void) {
 
 int main(void) {
   int number_failed;
+
   Suite *s;
   SRunner *sr;
 
@@ -82,6 +153,8 @@ int main(void) {
   srunner_run_all(sr, CK_NORMAL);
   number_failed = srunner_ntests_failed(sr);
   srunner_free(sr);
+
+
 
   return (number_failed == 0) ? 0 : 1;
 }

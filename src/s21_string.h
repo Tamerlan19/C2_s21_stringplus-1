@@ -12,6 +12,7 @@
 #endif
 
 size_t s21_strlen(const char *str);
+int s21_strncmp(const char *str1, const char *str2, size_t n);
 int s21_strcmp(const char* str1, const char* str2);
 char *s21_strcpy(char *dest, const char *src);
 char *s21_strcat(char *destination, const char *append);

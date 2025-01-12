@@ -1,6 +1,8 @@
 // #include <stdio.h>
 #include "s21_string.h"
 #include <stdarg.h>
+
+#include <stdio.h>
 /**
  TODO: Part 1. string.h Functions
  - Оформи решение как статическую библиотеку с названием s21_string.a (с
@@ -34,7 +36,7 @@ characters long.
  - [ ] char *s21_strchr(const char *str, int c)	Searches for the first
 occurrence of the character c (an unsigned char) in the string pointed to, by
 the argument str.
- - [ ] int s21_strncmp(const char *str1, const char *str2, size_t n)	Compares
+ - [x] int s21_strncmp(const char *str1, const char *str2, size_t n)	Compares
 at most the first n bytes of str1 and str2.
  - [ ] char *s21_strncpy(char *dest, const char *src, size_t n)	Copies up to n
 characters from the string pointed to, by src to dest.
@@ -101,14 +103,32 @@ TODO: Part 4. Дополнительно. Реализация функции ss
 модификаторов и типов преобразования).
 */
 
-size_t s21_strlen(const char *str) {
+size_t s21_strlen(const char *str){
   size_t len = 0;
-
   for (; *(str + len); len++)
     ;
-
   return len;
 }
+
+int s21_strncmp(const char *str1, const char *str2, size_t n)
+{
+    int rtn = 0;
+    int is_diff = 0;
+    for (size_t i=0; i < n && !is_diff; i++){
+      if (str1[i] != str2[i] || str1[i]=='\0'|| str2[i]=='\0') {
+        is_diff++;
+        rtn = (unsigned char)str1[i] - (unsigned char)str2[i];
+    }
+    }
+  return rtn;
+}
+
+// int s21_strncmp(const char *str1, const char *str2, size_t n){
+//     int rtn = 0;
+//   for (int i=0; *str1 && *str1 == *str2 && i<n; str1++, str2++, i++)
+//     ;
+//   return (*str1 - *str2);
+// }
 
 int s21_strcmp(const char *str1, const char *str2) {
   int rtn = 0;

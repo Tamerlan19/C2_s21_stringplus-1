@@ -2,6 +2,8 @@
 #include "s21_stdio.h"
 #include <stdarg.h>
 #include <string.h>
+#include <stdlib.h>
+
 /**
  TODO:    
  - [ ] int sprintf(char *str, const char *format, ...) — отправляет форматированный вывод в строку, на которую указывает str.
@@ -81,6 +83,23 @@ int main(){
     memset(buf, 0, sizeof(buf));
     sscanf("Test47! string 1", "%s", buf);
     printf("RESULT sscanf=%s\n",buf);
+
+
+    size_t size = 8300000;
+    char *strt = (char *)malloc(size);  // Выделяем память в куче
+    if (strt == NULL) {
+        perror("Failed to allocate memory");
+        return 1;
+    }
+
+    memset(strt, 'A', size - 1);  // Заполняем буфер символами 'A'
+    strt[size - 1] = '\0';  // Добавляем завершающий нулевой символ
+
+    size_t len = strlen(strt);  // Корректное вычисление длины
+    printf("Length: %zu\n", len);
+
+    free(strt);  // Освобождаем память
+
 
     return 0;
 

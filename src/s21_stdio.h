@@ -12,6 +12,6 @@ struct Specifiers
 
 struct Specifiers parse_specifiers(const char *format);
 int is_digit(char c);
-int s21_sprintf(const char *str, const char *format, ...);
+// int s21_sprintf(const char *str, const char *format, ...);
 int s21_sscanf(const char *str, const char *format, ...);
 //

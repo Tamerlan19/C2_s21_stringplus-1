@@ -103,31 +103,30 @@ TODO: Part 4. Дополнительно. Реализация функции ss
 модификаторов и типов преобразования).
 */
 
-size_t s21_strlen(const char *str){
+size_t s21_strlen(const char *str) {
   size_t len = 0;
   for (; *(str + len); len++)
     ;
   return len;
 }
 
-
 /**
-* @brief Finds the first occurrence of a character in a string.
-*
-* @param str The string to search.
-* @param ch The character to find.
-* @return A pointer to the first occurrence of the character in the string, or NULL if the character is not found.
-*/
-int s21_strncmp(const char *str1, const char *str2, size_t n)
-{
-    int rtn = 0;
-    int is_diff = 0;
-    for (size_t i=0; i < n && !is_diff; i++){
-      if (str1[i] != str2[i] || str1[i]=='\0'|| str2[i]=='\0') {
-        is_diff++;
-        rtn = (unsigned char)str1[i] - (unsigned char)str2[i];
+ * @brief Finds the first occurrence of a character in a string.
+ *
+ * @param str The string to search.
+ * @param ch The character to find.
+ * @return A pointer to the first occurrence of the character in the string, or
+ * NULL if the character is not found.
+ */
+int s21_strncmp(const char *str1, const char *str2, size_t n) {
+  int rtn = 0;
+  int is_diff = 0;
+  for (size_t i = 0; i < n && !is_diff; i++) {
+    if (str1[i] != str2[i] || str1[i] == '\0' || str2[i] == '\0') {
+      is_diff++;
+      rtn = (unsigned char)str1[i] - (unsigned char)str2[i];
     }
-    }
+  }
   return rtn;
 }
 
@@ -172,19 +171,20 @@ char *s21_strcat(char *destination, const char *append) {
 }
 
 /**
-* @brief Finds the first occurrence of a character in a string.
-*
-* @param str The string to search.
-* @param ch The character to find.
-* @return A pointer to the first occurrence of the character in the string, or NULL if the character is not found.
-*/
+ * @brief Finds the first occurrence of a character in a string.
+ *
+ * @param str The string to search.
+ * @param ch The character to find.
+ * @return A pointer to the first occurrence of the character in the string, or
+ * NULL if the character is not found.
+ */
 char *s21_strchr(const char *str, int ch) {
   char *rtn = NULL;
   if (str != NULL) {
-    for (; *str!='\0' && *str != ch; str++) {
+    for (; *str != '\0' && *str != ch; str++) {
     }
     if (*str == ch)
-      rtn = (char*) str;
+      rtn = (char *)str;
   }
   return rtn;
 }
@@ -196,14 +196,14 @@ int s21_sprintf(char *str, const char *format, ...) {
   int i = 0;
   while (*format) {
     if (*format != '%') {
-  //     i += s21_putchar(start, *format);
+      //     i += s21_putchar(start, *format);
       start++;
       format++;
     } else {
-  //     flags_t flags = parseFlags((char *)format, &ap);
-  //     if (flags.flagSize) format += flags.flagSize;
+      //     flags_t flags = parseFlags((char *)format, &ap);
+      //     if (flags.flagSize) format += flags.flagSize;
       format++;
-  //     int b = checkFormat(start, *format, &ap, flags);
+      //     int b = checkFormat(start, *format, &ap, flags);
       // i += b;
       // start += b;
       format++;

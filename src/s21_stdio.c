@@ -6,7 +6,8 @@
 #include <wchar.h>
 #include <locale.h>
 // #include <windows.h>
-#define UNICODE 
+#define asterisk -1
+
 
 /**
  TODO:    
@@ -83,6 +84,7 @@ int main(){
 //%[*][ширина][длина]спецификатор
 //%[*|5][h|l|L][]
     char buf[200];
+    char buf2[200];
     char *fmt="%Ls";
     char *sr="Tes555t 47! string 1";
     memset(buf, 0, sizeof(buf));
@@ -91,6 +93,21 @@ int main(){
     memset(buf, 0, sizeof(buf));
     sscanf(sr, fmt, buf);
     printf("RESULT sscanf=%s|\n",buf);
+
+    fmt="%s%*s%s";
+    sr="Tes555t 47! string 1";
+    memset(buf, 0, sizeof(buf));
+    // s21_sscanf(sr, fmt, buf,buf2);
+    // printf("RESULT s21_sscanf=%s|\n",buf);
+    printf("RESULT s21_sscanf=|%s| |%s|\n",buf,buf2);
+    memset(buf, 0, sizeof(buf));
+    sscanf(sr, fmt, buf,buf2);
+    printf("RESULT sscanf=|%s| |%s|\n",buf,buf2);
+
+    const char *input = "10 20 30";
+    int a, b;
+    s21_sscanf(input, "%d %*d %d", &a, &b);  // Пропуск второго числа
+    printf("a = %d, b = %d\n", a, b);  // Вывод: a = 10, b = 30
     
     // setlocale(LC_ALL, "");  // Устанавливаем локаль для поддержки широких символов
     // wchar_t bufw[200];
@@ -112,11 +129,11 @@ int main(){
     return 0;
 }
 
-struct Specifiers parse_specifiers(const char *format, const char mode){
-    struct Specifiers st_spec={0};
-        format++;
+struct Specifiers parse_specifiers(const char *format){
+    struct Specifiers st_spec={'*',-10,0,'*','*'};
+    format++;
         //Flags
-        if (mode=='p' && (*(format) == '+' || *(format) == '-' ||  *(format) == ' ' ||  *(format) == '#' ||  *(format) == '0')){
+        if ( (*(format) == '+' || *(format) == '-' ||  *(format) == ' ' ||  *(format) == '#' ||  *(format) == '0')){
             st_spec.flag = *(format);
             printf("DEBUG: FLAGS=%c\n",st_spec.flag);
             format++;
@@ -137,6 +154,7 @@ struct Specifiers parse_specifiers(const char *format, const char mode){
                     format++;
             }
             }
+                format++;
                 printf("DEBUG: Width=%i\n",st_spec.width);
         }
         //Precision
@@ -179,7 +197,7 @@ int is_digit(char c){
 
 /*TODO: Flags
  - [ ] #    При использовании со спецификаторами o, x или X перед числом вставляется 0, 0x или 0X соответственно (для значений, отличных от нуля). При использовании с e, E и f «заставляет» записанный вывод содержать десятичную точку, даже если за ней не последует никаких цифр. По умолчанию, если не следует никаких цифр, десятичная точка не записывается. При использовании с g или G результат такой же, как и с e или E, но конечные нули не удаляются.
- - [ ] 0    Заполняет число слева нулями (0) вместо пробелов, где указан спецификатор ширины (см. подспецификатор ширины).
+ - [ ] 0    Заполняет число слева нулями (0) вместо пробелов, где указан спецификатор ширины (см. подспецификатор ширины). 
 */ 
 
 /*TODO: Width
@@ -205,8 +223,10 @@ int s21_sscanf(const char *str, const char *format, ...){
     while (*fmt)
     {
         if(*fmt == '%'){
-            st_spec = parse_specifiers(fmt, 's');
-            printf("\n!!! Flag=%c, Width=%i, Length=%c, Precision=%i, Specifiers=%c\n",st_spec.flag,st_spec.width,st_spec.length,st_spec.precision,st_spec.specifier);
+            printf("\nNew arg:\n");
+            st_spec = parse_specifiers(fmt);
+            printf("DEBUG: str=%s\n",str);
+            printf("!!! Flag=%c, Width=%i, Length=%c, Precision=%i, Specifiers=%c\n",st_spec.flag,st_spec.width,st_spec.length,st_spec.precision,st_spec.specifier);
             
             if(st_spec.specifier == 'c'){
                 printf("DEBUG: Char=%c\n",*p);
@@ -227,16 +247,19 @@ int s21_sscanf(const char *str, const char *format, ...){
                     p++;
                     i++;
                 }
-                if (i>0){
+                if (i>0 && st_spec.width!=-1){
                     int *ch = va_arg(args, int*);
                     result = result*znak;
                     *ch = result;    
                     p++;
                     printf("DEBUG: Digit=%d\n",result);
+                }else{
+                    p++;
+                    // fmt++;
                 }
 
             
-            }else if(st_spec.specifier == 'f'){
+            } else if(st_spec.specifier == 'f'){
                 int znak=1;
                 int i=0;
                 float result=0;
@@ -267,16 +290,17 @@ int s21_sscanf(const char *str, const char *format, ...){
                     printf("DEBUG: Digit=%f\n",result);
                 }
 
-            }else if(st_spec.specifier == 's' && st_spec.length!='L'){
-                char *ch = va_arg(args, char*);
+            } else if(st_spec.specifier == 's' && (st_spec.length=='L' || st_spec.length=='l')){
+                wchar_t *ch = va_arg(args, wchar_t*);
+                
                 int i=0;
                 printf("Size=%ld\n",strlen(str));
                 int width = st_spec.width;
-                if (width == 0){
+                if (width < -1){
                     width = strlen(str);
                 }
                 while (*p!=' ' && i<(width)){
-                    if(width>0)
+                    if(width>=0)
                         *ch = *p;
                     p++;
                     ch++;
@@ -285,30 +309,28 @@ int s21_sscanf(const char *str, const char *format, ...){
                 *ch = '\0';
 
             
-            }else if(st_spec.specifier == 's' && st_spec.length=='L'){
-                wchar_t *ch = va_arg(args, wchar_t*);
+            } else if(st_spec.specifier == 's'){
+                char *ch = va_arg(args, char*);
                 int i=0;
                 printf("Size=%ld\n",strlen(str));
                 int width = st_spec.width;
-                if (width == 0){
+                if (width < -1){
                     width = strlen(str);
                 }
                 while (*p!=' ' && i<(width)){
-                    if(width>0)
+                    if(width>=0)
                         *ch = *p;
                     p++;
                     ch++;
                     i++;
                 }
-                *ch = L'\0';
+                *ch = L'\0';                   
 
-                    
             } else if(st_spec.specifier == '%'){
                 printf("DEBUG: Char=%c\n",*p);
                 p++;
                 fmt++;
             }
-
 
             }else if(st_spec.specifier == 'i'){
                 int znak=1;

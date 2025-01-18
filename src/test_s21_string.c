@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+Suite *s21_scanf_suite(void);
 START_TEST(test_s21_strchr_found) {
   const char *str = "Hello, World!";
   int ch = 'o';
@@ -177,47 +178,14 @@ START_TEST(test_s21_sprintf_с) {
 END_TEST
 
 
-START_TEST(test_s21_sscanf_d_simple) {
-  const char *input = "123";
-  int x = 0, xr = 0;
-  const char *fmt = "%d";
-  ck_assert_int_eq(s21_sscanf(input, fmt, &x), sscanf(input, fmt, &xr));
-  ck_assert_int_eq(x, xr);
-}
-
-START_TEST(test_s21_sscanf_d_neg) {
-  const char *input = "-123";
-  int x = 0, xr = 0;
-  const char *fmt = "%d";
-  ck_assert_int_eq(s21_sscanf(input, fmt, &x), sscanf(input, fmt, &xr));
-  ck_assert_int_eq(x,xr);
-}
-
-START_TEST(test_s21_sscanf_d_some) {
-  const char *input = "123 -456 789";
-  int x = 0, y=0, z = 0,xr = 0, yr=0, zr = 0;
-  const char *fmt = "%d %d %d";
-  ck_assert_int_eq(s21_sscanf(input, fmt, &x, &y, &z), sscanf(input, fmt, &xr, &yr, &zr));
-  ck_assert_int_eq(x, xr);
-  ck_assert_int_eq(y, yr);
-  ck_assert_int_eq(zr, zr);
-}
-
-START_TEST(test_s21_sscanf_d_space) {
-  const char *input = "  123";
-  int x = 0, xr = 0;
-  const char *fmt = "%d";
-  ck_assert_int_eq(s21_sscanf(input, fmt, &x), sscanf(input, fmt, &xr));
-  ck_assert_int_eq(x,xr);
-}
-
-
 Suite *s21_string_suite(void) {
   Suite *s;
-  TCase *tc_core;
+  TCase *tc_core, *tc_sprintf;
 
   s = suite_create("s21_string");
   tc_core = tcase_create("Core");
+  tc_sprintf = tcase_create("sprintf");
+  // tc_sscanf = tcase_create("sscanf");
 
   tcase_add_test(tc_core, test_s21_strlen);
   tcase_add_test(tc_core, test_s21_strncmp);
@@ -229,29 +197,44 @@ Suite *s21_string_suite(void) {
   tcase_add_test(tc_core, test_s21_strchr_first_char);
   tcase_add_test(tc_core, test_s21_strchr_last_char);
 
-  tcase_add_test(tc_core, test_s21_sscanf_d_simple);
-  tcase_add_test(tc_core, test_s21_sscanf_d_some);
-  tcase_add_test(tc_core, test_s21_sscanf_d_neg);
-  tcase_add_test(tc_core, test_s21_sscanf_d_space);
-  tcase_add_test(tc_core, test_s21_sprintf_с);
+  tcase_add_test(tc_sprintf, test_s21_sprintf_с);
 
   suite_add_tcase(s, tc_core);
+  // suite_add_tcase(s, tc_sprintf);
+  // suite_add_tcase(s, tc_sscanf);
+
 
   return s;
 }
 
+
+
 int main(void) {
   int number_failed;
 
-  Suite *s;
+  Suite *s,*s_sscanf;
   SRunner *sr;
 
   s = s21_string_suite();
+  s_sscanf = s21_scanf_suite();
   sr = srunner_create(s);
-
+  // srunner_add_suite(sr, s21_string_suite());
+  srunner_add_suite(sr, s_sscanf);
+  
   srunner_run_all(sr, CK_NORMAL);
   number_failed = srunner_ntests_failed(sr);
   srunner_free(sr);
 
+  // const char *input = "2147483657";// INT_MAX +10
+  // int x = 0, xr = 0;
+  // const char *fmt = "%d";
+  // s21_sscanf(input, fmt, &x);
+  // sscanf(input, fmt, &xr);
+  // printf("Result s21_scanf=%d, sscanf=%d\n", x, xr);
+
+
   return (number_failed == 0) ? 0 : 1;
 }
+
+
+

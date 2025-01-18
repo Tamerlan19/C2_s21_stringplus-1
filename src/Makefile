@@ -19,8 +19,8 @@ build: style cppcheck all
 s21_string.a: s21_string.o
 	ar rcs $(TARGET)$@ $^
 
-test: s21_string.a test_s21_string.c
-	$(CC) $(CFLAGS) -o test_s21_string.exe test_s21_string.c -L. -l:s21_string.a $(TESTFLAGS)
+test: s21_string.a test_s21_string.c test_s21_sscanf.c
+	$(CC) $(CFLAGS) -o test_s21_string.exe test_s21_string.c test_s21_sscanf.c -L. -l:s21_string.a $(TESTFLAGS)
 	./test_s21_string.exe
 
 gcov_report: 

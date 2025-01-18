@@ -224,7 +224,7 @@ struct Specifiers parse_specifiers(const char *format) {
     printf("DEBUG: FLAGS=%c\n", st_spec.flag);
     format++;
   }
-  if ((is_digit(*(format))) || *(format) == '*') {
+  if ( *(format) == '*' || is_digit(*(format))) {
     st_spec.width = 0;
     if (*(format) == '*')
       st_spec.width = -1;
@@ -234,7 +234,7 @@ struct Specifiers parse_specifiers(const char *format) {
         format++;
       }
     }
-    format++;
+    // format++;
     printf("DEBUG: Width=%i\n", st_spec.width);
   }
   // Precision
@@ -323,10 +323,10 @@ int s21_sscanf(const char *str, const char *format, ...) {
 
   while (*fmt) {
     if (*fmt == '%') {
-      printf("\nNew arg:\n");
+      printf("\nDEBUG: Format string:%s\n",fmt);
       st_spec = parse_specifiers(fmt);
       printf("DEBUG: str=%s\n", str);
-      printf("!!! Flag=%c, Width=%i, Length=%c, Precision=%i, Specifiers=%c\n",
+      printf("DEBUG: !!! Flag=%c, Width=%i, Length=%c, Precision=%i, Specifiers=%c\n",
              st_spec.flag, st_spec.width, st_spec.length, st_spec.precision,
              st_spec.specifier);
       if (st_spec.specifier == 'c') {
@@ -336,28 +336,43 @@ int s21_sscanf(const char *str, const char *format, ...) {
         p++;
 
       } else if (st_spec.specifier == 'd') {
-        int znak = 1;
-        int i = 0;
-        int result = 0;
-        while (is_space(*p))
+        int znak = 1, i = 0, width=st_spec.width;
+        long int  result = 0;
+        if(width<0 && width!=asterisk){
+            width = s21_strlen(str);
+        }
+        while (is_space(*p)) {
           p++;
+        }
         if (*p == '-') {
           znak = -1;
           p++;
         }
-        while (is_digit(*p)) {
+        while (is_digit(*p) && i <width) {
           result = result * 10 + *p - '0';
+          printf("DEBUG: Width=%d result=%ld.\n", width,result);
           p++;
           i++;
         }
         if (i > 0 && st_spec.width != asterisk) {
-          int *ch = va_arg(args, int *);
-          result = result * znak;
-          *ch = result;
+            result = result * znak;
+            if(st_spec.length == 'h'){
+            short int *ch = va_arg(args, short int *);
+            *ch = result;
+            } else if (st_spec.length == 'l'){
+            long int *ch = va_arg(args, long int *);
+            *ch = result;
+            }else{
+              int *ch = va_arg(args, int *);
+              *ch = result;
+            }
           p++;
           res++;
-          printf("DEBUG: Digit=%d\n", result);
+        //   printf("DEBUG: Digit=%ld\n", result);
         } else {
+          if (*p=='\0' && st_spec.width!=asterisk) {
+            res = -1;
+          }
           p++;
         }
 
@@ -436,7 +451,7 @@ int s21_sscanf(const char *str, const char *format, ...) {
         p++;
         fmt++;
       }
-      } else if (st_spec.specifier == 'i') {
+    } else if (st_spec.specifier == 'i') {
       int znak = 1;
       int i = 0;
       int result = 0;
@@ -473,7 +488,6 @@ int s21_sscanf(const char *str, const char *format, ...) {
     }
 
     fmt++;
-    
   }
   return res;
 }

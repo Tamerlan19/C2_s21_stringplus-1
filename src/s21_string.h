@@ -2,17 +2,20 @@
 #define STR_LIB_H
 #include <wchar.h>
 #include <stdlib.h>
+
 #define NULL ((void *)0) //macros for NULL
 
 //Data type size_t
 #ifdef _WIN64
     typedef unsigned long size_t;  // 64-bit Windows
 #elif __x86_64__ || __ppc64__ || __aarch64__
-    typedef unsigned long size_t;  // 64-bitLinux/macOS
+    typedef unsigned long size_t;  // 64-bit Linux/macOS
 #else
     typedef unsigned int size_t;        // 32-bit
 #endif
-#define asterisk -1
+
+
+#define asterisk -1 //for width='*'
 
 struct Specifiers
 {

@@ -3,7 +3,7 @@ CC = gcc
 CFLAGS = -Werror -Wall -Wextra -std=c11
 TESTFLAGS = -lcheck -lsubunit -lm
 SRC_DIR =./
-SOURCES = s21_string.c test_s21_string.c
+SOURCES = test.c s21_string.c test_s21_string.c test_s21_sscanf.c test_s21_sprintf.c
 OBJS = $(SOURCES:.c=.o)
 TARGET = ./
 
@@ -19,18 +19,18 @@ build: style cppcheck all
 s21_string.a: s21_string.o
 	ar rcs $(TARGET)$@ $^
 
-test: s21_string.a test_s21_string.c test_s21_sscanf.c
-	$(CC) $(CFLAGS) -o test_s21_string.exe test_s21_string.c test_s21_sscanf.c -L. -l:s21_string.a $(TESTFLAGS)
-	./test_s21_string.exe
+test: s21_string.a test_s21_string.c test_s21_sscanf.c test_s21_sprintf.c
+	$(CC) $(CFLAGS) -o test.exe test.c test_s21_string.c test_s21_sscanf.c test_s21_sprintf.c -L. -l:s21_string.a $(TESTFLAGS)
+	./test.exe
 
 gcov_report: 
 	$(CC) $(CFLAGS) -fprofile-arcs -ftest-coverage -c s21_string.c -o s21_string.o
 	ar rcs $(TARGET)s21_string.a s21_string.o
-	$(CC) $(CFLAGS)  -fprofile-arcs -ftest-coverage  -o test_s21_string.exe test_s21_string.c -L. -l:s21_string.a $(TESTFLAGS)
-	./test_s21_string.exe
+	$(CC) $(CFLAGS)  -fprofile-arcs -ftest-coverage  -o test.exe test.c test_s21_string.c test_s21_sscanf.c test_s21_sprintf.c -L. -l:s21_string.a $(TESTFLAGS)
+	./test.exe
 	gcov s21_string.c
-	lcov --capture --directory ./ --output-file coverage.info
-	genhtml coverage.info --output-directory gcov_report
+	lcov --exclude "test.c" --capture --directory ./ --output-file flt-coverage.info
+	genhtml flt-coverage.info --output-directory gcov_report
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@

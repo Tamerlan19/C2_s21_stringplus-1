@@ -1,7 +1,6 @@
 // #include <stdio.h>
 #include "s21_string.h"
 #include <stdarg.h>
-
 #include <stdio.h>
 /**
  TODO: Part 1. string.h Functions
@@ -20,35 +19,35 @@ test, s21_string.a, gcov_report).
 этого unit-тесты должны запускаться с флагами gcov.
  - Перед каждой функцией используй префикс s21_.
 No.	Function	Description
- - [ ] void *s21_memchr(const void *str, int c, size_t n)	Searches for the
+ - [ ] void *s21_memchr(const void *str, int c, s21_size_t n)	Searches for the
 first occurrence of the character c (an unsigned char) in the first n bytes of
 the string pointed to, by the argument str.
- - [ ] int s21_memcmp(const void *str1, const void *str2, size_t n)	Compares
+ - [ ] int s21_memcmp(const void *str1, const void *str2, s21_size_t n)	Compares
 the first n bytes of str1 and str2.
- - [ ] void *s21_memcpy(void *dest, const void *src, size_t n)	Copies n
+ - [ ] void *s21_memcpy(void *dest, const void *src, s21_size_t n)	Copies n
 characters from src to dest.
- - [ ] void *s21_memset(void *str, int c, size_t n)	Copies the character c
+ - [ ] void *s21_memset(void *str, int c, s21_size_t n)	Copies the character c
 (an unsigned char) to the first n characters of the string pointed to, by the
 argument str.
- - [ ] char *s21_strncat(char *dest, const char *src, size_t n)	Appends the
-string pointed to, by src to the end of the string pointed to, by dest up to n
-characters long.
+ - [ ] char *s21_strncat(char *dest, const char *src, s21_size_t n)	Appends
+the string pointed to, by src to the end of the string pointed to, by dest up to
+n characters long.
  - [x] char *s21_strchr(const char *str, int c)	Searches for the first
 occurrence of the character c (an unsigned char) in the string pointed to, by
 the argument str.
- - [x] int s21_strncmp(const char *str1, const char *str2, size_t n)	Compares
-at most the first n bytes of str1 and str2.
- - [ ] char *s21_strncpy(char *dest, const char *src, size_t n)	Copies up to n
-characters from the string pointed to, by src to dest.
- - [ ] size_t s21_strcspn(const char *str1, const char *str2)	Calculates the
-length of the initial segment of str1 which consists entirely of characters not
-in str2.
+ - [x] int s21_strncmp(const char *str1, const char *str2, s21_size_t n)
+Compares at most the first n bytes of str1 and str2.
+ - [ ] char *s21_strncpy(char *dest, const char *src, s21_size_t n)	Copies
+up to n characters from the string pointed to, by src to dest.
+ - [ ] s21_size_t s21_strcspn(const char *str1, const char *str2)
+Calculates the length of the initial segment of str1 which consists entirely of
+characters not in str2.
  - [ ] 	char *s21_strerror(int errnum)	Searches an internal array for the error
 number errnum and returns a pointer to an error message string. You need to
 declare macros containing arrays of error messages for mac and linux operating
 systems. Error descriptions are available in the original library. Checking the
 current OS is carried out using directives.
- - [x] 	size_t s21_strlen(const char *str)	Computes the length of the
+ - [x] 	s21_size_t s21_strlen(const char *str)	Computes the length of the
 string str up to but not including the terminating null character.
  - [ ] 	char *s21_strpbrk(const char *str1, const char *str2)	Finds the first
 character in the string str1 that matches any character specified in str2.
@@ -103,8 +102,8 @@ TODO: Part 4. Дополнительно. Реализация функции ss
 модификаторов и типов преобразования).
 */
 
-size_t s21_strlen(const char *str) {
-  size_t len = 0;
+s21_size_t s21_strlen(const char *str) {
+  s21_size_t len = 0;
   for (; *(str + len); len++)
     ;
   return len;
@@ -118,10 +117,10 @@ size_t s21_strlen(const char *str) {
  * @return A pointer to the first occurrence of the character in the string, or
  * NULL if the character is not found.
  */
-int s21_strncmp(const char *str1, const char *str2, size_t n) {
+int s21_strncmp(const char *str1, const char *str2, s21_size_t n) {
   int rtn = 0;
   int is_diff = 0;
-  for (size_t i = 0; i < n && !is_diff; i++) {
+  for (s21_size_t i = 0; i < n && !is_diff; i++) {
     if (str1[i] != str2[i] || str1[i] == '\0' || str2[i] == '\0') {
       is_diff++;
       rtn = (unsigned char)str1[i] - (unsigned char)str2[i];
@@ -130,7 +129,7 @@ int s21_strncmp(const char *str1, const char *str2, size_t n) {
   return rtn;
 }
 
-// int s21_strncmp(const char *str1, const char *str2, size_t n){
+// int s21_strncmp(const char *str1, const char *str2, s21_size_t n){
 //     int rtn = 0;
 //   for (int i=0; *str1 && *str1 == *str2 && i<n; str1++, str2++, i++)
 //     ;
@@ -153,7 +152,7 @@ int s21_strcmp(const char *str1, const char *str2) {
 }
 
 char *s21_strcpy(char *dest, const char *src) {
-  if (src != NULL) {
+  if (src != S21_NULL) {
     for (int i = 0; (dest[i] = src[i]) != '\0'; i++) {
     }
   }
@@ -179,8 +178,8 @@ char *s21_strcat(char *destination, const char *append) {
  * NULL if the character is not found.
  */
 char *s21_strchr(const char *str, int ch) {
-  char *rtn = NULL;
-  if (str != NULL) {
+  char *rtn = S21_NULL;
+  if (str != S21_NULL) {
     for (; *str != '\0' && *str != ch; str++) {
     }
     if (*str == ch)
@@ -221,10 +220,10 @@ struct Specifiers parse_specifiers(const char *format) {
   if ((*(format) == '+' || *(format) == '-' || *(format) == ' ' ||
        *(format) == '#' || *(format) == '0')) {
     st_spec.flag = *(format);
-    printf("DEBUG: FLAGS=%c\n", st_spec.flag);
+    // printf("DEBUG: FLAGS=%c\n", st_spec.flag);
     format++;
   }
-  if ( *(format) == '*' || is_digit(*(format))) {
+  if (*(format) == '*' || is_digit(*(format))) {
     st_spec.width = 0;
     if (*(format) == '*')
       st_spec.width = -1;
@@ -235,7 +234,7 @@ struct Specifiers parse_specifiers(const char *format) {
       }
     }
     // format++;
-    printf("DEBUG: Width=%i\n", st_spec.width);
+    // printf("DEBUG: Width=%i\n", st_spec.width);
   }
   // Precision
   if (*(format) == '.') {
@@ -249,14 +248,14 @@ struct Specifiers parse_specifiers(const char *format) {
         format++;
       }
     }
-    printf("DEBUG: Precision=%i\n", st_spec.precision);
+    // printf("DEBUG: Precision=%i\n", st_spec.precision);
   }
 
   // Length
   if (*(format) == 'h' || *(format) == 'l' || *(format) == 'L') {
     st_spec.length = *(format);
     format++;
-    printf("DEBUG: Length=%c\n", st_spec.length);
+    // printf("DEBUG: Length=%c\n", st_spec.length);
   }
 
   // Specifiers
@@ -266,7 +265,7 @@ struct Specifiers parse_specifiers(const char *format) {
       *format == 'X' || *format == 'o' || *format == 'p') {
     st_spec.specifier = *format;
     format++;
-    printf("DEBUG: Specifier=%c\n", st_spec.specifier);
+    // printf("DEBUG: Specifier=%c\n", st_spec.specifier);
   } else {
     st_spec.specifier = '0';
   }
@@ -323,12 +322,13 @@ int s21_sscanf(const char *str, const char *format, ...) {
 
   while (*fmt) {
     if (*fmt == '%') {
-      printf("\nDEBUG: Format string:%s\n",fmt);
+      // printf("\nDEBUG: Format string:%s\n", fmt);
       st_spec = parse_specifiers(fmt);
-      printf("DEBUG: str=%s\n", str);
-      printf("DEBUG: !!! Flag=%c, Width=%i, Length=%c, Precision=%i, Specifiers=%c\n",
-             st_spec.flag, st_spec.width, st_spec.length, st_spec.precision,
-             st_spec.specifier);
+      // printf("DEBUG: str=%s\n", str);
+      // printf("DEBUG: !!! Flag=%c, Width=%i, Length=%c, Precision=%i, "
+            //  "Specifiers=%c\n",
+            //  st_spec.flag, st_spec.width, st_spec.length, st_spec.precision,
+            //  st_spec.specifier);
       if (st_spec.specifier == 'c') {
         printf("DEBUG: Char=%c\n", *p);
         char *ch = va_arg(args, char *);
@@ -336,10 +336,10 @@ int s21_sscanf(const char *str, const char *format, ...) {
         p++;
 
       } else if (st_spec.specifier == 'd') {
-        int znak = 1, i = 0, width=st_spec.width;
-        long int  result = 0;
-        if(width<0 && width!=asterisk){
-            width = s21_strlen(str);
+        int znak = 1, i = 0, width = st_spec.width;
+        long int result = 0;
+        if (width < 0 && width != asterisk) {
+          width = s21_strlen(str);
         }
         while (is_space(*p)) {
           p++;
@@ -348,29 +348,29 @@ int s21_sscanf(const char *str, const char *format, ...) {
           znak = -1;
           p++;
         }
-        while (is_digit(*p) && i <width) {
+        while (is_digit(*p) && i < width) {
           result = result * 10 + *p - '0';
-          printf("DEBUG: Width=%d result=%ld.\n", width,result);
+          // printf("DEBUG: Width=%d result=%ld.\n", width, result);
           p++;
           i++;
         }
         if (i > 0 && st_spec.width != asterisk) {
-            result = result * znak;
-            if(st_spec.length == 'h'){
+          result = result * znak;
+          if (st_spec.length == 'h') {
             short int *ch = va_arg(args, short int *);
             *ch = result;
-            } else if (st_spec.length == 'l'){
+          } else if (st_spec.length == 'l') {
             long int *ch = va_arg(args, long int *);
             *ch = result;
-            }else{
-              int *ch = va_arg(args, int *);
-              *ch = result;
-            }
+          } else {
+            int *ch = va_arg(args, int *);
+            *ch = result;
+          }
           p++;
           res++;
-        //   printf("DEBUG: Digit=%ld\n", result);
+          //   printf("DEBUG: Digit=%ld\n", result);
         } else {
-          if (*p=='\0' && st_spec.width!=asterisk) {
+          if (*p == '\0' && st_spec.width != asterisk) {
             res = -1;
           }
           p++;
@@ -423,7 +423,7 @@ int s21_sscanf(const char *str, const char *format, ...) {
           if ((st_spec.length == 'L' || st_spec.length == 'l')) {
             wchar_t *ch = va_arg(args, wchar_t *);
             while (*p && !is_space(*p) && i <= (width)) {
-              size_t res = mbrtowc(ch, p, MB_CUR_MAX, NULL);
+              s21_size_t res = mbrtowc(ch, p, MB_CUR_MAX, S21_NULL);
               p += res;
               ch++;
               i++;

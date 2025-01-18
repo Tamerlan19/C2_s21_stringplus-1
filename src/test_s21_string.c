@@ -4,7 +4,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-Suite *s21_scanf_suite(void);
 START_TEST(test_s21_strchr_found) {
   const char *str = "Hello, World!";
   int ch = 'o';
@@ -177,7 +176,6 @@ START_TEST(test_s21_sprintf_с) {
 }
 END_TEST
 
-
 Suite *s21_string_suite(void) {
   Suite *s;
   TCase *tc_core, *tc_sprintf;
@@ -203,38 +201,5 @@ Suite *s21_string_suite(void) {
   // suite_add_tcase(s, tc_sprintf);
   // suite_add_tcase(s, tc_sscanf);
 
-
   return s;
 }
-
-
-
-int main(void) {
-  int number_failed;
-
-  Suite *s,*s_sscanf;
-  SRunner *sr;
-
-  s = s21_string_suite();
-  s_sscanf = s21_scanf_suite();
-  sr = srunner_create(s);
-  // srunner_add_suite(sr, s21_string_suite());
-  srunner_add_suite(sr, s_sscanf);
-  
-  srunner_run_all(sr, CK_NORMAL);
-  number_failed = srunner_ntests_failed(sr);
-  srunner_free(sr);
-
-  // const char *input = "2147483657";// INT_MAX +10
-  // int x = 0, xr = 0;
-  // const char *fmt = "%d";
-  // s21_sscanf(input, fmt, &x);
-  // sscanf(input, fmt, &xr);
-  // printf("Result s21_scanf=%d, sscanf=%d\n", x, xr);
-
-
-  return (number_failed == 0) ? 0 : 1;
-}
-
-
-

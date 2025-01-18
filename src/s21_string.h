@@ -1,5 +1,7 @@
 #ifndef STR_LIB_H
 #define STR_LIB_H
+#include <wchar.h>
+#include <stdlib.h>
 #define NULL ((void *)0) //macros for NULL
 
 //Data type size_t
@@ -10,6 +12,17 @@
 #else
     typedef unsigned int size_t;        // 32-bit
 #endif
+#define asterisk -1
+
+struct Specifiers
+{
+    char flag;
+    int width;
+    int precision;
+    char length;
+    char specifier;
+};
+
 
 char *s21_strchr(const char *str, int ch);
 size_t s21_strlen(const char *str);
@@ -18,4 +31,12 @@ int s21_strcmp(const char* str1, const char* str2);
 char *s21_strcpy(char *dest, const char *src);
 char *s21_strcat(char *destination, const char *append);
 int s21_sprintf(char *str, const char *format, ...);
+
+
+
+struct Specifiers parse_specifiers(const char *format);
+int is_digit(char c);
+int is_space(char c);
+// int s21_sprintf(const char *str, const char *format, ...);
+int s21_sscanf(const char *str, const char *format, ...);
 #endif

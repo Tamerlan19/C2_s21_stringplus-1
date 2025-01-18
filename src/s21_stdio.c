@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "s21_stdio.h"
+#include "s21_string.h"
 #include <stdarg.h>
 #include <string.h>
 #include <stdlib.h>
@@ -97,7 +98,7 @@ int main(){
     fmt="%s%*s%s";
     sr="Tes555t 47! string 1";
     memset(buf, 0, sizeof(buf));
-    // s21_sscanf(sr, fmt, buf,buf2);
+    s21_sscanf(sr, fmt, buf,buf2);
     // printf("RESULT s21_sscanf=%s|\n",buf);
     printf("RESULT s21_sscanf=|%s| |%s|\n",buf,buf2);
     memset(buf, 0, sizeof(buf));
@@ -106,22 +107,26 @@ int main(){
 
     const char *input = "10 20 30";
     int a, b;
+    char ca[100], cb[100];
     s21_sscanf(input, "%d %*d %d", &a, &b);  // Пропуск второго числа
     printf("a = %d, b = %d\n", a, b);  // Вывод: a = 10, b = 30
+    printf("=============================");
+    s21_sscanf(input, "%s %*s %s", ca, cb);  // Пропуск второго числа
+    printf("a = %s, b = %s\n", ca, cb);  // Вывод: a = 10, b = 30
     
-    // setlocale(LC_ALL, "");  // Устанавливаем локаль для поддержки широких символов
-    // wchar_t bufw[200];
-    // char *fmtw="%ls";
-    // char *srw="ЦTes555t 47! string 1";
-    // // wchar_t srw2[100];
-    // memset(bufw, 0, sizeof(bufw));
-    // s21_sscanf(srw, fmtw, bufw);
-    // wprintf(L"RESULT s21_sscanf=%ls|\n",bufw);
-    // memset(bufw, 0, sizeof(bufw));
-    // sscanf(srw, fmtw, bufw);
-    // printf("RESULT sscanf=%ls|\n",bufw);
-    // printf("\n");
-    // wprintf(L"Hello, world\n");
+    setlocale(LC_ALL, "");  // Устанавливаем локаль для поддержки широких символов
+    wchar_t bufw[200];
+    char *fmtw="%Ls";
+    char *srw="ЦTes555t 47! string 1";
+    // wchar_t srw2[100];
+    memset(bufw, 0, sizeof(bufw));
+    s21_sscanf(srw, fmtw, bufw);
+    printf("RESULT s21_sscanf=%ls|\n",bufw);
+    memset(bufw, 0, sizeof(bufw));
+    sscanf(srw, fmtw, bufw);
+    printf("RESULT sscanf=%ls|\n",bufw);
+    printf("\n");
+    wprintf(L"Hello, world\n");
 
     // printf("\n");
     // fflush(stdout); 
@@ -138,12 +143,6 @@ struct Specifiers parse_specifiers(const char *format){
             printf("DEBUG: FLAGS=%c\n",st_spec.flag);
             format++;
         }
-        // if (mode=='s' && (*(format) == '*' )){
-        //     st_spec.flag = *(format);
-        //     printf("DEBUG: FLAGS=%c\n",st_spec.flag);
-        //     format++;
-        // }
-        //Width
         if((is_digit(*(format))) || *(format) == '*'){   
             st_spec.width=0;
             if (*(format) == '*')
@@ -195,6 +194,11 @@ int is_digit(char c){
     return (c>='0' && c<='9');
 }
 
+int is_space(char c){
+    return (c==' ' || c=='\t' || c=='\n' || c=='\r');
+}
+
+
 /*TODO: Flags
  - [ ] #    При использовании со спецификаторами o, x или X перед числом вставляется 0, 0x или 0X соответственно (для значений, отличных от нуля). При использовании с e, E и f «заставляет» записанный вывод содержать десятичную точку, даже если за ней не последует никаких цифр. По умолчанию, если не следует никаких цифр, десятичная точка не записывается. При использовании с g или G результат такой же, как и с e или E, но конечные нули не удаляются.
  - [ ] 0    Заполняет число слева нулями (0) вместо пробелов, где указан спецификатор ширины (см. подспецификатор ширины). 
@@ -202,7 +206,8 @@ int is_digit(char c){
 
 /*TODO: Width
  - [ ] (число)  Минимальное количество печатаемых символов. Если выводимое значение короче этого числа, результат дополняется пробелами. Значение не усекается, даже если результат больше.
- - [ ] *    В sprintf знак * значит, что ширина указывается не в строке формата, а в качестве дополнительного аргумента целочисленного значения, предшествующего аргументу, который необходимо отформатировать. В sscanf знак *, помещенный после % и перед спецификатором формата, считывает данные указанного типа, но подавляет их присваивание.
+ - [ ] *    В sprintf знак * значит, что ширина указывается не в строке формата, а в качестве дополнительного аргумента целочисленного значения, предшествующего аргументу, который необходимо отформатировать. 
+            В sscanf знак *, помещенный после % и перед спецификатором формата, считывает данные указанного типа, но подавляет их присваивание.
  */
 
 /*TODO: Длина
@@ -220,6 +225,7 @@ int s21_sscanf(const char *str, const char *format, ...){
     const char *fmt = format;  // Указатель на строку формата
     //%[*][ширина][длина]спецификатор.
     int res=0;
+
     while (*fmt)
     {
         if(*fmt == '%'){
@@ -227,14 +233,14 @@ int s21_sscanf(const char *str, const char *format, ...){
             st_spec = parse_specifiers(fmt);
             printf("DEBUG: str=%s\n",str);
             printf("!!! Flag=%c, Width=%i, Length=%c, Precision=%i, Specifiers=%c\n",st_spec.flag,st_spec.width,st_spec.length,st_spec.precision,st_spec.specifier);
-            
+            // while (is_space(*p)) p++;
             if(st_spec.specifier == 'c'){
                 printf("DEBUG: Char=%c\n",*p);
                 char *ch = va_arg(args, char*);
                 *ch = *p;
                 p++;           
             
-            }else if(st_spec.specifier == 'd'){
+            } else if(st_spec.specifier == 'd'){
                 int znak=1;
                 int i=0;
                 int result=0;
@@ -247,7 +253,7 @@ int s21_sscanf(const char *str, const char *format, ...){
                     p++;
                     i++;
                 }
-                if (i>0 && st_spec.width!=-1){
+                if (i>0 && st_spec.width!=asterisk){
                     int *ch = va_arg(args, int*);
                     result = result*znak;
                     *ch = result;    
@@ -255,7 +261,6 @@ int s21_sscanf(const char *str, const char *format, ...){
                     printf("DEBUG: Digit=%d\n",result);
                 }else{
                     p++;
-                    // fmt++;
                 }
 
             
@@ -290,41 +295,58 @@ int s21_sscanf(const char *str, const char *format, ...){
                     printf("DEBUG: Digit=%f\n",result);
                 }
 
-            } else if(st_spec.specifier == 's' && (st_spec.length=='L' || st_spec.length=='l')){
-                wchar_t *ch = va_arg(args, wchar_t*);
-                
-                int i=0;
-                printf("Size=%ld\n",strlen(str));
-                int width = st_spec.width;
-                if (width < -1){
-                    width = strlen(str);
-                }
-                while (*p!=' ' && i<(width)){
-                    if(width>=0)
-                        *ch = *p;
-                    p++;
-                    ch++;
-                    i++;
-                }
-                *ch = '\0';
+            // } else if(st_spec.specifier == 's' && (st_spec.length=='L' || st_spec.length=='l')){
+            //     wchar_t *ch = va_arg(args, wchar_t*);
+            //     int i=0;
+            //     printf("Size=%ld\n",strlen(str));
+            //     int width = st_spec.width;
+            //     if (width < -1){
+            //         width = strlen(str);
+            //     }
+            //     while (*p!=' ' && i<(width)){
+            //         if(width>=0)
+            //             *ch = *p;
+            //         p++;
+            //         ch++;
+            //         i++;
+            //     }
+            //     *ch = '\0';
 
             
             } else if(st_spec.specifier == 's'){
-                char *ch = va_arg(args, char*);
                 int i=0;
-                printf("Size=%ld\n",strlen(str));
+                printf("Size=%ld\n",s21_strlen(str));
+                while (is_space(*p)) p++;
                 int width = st_spec.width;
                 if (width < -1){
-                    width = strlen(str);
+                    width = s21_strlen(str);
                 }
-                while (*p!=' ' && i<(width)){
-                    if(width>=0)
-                        *ch = *p;
+                if (width == asterisk){
+                     for(;*p!=' ' && i<=width;i++,p++);
+                }else{
+                if ((st_spec.length=='L' || st_spec.length=='l')){
+                wchar_t *ch = va_arg(args, wchar_t*);
+                while (*p && !is_space(*p) && i<=(width)){
+                    size_t res = mbrtowc(ch,p,MB_CUR_MAX,NULL);
+                    p+=res;
+                    ch++;
+                    i++;
+                }
+                *ch = L'\0'; 
+                wprintf(L"DEBUG: wide String=%ls\n",ch);
+                printf("DEBUG: 11111111111\n");
+                }else{
+                char *ch = va_arg(args, char*);
+                while (*p && !is_space(*p) && i<=(width)){
+                    *ch = *p;
                     p++;
                     ch++;
                     i++;
                 }
-                *ch = L'\0';                   
+                *ch = '\0';                   
+                printf("DEBUG: String=%s\n",ch);
+                }
+                }
 
             } else if(st_spec.specifier == '%'){
                 printf("DEBUG: Char=%c\n",*p);
@@ -366,6 +388,7 @@ int s21_sscanf(const char *str, const char *format, ...){
                     printf("DEBUG: Digit=%d\n",result);
                 }
         }
+
     fmt++;
     }
     return res;

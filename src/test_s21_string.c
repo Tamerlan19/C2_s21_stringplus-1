@@ -176,6 +176,42 @@ START_TEST(test_s21_sprintf_с) {
 }
 END_TEST
 
+
+START_TEST(test_s21_sscanf_d_simple) {
+  const char *input = "123";
+  int x = 0, xr = 0;
+  const char *fmt = "%d";
+  ck_assert_int_eq(s21_sscanf(input, fmt, &x), sscanf(input, fmt, &xr));
+  ck_assert_int_eq(x, xr);
+}
+
+START_TEST(test_s21_sscanf_d_neg) {
+  const char *input = "-123";
+  int x = 0, xr = 0;
+  const char *fmt = "%d";
+  ck_assert_int_eq(s21_sscanf(input, fmt, &x), sscanf(input, fmt, &xr));
+  ck_assert_int_eq(x,xr);
+}
+
+START_TEST(test_s21_sscanf_d_some) {
+  const char *input = "123 -456 789";
+  int x = 0, y=0, z = 0,xr = 0, yr=0, zr = 0;
+  const char *fmt = "%d %d %d";
+  ck_assert_int_eq(s21_sscanf(input, fmt, &x, &y, &z), sscanf(input, fmt, &xr, &yr, &zr));
+  ck_assert_int_eq(x, xr);
+  ck_assert_int_eq(y, yr);
+  ck_assert_int_eq(zr, zr);
+}
+
+START_TEST(test_s21_sscanf_d_space) {
+  const char *input = "  123";
+  int x = 0, xr = 0;
+  const char *fmt = "%d";
+  ck_assert_int_eq(s21_sscanf(input, fmt, &x), sscanf(input, fmt, &xr));
+  ck_assert_int_eq(x,xr);
+}
+
+
 Suite *s21_string_suite(void) {
   Suite *s;
   TCase *tc_core;
@@ -193,6 +229,10 @@ Suite *s21_string_suite(void) {
   tcase_add_test(tc_core, test_s21_strchr_first_char);
   tcase_add_test(tc_core, test_s21_strchr_last_char);
 
+  tcase_add_test(tc_core, test_s21_sscanf_d_simple);
+  tcase_add_test(tc_core, test_s21_sscanf_d_some);
+  tcase_add_test(tc_core, test_s21_sscanf_d_neg);
+  tcase_add_test(tc_core, test_s21_sscanf_d_space);
   tcase_add_test(tc_core, test_s21_sprintf_с);
 
   suite_add_tcase(s, tc_core);

@@ -64,7 +64,7 @@ series of tokens separated by delim.
 /**
 TODO: Part 2. Частичная реализация функции sprintf
 Тебе необходимо реализовать функцию sprintf из библиотеки stdio.h:
-- [ ] sprintf()
+- [ ] sprintf(): %[флаги][ширина][.точность][длина]спецификатор
 - [ ] обработка форматной строки и заполнение параметров вывода (Структура?)
 Функция должна быть размещена в библиотеке s21_string.h.
 На реализацию функции накладываются все требования, изложенные в первой части.
@@ -89,17 +89,6 @@ TODO: Part 3. Дополнительно. Реализация некоторы�
 Ширина: *
 Точность: .*
 Длина: L
-*/
-
-/**
-TODO: Part 4. Дополнительно. Реализация функции sscanf
-Необязательное задание на дополнительные баллы: реализуй функцию sscanf из
-библиотеки stdio.h:
-
-Функция должна быть размещена в библиотеке s21_string.h;
-На реализацию функции накладываются все требования, изложенные в первой части.
-Должно поддерживаться полное форматирование (с учетом флагов, ширины, точности,
-модификаторов и типов преобразования).
 */
 
 s21_size_t s21_strlen(const char *str) {
@@ -129,13 +118,6 @@ int s21_strncmp(const char *str1, const char *str2, s21_size_t n) {
   return rtn;
 }
 
-// int s21_strncmp(const char *str1, const char *str2, s21_size_t n){
-//     int rtn = 0;
-//   for (int i=0; *str1 && *str1 == *str2 && i<n; str1++, str2++, i++)
-//     ;
-//   return (*str1 - *str2);
-// }
-
 int s21_strcmp(const char *str1, const char *str2) {
   int rtn = 0;
   for (; *str1 && *str1 == *str2; str1++, str2++)
@@ -151,6 +133,13 @@ int s21_strcmp(const char *str1, const char *str2) {
   return rtn;
 }
 
+/**
+ * @brief Copies the string pointed to by src to the buffer pointed to by dest.
+ *
+ * @param dest The destination buffer.
+ * @param src The source string.
+ * @return A pointer to the destination buffer.
+ */
 char *s21_strcpy(char *dest, const char *src) {
   if (src != S21_NULL) {
     for (int i = 0; (dest[i] = src[i]) != '\0'; i++) {
@@ -188,6 +177,28 @@ char *s21_strchr(const char *str, int ch) {
   return rtn;
 }
 
+/**
+ * @brief Copies n bytes from the memory area src to the memory area dest.
+ *
+ * @param dest The destination memory area.
+ * @param src The source memory area.
+ * @param n The number of bytes to copy.
+ * @return A pointer to the destination memory area.
+ */
+void *s21_memcpy(void *dest, const void *src, s21_size_t n) {
+  // Приводим указатели к типу char* для побайтового копирования
+  char *d = (char *)dest;
+  const char *s = (const char *)src;
+
+  // Копируем n байт из src в dest
+  for (size_t i = 0; i < n; i++) {
+    d[i] = s[i];
+  }
+
+  // Возвращаем указатель на dest
+  return dest;
+}
+
 int s21_sprintf(char *str, const char *format, ...) {
   char *start = str;
   va_list ap;
@@ -213,6 +224,12 @@ int s21_sprintf(char *str, const char *format, ...) {
   return i;
 }
 
+/**
+ * @brief Parses the format string and extracts the specifiers.
+ *
+ * @param format The format string to parse.
+ * @return A struct containing the parsed specifiers.
+ */
 struct Specifiers parse_specifiers(const char *format) {
   struct Specifiers st_spec = {'*', -10, 0, '*', '*'};
   format++;
@@ -311,29 +328,78 @@ int is_space(char c) {
  спецификаторам с плавающей точкой — e, E, f, g и G).
 */
 
+/**
+TODO: Part 4. Дополнительно. Реализация функции sscanf
+Необязательное задание на дополнительные баллы: реализуй функцию sscanf из
+библиотеки stdio.h:
+%[*][ширина][длина]спецификатор
+Функция должна быть размещена в библиотеке s21_string.h;
+На реализацию функции накладываются все требования, изложенные в первой части.
+Должно поддерживаться полное форматирование (с учетом флагов, ширины, точности,
+модификаторов и типов преобразования).
+[ ] Спецификаторы: c, d, f, s, u, %
+[ ] Ширина: (число)
+[ ] Длина: h, l
+[ ] Спецификаторы: g, G, e, E, x, X, o, p
+[ ] Ширина: *
+[ ] Длина: L
+[ ]%[*|ширина][длина]c.
+[ ]%[*|ширина][длина]d.
+[ ]%[*|ширина][длина]f.
+[ ]%[*|ширина][длина]s.
+[ ]%[*|ширина][длина]u.
+[ ]%[*|ширина][длина]%
+[ ]%[*|ширина][длина]g.
+[ ]%[*|ширина][длина]G.
+[ ]%[*|ширина][длина]e.
+[ ]%[*|ширина][длина]E.
+[ ]%[*|ширина][длина]x.
+[ ]%[*|ширина][длина]X.
+[ ]%[*|ширина][длина]o.
+[ ]%[*|ширина][длина]p.
+*/
 int s21_sscanf(const char *str, const char *format, ...) {
   va_list args;
   va_start(args, format);
   struct Specifiers st_spec;
   const char *p = str; // Указатель на входную строку
   const char *fmt = format; // Указатель на строку формата
-  //%[*][ширина][длина]спецификатор.
+  //%[*/ширина][длина]спецификатор.
   int res = 0;
 
   while (*fmt) {
     if (*fmt == '%') {
-      // printf("\nDEBUG: Format string:%s\n", fmt);
       st_spec = parse_specifiers(fmt);
-      // printf("DEBUG: str=%s\n", str);
-      // printf("DEBUG: !!! Flag=%c, Width=%i, Length=%c, Precision=%i, "
-            //  "Specifiers=%c\n",
-            //  st_spec.flag, st_spec.width, st_spec.length, st_spec.precision,
-            //  st_spec.specifier);
+
+      if (st_spec.width < -1) {
+        st_spec.width = s21_strlen(p);
+      }
+      // printf("\nDEBUG: Format string:%s\n", fmt);
+      printf("\nDEBUG: str=%s\n", p);
+      printf("DEBUG: !!! Flag=%c, Width=%i, Length=%c, Precision=%i, "
+             "Specifiers=%c\n",
+             st_spec.flag, st_spec.width, st_spec.length, st_spec.precision,
+             st_spec.specifier);
+
       if (st_spec.specifier == 'c') {
         printf("DEBUG: Char=%c\n", *p);
-        char *ch = va_arg(args, char *);
-        *ch = *p;
-        p++;
+        if (st_spec.width == asterisk) {
+          p++;
+        } else {
+          if ((st_spec.length == 'l')) {
+            wchar_t *ch = va_arg(args, wchar_t *);
+            mbrtowc(ch, p, MB_CUR_MAX, S21_NULL);
+            p++;
+            ch++;
+            wprintf(L"DEBUG: wide Char=%lc\n", *ch);
+            printf("DEBUG: 11111111111\n");
+          } else {
+            char *ch = va_arg(args, char *);
+            *ch = *p;
+            res++;
+            printf("DEBUG: Char=%c\n", *ch);
+          }
+        }
 
       } else if (st_spec.specifier == 'd') {
         int znak = 1, i = 0, width = st_spec.width;
@@ -350,7 +416,7 @@ int s21_sscanf(const char *str, const char *format, ...) {
         }
         while (is_digit(*p) && i < width) {
           result = result * 10 + *p - '0';
-          // printf("DEBUG: Width=%d result=%ld.\n", width, result);
+          printf("DEBUG: Width=%d result=%ld.\n", width, result);
           p++;
           i++;
         }
@@ -377,74 +443,9 @@ int s21_sscanf(const char *str, const char *format, ...) {
         }
 
       } else if (st_spec.specifier == 'f') {
-        int znak = 1;
-        int i = 0;
-        float result = 0;
-        if (*p == '-') {
-          znak = -1;
-          p++;
-        }
-        while (is_digit(*p)) {
-          result = result * 10 + *p - '0';
-          p++;
-          i++;
-        }
-        if (*p == '.') {
-          p++;
-          float ost = 1;
-          while (is_digit(*p)) {
-            ost = ost * 0.1f;
-            result = result + (*p - '0') * ost;
-            p++;
-            i++;
-          }
-        }
-        if (i > 0) {
-          float *ch = va_arg(args, float *);
-          result = result * znak;
-          *ch = result;
-          p++;
-          res++;
-          printf("DEBUG: Digit=%f\n", result);
-        }
+        p = p + proc_spec_f(p, args, st_spec);
       } else if (st_spec.specifier == 's') {
-        int i = 0;
-        printf("Size=%ld\n", s21_strlen(str));
-        while (is_space(*p))
-          p++;
-        int width = st_spec.width;
-        if (width < -1) {
-          width = s21_strlen(str);
-        }
-        if (width == asterisk) {
-          for (; *p != ' ' && i <= width; i++, p++)
-            ;
-        } else {
-          if ((st_spec.length == 'L' || st_spec.length == 'l')) {
-            wchar_t *ch = va_arg(args, wchar_t *);
-            while (*p && !is_space(*p) && i <= (width)) {
-              s21_size_t res = mbrtowc(ch, p, MB_CUR_MAX, S21_NULL);
-              p += res;
-              ch++;
-              i++;
-            }
-            *ch = L'\0';
-            res++;
-            wprintf(L"DEBUG: wide String=%ls\n", ch);
-            printf("DEBUG: 11111111111\n");
-          } else {
-            char *ch = va_arg(args, char *);
-            while (*p && !is_space(*p) && i <= (width)) {
-              *ch = *p;
-              p++;
-              ch++;
-              i++;
-            }
-            *ch = '\0';
-            res++;
-            printf("DEBUG: String=%s\n", ch);
-          }
-        }
+        p = p + proc_spec_s(p, args, st_spec);
 
       } else if (st_spec.specifier == '%') {
         printf("DEBUG: Char=%c\n", *p);
@@ -490,4 +491,131 @@ int s21_sscanf(const char *str, const char *format, ...) {
     fmt++;
   }
   return res;
+}
+int get_number(const char *p, int *res) {
+  *res = 0;
+  int i = 0;
+  int znak = 1;
+  if (*p == '-') {
+    znak = -1;
+    p++;
+    i++;
+  }
+  while (is_digit(*p)) {
+    *res = *res * 10 + (*p - '0');
+    p++;
+    i++;
+  }
+  *res *= znak;
+  return i;
+}
+
+float s21_pow(int x, int y) {
+  float result = 1.0;
+    if (y < 0) {
+    while (y < 0) {
+      result = 1 / s21_pow(x, y*-1);
+      y++;
+    }
+    } else {
+      while (y > 0) {
+        result = result * x;
+        y--;
+      }
+    }
+  return result;
+}
+int proc_spec_f(const char *str, va_list args,
+                const struct Specifiers st_spec) {
+  char arg_str[s21_strlen(str)];
+  if (st_spec.width >= 0) {
+    s21_memcpy(arg_str, str, st_spec.width);
+    arg_str[st_spec.width] = '\0';
+  } else {
+    s21_memcpy(arg_str, str, st_spec.width);
+  }
+  const char *p = arg_str; // Указатель на входную строку
+  printf("DEBUG: String=%s\n", p);
+  int res = 0;
+  int i = 0;
+  long double result = 0.0;
+  p += get_number(p, &res);
+  result += res;
+  printf("DEBUG: RES_CELOE=%Lf\n", result);
+  if (*p == '.') {
+    p++;
+    i++;
+    int ost_div = get_number(p, &res);
+    printf("DEBUG: Ostatoc_div=%d\n", ost_div);
+    result = result + res * (1 / s21_pow(10, ost_div));
+    p+=ost_div;
+    printf("DEBUG: String after get float=%s\n", p);
+    printf("DEBUG: RES_frac=%Lf\n", result);
+  }
+  if (*p == 'e' || *p == 'E') {
+    p++;
+    p+=get_number(p, &res);
+    printf("DEBUG: exp=%d\n", res);
+    result = result * s21_pow(10, (res));
+  }
+  if (i > 0 && st_spec.width != asterisk) {
+    float *ch = va_arg(args, float *);
+    *ch = result;
+    p++;
+    i++;
+    printf("DEBUG: Float=%Lf\n", result);
+  }
+  // printf("DEBUG: value Length=%ld\n", arg_str - p);
+  return p-arg_str;
+}
+int proc_spec_s(const char *str, va_list args, const struct Specifiers st_spec) {
+  // const char *p = str; // Указатель на входную строку
+  char arg_str[s21_strlen(str)];
+   if (st_spec.width >= 0) {
+    s21_memcpy(arg_str, str, st_spec.width);
+    arg_str[st_spec.width] = '\0';
+  } else {
+    s21_memcpy(arg_str, str, st_spec.width);
+  }
+
+  const char *p = arg_str;
+  int res = 0;
+  int i = 0;
+  printf("Size=%ld\n", s21_strlen(p));
+  while (is_space(*p))
+    p++;
+  int width = st_spec.width;
+  if (width < -1) {
+    width = s21_strlen(p);
+  }
+  if (width == asterisk) {
+    for (; !(is_space(*p)) && i <= width; i++, p++)
+      ;
+  } else {
+    if ((st_spec.length == 'l')) {
+      wchar_t *ch = va_arg(args, wchar_t *);
+      while (*p && !is_space(*p) && i <= (width)) {
+        s21_size_t res = mbrtowc(ch, p, MB_CUR_MAX, S21_NULL);
+        p += res;
+        ch++;
+        i++;
+      }
+      *ch = L'\0';
+      res++;
+      wprintf(L"DEBUG: wide String=%ls\n", ch);
+    } else {
+      char *ch = va_arg(args, char *);
+      while (*p && !is_space(*p) && i <= (width)) {
+        *ch = *p;
+        p++;
+        ch++;
+        i++;
+      }
+      *ch = '\0';
+      // res++;
+      printf("DEBUG: String=%s\n", ch);
+    }
+  }
+  printf("DEBUG: value Length=%ld\n", p-arg_str);
+  return p-arg_str;
 }

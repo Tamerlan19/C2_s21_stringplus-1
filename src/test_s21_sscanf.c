@@ -1,5 +1,6 @@
 #include "s21_string.h"
 #include <check.h>
+#include <locale.h>
 #include <stdio.h>
 
 START_TEST(test_s21_sscanf_d_simple) {
@@ -219,6 +220,33 @@ START_TEST(test_s21_sscanf_ld_empty) {
 }
 END_TEST
 
+START_TEST(test_s21_sscanf_complex) {
+  int i, j;
+  float x, y;
+  char str1[10], str2[4];
+  wchar_t warr[2];
+  setlocale(LC_ALL, "en_US.utf8");
+  char input[] = "25 54.32E-1 Thompson 56789 0123 56ß水";
+  int ret = s21_sscanf(input, "%d%f%9s%2d%f%*d %3[0-9]%2lc", &i, &x, str1, &j,
+                       &y, str2, warr);
+  ck_assert_int_eq(i, 25);
+  ck_assert_float_eq(x, 5.432);
+  ck_assert_str_eq(str1, "Thompson");
+  ck_assert_int_eq(j, 56);
+  ck_assert_float_eq(y, 789.000000);
+  ck_assert_str_eq(str2, "56");
+  ck_assert_msg(warr[0] == 0x00DF,
+                "Символы не совпадают: ожидалось U+00DF (ß), получено %lc",
+                warr[0]);
+  // ck_assert_int_eq(warr[0], 0x00DF);
+  ck_assert_msg(warr[1] == 0x6C34,
+                "Символы не совпадают: ожидалось U+6C34 (水), получено %lc",
+                warr[1]);
+  // ck_assert_int_eq(warr[1], 0x6C34);
+  ck_assert_int_eq(ret, 7);
+}
+END_TEST
+
 Suite *s21_sscanf_suite(void) {
   Suite *s;
   TCase *tc_core;
@@ -251,6 +279,8 @@ Suite *s21_sscanf_suite(void) {
   tcase_add_test(tc_core, test_s21_sscanf_ld_width);
   tcase_add_test(tc_core, test_s21_sscanf_ld_invalid);
   tcase_add_test(tc_core, test_s21_sscanf_ld_empty);
+
+  tcase_add_test(tc_core, test_s21_sscanf_complex);
 
   suite_add_tcase(s, tc_core);
 

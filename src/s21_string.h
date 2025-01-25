@@ -41,6 +41,5 @@ int is_space(char c);
 // int s21_sprintf(const char *str, const char *format, ...);
 int s21_sscanf(const char *str, const char *format, ...);
 
-int proc_spec_s(const char* str, va_list args, const struct Specifiers st_spec);
-int proc_spec_f(const char* str, va_list args, const struct Specifiers st_spec);
+
 #endif

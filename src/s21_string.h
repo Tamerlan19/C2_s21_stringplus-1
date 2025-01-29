@@ -1,8 +1,8 @@
 #ifndef STR_LIB_H
 #define STR_LIB_H
+#include <stdarg.h>
 #include <stdlib.h>
 #include <wchar.h>
-#include <stdarg.h>
 
 #define S21_NULL ((void *)0) // macros for NULL
 
@@ -27,12 +27,12 @@ struct Specifiers {
 
 char *s21_strchr(const char *str, int ch);
 s21_size_t s21_strlen(const char *str);
-int s21_strncmp(const char *str1, const char *str2, size_t n);
+int s21_strncmp(const char *str1, const char *str2, s21_size_t n);
 int s21_strcmp(const char *str1, const char *str2);
 char *s21_strcpy(char *dest, const char *src);
 char *s21_strcat(char *destination, const char *append);
 
-void *ы21_memcpy(void *dest, const void *src, s21_size_t n);
+void *s21_memcpy(void *dest, const void *src, s21_size_t n);
 int s21_sprintf(char *str, const char *format, ...);
 
 struct Specifiers parse_specifiers(const char *format);
@@ -40,6 +40,5 @@ int is_digit(char c);
 int is_space(char c);
 // int s21_sprintf(const char *str, const char *format, ...);
 int s21_sscanf(const char *str, const char *format, ...);
-
 
 #endif

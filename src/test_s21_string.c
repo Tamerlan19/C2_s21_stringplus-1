@@ -152,7 +152,7 @@ START_TEST(test_s21_strcmp) {
 }
 END_TEST
 
-START_TEST(test_s21_sprintf_с) {
+START_TEST(test_s21_sprintf_c) {
   char buff[70] = {0};
   char s21_buff[70] = {0};
 
@@ -195,7 +195,7 @@ Suite *s21_string_suite(void) {
   tcase_add_test(tc_core, test_s21_strchr_first_char);
   tcase_add_test(tc_core, test_s21_strchr_last_char);
 
-  tcase_add_test(tc_sprintf, test_s21_sprintf_с);
+  tcase_add_test(tc_sprintf, test_s21_sprintf_c);
 
   suite_add_tcase(s, tc_core);
   // suite_add_tcase(s, tc_sprintf);

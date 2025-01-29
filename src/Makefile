@@ -3,8 +3,9 @@ CC = gcc
 CFLAGS = -Werror -Wall -Wextra -std=c11
 TESTFLAGS = -lcheck -lsubunit -lm
 SRC_DIR =./
-SOURCES = test.c s21_string.c test_s21_string.c test_s21_sscanf.c test_s21_sprintf.c
-OBJS = $(SOURCES:.c=.o)
+SOURCES = test.c s21_string.c test_s21_string.c test_s21_sscanf.c test_s21_sprintf.c s21_string.h
+SRCS = test.c s21_string.c test_s21_string.c test_s21_sscanf.c test_s21_sprintf.c
+OBJS = $(SRCS:.c=.o)
 TARGET = ./
 
 
@@ -30,7 +31,7 @@ gcov_report:
 	$(CC) $(CFLAGS)  -fprofile-arcs -ftest-coverage  -o test.exe test.c test_s21_string.c test_s21_sscanf.c test_s21_sprintf.c -L. -l:s21_string.a $(TESTFLAGS)
 	./test.exe
 	gcov s21_string.c
-	lcov --exclude "test.c" --capture --directory ./ --output-file flt-coverage.info
+	lcov --exclude "test*.c"  --capture --directory ./ --output-file flt-coverage.info
 	genhtml flt-coverage.info --output-directory gcov_report
 
 %.o: %.c
@@ -62,7 +63,7 @@ check-style:
 
 cppcheck:
 		@FLS="" ; \
-		for src in $(SOURCES)  ; do \
+		for src in $(SOURCES) ; do \
 			FLS="$$FLS $(SRC_DIR)$$src" ; \
 		done ;\
 		echo "### Test cppcheck for files: $$FLS..."; \

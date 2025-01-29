@@ -348,26 +348,26 @@ TODO: Part 4. Дополнительно. Реализация функции ss
 На реализацию функции накладываются все требования, изложенные в первой части.
 Должно поддерживаться полное форматирование (с учетом флагов, ширины, точности,
 модификаторов и типов преобразования).
-[ ] Спецификаторы: c, d, f, s, u, %
-[ ] Ширина: (число)
-[ ] Длина: h, l
+[ ] Спецификаторы: c, d, f, s, u, %, i
+ - Ширина: (число)
+ - Длина: h, l
 [ ] Спецификаторы: g, G, e, E, x, X, o, p
-[ ] Ширина: *
-[ ] Длина: L
-[ ]%[*|ширина][длина]c.
-[ ]%[*|ширина][длина]d.
-[ ]%[*|ширина][длина]f.
-[ ]%[*|ширина][длина]s.
-[ ]%[*|ширина][длина]u.
-[ ]%[*|ширина][длина]%
-[ ]%[*|ширина][длина]g.
-[ ]%[*|ширина][длина]G.
-[ ]%[*|ширина][длина]e.
-[ ]%[*|ширина][длина]E.
-[ ]%[*|ширина][длина]x.
-[ ]%[*|ширина][длина]X.
-[ ]%[*|ширина][длина]o.
-[ ]%[*|ширина][длина]p.
+ - Ширина: *
+ - Длина: L
+[x] %[*|ширина][длина]c.
+[x] %[*|ширина][длина]d.
+[x] %[*|ширина][длина]f.
+[ ] %[*|ширина][длина]s.
+[ ] %[*|ширина][длина]u.
+[ ] %[*|ширина][длина]%
+[ ] %[*|ширина][длина]g.
+[ ] %[*|ширина][длина]G.
+[ ] %[*|ширина][длина]e.
+[ ] %[*|ширина][длина]E.
+[ ] %[*|ширина][длина]x.
+[ ] %[*|ширина][длина]X.
+[ ] %[*|ширина][длина]o.
+[ ] %[*|ширина][длина]p.
 */
 int s21_sscanf(const char *str, const char *format, ...) {
   va_list args;
@@ -404,13 +404,13 @@ int s21_sscanf(const char *str, const char *format, ...) {
         } else if (step <= 0) {
           res--;
         }
-        printf ("DEBUG: after process Char Result=%d\n", res);
+        printf("DEBUG: after process Char Result=%d\n", res);
 
       } else if (st_spec.specifier == 'd') {
-      while ((is_space(*p)) && *p != '-') {
-        printf("Noop symbol:|%c|\n", *p);
-        p++;
-      }
+        while ((is_space(*p)) && *p != '-') {
+          printf("Noop symbol:|%c|\n", *p);
+          p++;
+        }
         int step = 0;
         step = proc_spec_d(p, args, st_spec);
         if (step > 0) {
@@ -424,11 +424,11 @@ int s21_sscanf(const char *str, const char *format, ...) {
         printf("DEBUG: FINISH position=%s\n", p);
 
       } else if (st_spec.specifier == 'f') {
-              while ((is_space(*p)) && *p != '-') {
-        printf("Noop symbol:|%c|\n", *p);
-        p++;
-      }
-                int step = 0;
+        while ((is_space(*p)) && *p != '-') {
+          printf("Noop symbol:|%c|\n", *p);
+          p++;
+        }
+        int step = 0;
         step = proc_spec_f(p, args, st_spec);
         if (step > 0) {
           p = p + step;
@@ -440,10 +440,10 @@ int s21_sscanf(const char *str, const char *format, ...) {
         }
       } else if (st_spec.specifier == 's') {
         while ((is_space(*p)) && *p != '-') {
-        printf("Noop symbol:|%c|\n", *p);
-        p++;
-      }
-                int step = 0;
+          printf("Noop symbol:|%c|\n", *p);
+          p++;
+        }
+        int step = 0;
         step = proc_spec_s(p, args, st_spec);
         if (step > 0) {
           p = p + step;
@@ -453,7 +453,7 @@ int s21_sscanf(const char *str, const char *format, ...) {
         } else if (step < 0) {
           res--;
         }
-          printf ("DEBUG: after process string Result=%d\n", res);
+        printf("DEBUG: after process string Result=%d\n", res);
       } else if (st_spec.specifier == '%') {
         printf("DEBUG: Char=%c\n", *p);
         p++;
@@ -516,7 +516,7 @@ int get_number(const char *p, long int *res) {
   *res = 0;
   int i = 0;
   int znak = 1;
-  if (*p == '-' && is_digit(*(p+1))) {
+  if (*p == '-' && is_digit(*(p + 1))) {
     znak = -1;
     p++;
     i++;
@@ -552,24 +552,25 @@ int proc_spec_c(const char *str, va_list args,
   const char *p = str;
   printf("DEBUG: String for decode=|%s|\n", str);
   if (st_spec.width == asterisk) {
-            if (st_spec.length == 'l') {
-            wchar_t dummy;
-            for (int i = 0; i < st_spec.width && *p; i++) {
-                if (read_wchar(&p, &dummy) != 0) break;
-            }
-        } else {
-            p += st_spec.width > 0 ? st_spec.width : 1;
-        }
+    if (st_spec.length == 'l') {
+      wchar_t dummy;
+      for (int i = 0; i < st_spec.width && *p; i++) {
+        if (read_wchar(&p, &dummy) != 0)
+          break;
+      }
+    } else {
+      p += st_spec.width > 0 ? st_spec.width : 1;
+    }
   } else {
     int width = st_spec.width > 0 ? st_spec.width : 1;
     if ((st_spec.length == 'l')) {
-    width = (width > (int)max_len) ? (int)max_len : width;
-    wchar_t *wch = va_arg(args, wchar_t *);
+      width = (width > (int)max_len) ? (int)max_len : width;
+      wchar_t *wch = va_arg(args, wchar_t *);
       for (int i = 0; i < width; i++) {
         printf("DEBUG: wide Char=%x\n", L'Ω');
-        if (read_wchar(&p, &wch[i])!=0){
-          wch[i]=L'\0';
-          printf("DEBUG: read char symbol=%d\n",i);
+        if (read_wchar(&p, &wch[i]) != 0) {
+          wch[i] = L'\0';
+          printf("DEBUG: read char symbol=%d\n", i);
           break;
         }
         printf("DEBUG: wide Char=%x\n", (wchar_t)wch[i]);
@@ -577,13 +578,13 @@ int proc_spec_c(const char *str, va_list args,
     } else {
       char *ch = va_arg(args, char *);
       size_t copy_size = (size_t)width > max_len ? max_len : (size_t)width;
-      s21_memcpy(ch, p ,copy_size);
+      s21_memcpy(ch, p, copy_size);
       ch[copy_size] = '\0';
       p += copy_size;
       printf("DEBUG: ordinary Char=%c\n", *ch);
     }
   }
-  return p-str;
+  return p - str;
 }
 
 int proc_spec_f(const char *str, va_list args,
@@ -636,8 +637,8 @@ int proc_spec_s(const char *str, va_list args,
   if (st_spec.width >= 0) {
     s21_memcpy(arg_str, str, st_spec.width);
     arg_str[st_spec.width] = '\0';
-  } else {
-    s21_memcpy(arg_str, str, st_spec.width);
+  // } else {
+  //   s21_memcpy(arg_str, str, st_spec.width);
   }
 
   const char *p = arg_str;
@@ -653,6 +654,7 @@ int proc_spec_s(const char *str, va_list args,
   if (width == asterisk) {
     for (; !(is_space(*p)) && i <= width; i++, p++)
       ;
+    res=0;
   } else {
     if ((st_spec.length == 'l')) {
       wchar_t *ch = va_arg(args, wchar_t *);
@@ -674,12 +676,17 @@ int proc_spec_s(const char *str, va_list args,
         i++;
       }
       *ch = '\0';
-      // res++;
+      res++;
       printf("DEBUG: String=%s\n", p);
     }
+    if (i==0) {
+      res = -1;
+    }
+    else
+    res = p - arg_str;
   }
   printf("DEBUG: value Step=%ld\n", p - arg_str);
-  return p - arg_str;
+  return res;
 }
 int proc_spec_d(const char *str, va_list args,
                 const struct Specifiers st_spec) {

@@ -11,7 +11,7 @@ int proc_spec_d(const char *str, va_list args, const struct Specifiers st_spec);
 int proc_spec_s(const char *str, va_list args, const struct Specifiers st_spec);
 int proc_spec_f(const char *str, va_list args, const struct Specifiers st_spec);
 int proc_spec_c(const char *str, va_list args, const struct Specifiers st_spec);
-
+int is_alpha(char c);
 /**
  TODO: Part 1. string.h Functions
  - Оформи решение как статическую библиотеку с названием s21_string.a (с
@@ -208,30 +208,94 @@ void *s21_memcpy(void *dest, const void *src, s21_size_t n) {
   return dest;
 }
 
+
+int parse_specifiers_length(const char *format) {
+    int len = 0;
+    while (format[len] && !is_alpha(format[len]) && format[len] != '%') {
+        len++;
+    }
+    if (is_alpha(format[len])) {
+        len++; // Учитываем спецификатор
+    }
+    return len;
+}
+
 int s21_sprintf(char *str, const char *format, ...) {
-  char *start = str;
+  // char *start = str;
+  struct Specifiers st_spec = {'*', -10, 0, '*', '*'};
   va_list ap;
   va_start(ap, format);
   int i = 0;
-  while (*format) {
-    if (*format != '%') {
-      //     i += s21_putchar(start, *format);
-      start++;
-      format++;
-    } else {
-      //     flags_t flags = parseFlags((char *)format, &ap);
-      //     if (flags.flagSize) format += flags.flagSize;
-      format++;
-      //     int b = checkFormat(start, *format, &ap, flags);
-      // i += b;
-      // start += b;
-      format++;
+while (*format) {
+        if (*format == '%') {
+            // Проверяем следующий символ после %
+            if (*(format + 1) == '%') {
+                str[i++] = '%';
+                format += 2;
+                continue;
+            }
+
+            // Парсим спецификаторы
+            st_spec = parse_specifiers(format);
+            int spec_len = parse_specifiers_length(format); // Функция должна вернуть количество символов, которые занимает спецификатор
+            format += spec_len;
+
+            // Обработка спецификаторов
+            switch (st_spec.specifier) {
+                case 'd': {
+                    int val = va_arg(ap, int);
+                    if (st_spec.width > 0) {
+                        char temp[1024];
+                        snprintf(temp, sizeof(temp), "%*d", st_spec.width, val);
+                        printf("DEBUG2: %s\n", temp);
+                        s21_strcpy(str + i, temp);
+                        i += s21_strlen(temp);
+                    } else {
+                        i += sprintf(str + i, "%d", val);
+                    }
+                    break;
+                }
+                case 'f': {
+                    double val = va_arg(ap, double);
+                    if (st_spec.precision >= 0) {
+                        char temp[1024];
+                        snprintf(temp, sizeof(temp), "%.*f", st_spec.precision, val);
+                        s21_strcpy(str + i, temp);
+                        i += s21_strlen(temp);
+                    } else {
+                        i += sprintf(str + i, "%f", val);
+                    }
+                    break;
+                }
+                case 's': {
+                    char *val = va_arg(ap, char *);
+                    if (st_spec.width > 0) {
+                        char temp[1024];
+                        snprintf(temp, sizeof(temp), "%*s", st_spec.width, val);
+                        s21_strcpy(str + i, temp);
+                        i += s21_strlen(temp);
+                    } else {
+                        s21_strcpy(str + i, val);
+                        i += s21_strlen(val);
+                    }
+                    break;
+                }
+                default:
+                    str[i++] = *format;
+                    break;
+            }
+        } else {
+            str[i++] = *format;
+        }
+        format++;
     }
-  }
-  va_end(ap);
-  str[i] = '\0';
-  return i;
+
+    str[i] = '\0';
+    va_end(ap);
+    return i;
 }
+
+
 
 /**
  * @brief Parses the format string and extracts the specifiers.
@@ -302,6 +366,11 @@ struct Specifiers parse_specifiers(const char *format) {
 }
 
 int is_digit(char c) { return (c >= '0' && c <= '9'); }
+
+int is_alpha(char c) { 
+  return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'); }
+
+
 
 int is_space(char c) {
   return (c == ' ' || c == '\t' || c == '\n' || c == '\r');

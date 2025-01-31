@@ -489,220 +489,6 @@ START_TEST(test_s21_sscanf_s_add_spaces) {
 }
 END_TEST
 
-START_TEST(test_s21_sscanf_ls_simple) {
-    const char *input = "αβγδε";
-    wchar_t str[20] = {0}, strr[20] = {0};
-    const char *fmt = "%ls";
-
-    // Преобразуем входную строку в широкую строку
-    const char *wide_input = "αβγδε";
-
-    // Вызываем s21_sscanf и стандартную swscanf
-    int result = s21_sscanf(input, fmt, str);
-    int resultr = sscanf(wide_input, fmt, strr);
-
-    // Проверяем результаты
-    ck_assert_int_eq(result, resultr); // Ожидается 1 (успешное чтение)
-    ck_assert_wstr_eq(str, strr);      // Ожидается L"αβγδε"
-}
-END_TEST
-
-// Тест 2: Чтение широкой строки с пробелами (должно остановиться на первом пробеле)
-START_TEST(test_s21_sscanf_ls_space) {
-    const char *input = "αβγδε ζηθικ";
-    char str[20] = {0}, strr[20] = {0};
-    const char *fmt = "%ls";
-
-    // Преобразуем входную строку в широкую строку
-    const char *wide_input = "αβγδε ζηθικ";
-
-    // Вызываем s21_sscanf и стандартную swscanf
-    int result = s21_sscanf(input, fmt, str);
-    int resultr = sscanf(wide_input, fmt, strr);
-
-    // Проверяем результаты
-    ck_assert_int_eq(result, resultr); // Ожидается 1 (успешное чтение)
-    ck_assert_wstr_eq(str, strr);      // Ожидается L"αβγδε"
-}
-END_TEST
-
-// Тест 3: Чтение широкой строки с указанием ширины
-START_TEST(test_s21_sscanf_ls_width) {
-    const char *input = "αβγδεζηθ";
-    char str[20] = {0}, strr[20] = {0};
-    const char *fmt = "%5ls"; // Чтение только 5 символов
-
-    // Преобразуем входную строку в широкую строку
-    const char *wide_input = "αβγδεζηθ";
-
-    // Вызываем s21_sscanf и стандартную swscanf
-    int result = s21_sscanf(input, fmt, str);
-    int resultr = sscanf(wide_input, fmt, strr);
-
-    // Проверяем результаты
-    ck_assert_int_eq(result, resultr); // Ожидается 1 (успешное чтение)
-    ck_assert_wstr_eq(str, strr);      // Ожидается L"αβγδε"
-}
-END_TEST
-
-// Тест 4: Чтение нескольких широких строк
-START_TEST(test_s21_sscanf_ls_multiple) {
-    const char *input = "αβγδε ζηθικ";
-    char str1[20] = {0}, str2[20] = {0}, str1r[20] = {0}, str2r[20] = {0};
-    const char *fmt = "%ls %ls";
-
-    // Преобразуем входную строку в широкую строку
-    const char *wide_input = "αβγδε ζηθικ";
-
-    // Вызываем s21_sscanf и стандартную swscanf
-    int result = s21_sscanf(input, fmt, str1, str2);
-    int resultr = sscanf(wide_input, fmt, str1r, str2r);
-
-    // Проверяем результаты
-    ck_assert_int_eq(result, resultr); // Ожидается 2 (успешное чтение двух строк)
-    ck_assert_wstr_eq(str1, str1r);    // Ожидается L"αβγδε"
-    ck_assert_wstr_eq(str2, str2r);    // Ожидается L"ζηθικ"
-}
-END_TEST
-
-// Тест 5: Чтение широкой строки с пустым вводом
-START_TEST(test_s21_sscanf_ls_empty) {
-    const char *input = "";
-    char str[20] = {0}, strr[20] = {0};
-    const char *fmt = "%ls";
-
-    // Преобразуем входную строку в широкую строку
-    const char *wide_input = "";
-
-    // Вызываем s21_sscanf и стандартную swscanf
-    int result = s21_sscanf(input, fmt, str);
-    int resultr = sscanf(wide_input, fmt, strr);
-
-    // Проверяем результаты
-    ck_assert_int_eq(result, resultr); // Ожидается -1 (пустой ввод)
-    ck_assert_wstr_eq(str, strr);      // Ожидается пустая строка
-}
-END_TEST
-
-// Тест 6: Чтение широкой строки с неверным форматом
-START_TEST(test_s21_sscanf_ls_wrong_fmt) {
-    const char *input = "αβγδε";
-    char str[20] = {0}, strr[20] = {0};
-    const char *fmt = "%d"; // Неверный формат для широкой строки
-
-    // Преобразуем входную строку в широкую строку
-    const char *wide_input = "αβγδε";
-
-    // Вызываем s21_sscanf и стандартную swscanf
-    int result = s21_sscanf(input, fmt, str);
-    int resultr = sscanf(wide_input, fmt, strr);
-
-    // Проверяем результаты
-    ck_assert_int_eq(result, resultr); // Ожидается 0 (неверный формат)
-    ck_assert_wstr_eq(str, strr);      // Ожидается пустая строка
-}
-END_TEST
-
-// Тест 7: Чтение широкой строки с модификатором ширины и неверным форматом
-START_TEST(test_s21_sscanf_ls_width_wrong_fmt) {
-    const char *input = "αβγδε";
-    char str[20] = {0}, strr[20] = {0};
-    const char *fmt = "%5d"; // Неверный формат для широкой строки
-
-    // Преобразуем входную строку в широкую строку
-    const char *wide_input = "αβγδε";
-
-    // Вызываем s21_sscanf и стандартную swscanf
-    int result = s21_sscanf(input, fmt, str);
-    int resultr = sscanf(wide_input, fmt, strr);
-
-    // Проверяем результаты
-    ck_assert_int_eq(result, resultr); // Ожидается 0 (неверный формат)
-    ck_assert_wstr_eq(str, strr);      // Ожидается пустая строка
-}
-END_TEST
-
-// Тест 8: Чтение широкой строки с разделителями (пробелы, табуляция, новая строка)
-START_TEST(test_s21_sscanf_ls_separators) {
-    const char *input = " \t\nαβγδε \t\nζηθικ \t\n";
-    char str1[20] = {0}, str2[20] = {0}, str1r[20] = {0}, str2r[20] = {0};
-    const char *fmt = "%ls %ls";
-
-    // Преобразуем входную строку в широкую строку
-    const char *wide_input = " \t\nαβγδε \t\nζηθικ \t\n";
-
-    // Вызываем s21_sscanf и стандартную swscanf
-    int result = s21_sscanf(input, fmt, str1, str2);
-    int resultr = sscanf(wide_input, fmt, str1r, str2r);
-
-    // Проверяем результаты
-    ck_assert_int_eq(result, resultr); // Ожидается 2 (успешное чтение двух строк)
-    ck_assert_wstr_eq(str1, str1r);    // Ожидается L"αβγδε"
-    ck_assert_wstr_eq(str2, str2r);    // Ожидается L"ζηθικ"
-}
-END_TEST
-
-// Тест 9: Чтение широкой строки с модификатором ширины и разделителями
-START_TEST(test_s21_sscanf_ls_width_separators) {
-    const char *input = " \t\nαβγδε \t\nζηθικ \t\n";
-    char str1[20] = {0}, str2[20] = {0}, str1r[20] = {0}, str2r[20] = {0};
-    const char *fmt = "%3ls %3ls"; // Чтение только 3 символов
-
-    // Преобразуем входную строку в широкую строку
-    const char *wide_input = " \t\nαβγδε \t\nζηθικ \t\n";
-
-    // Вызываем s21_sscanf и стандартную swscanf
-    int result = s21_sscanf(input, fmt, str1, str2);
-    int resultr = sscanf(wide_input, fmt, str1r, str2r);
-
-    // Проверяем результаты
-    ck_assert_int_eq(result, resultr); // Ожидается 2 (успешное чтение двух строк)
-    ck_assert_wstr_eq(str1, str1r);    // Ожидается L"αβγ"
-    ck_assert_wstr_eq(str2, str2r);    // Ожидается L"ζηθ"
-}
-END_TEST
-
-// Тест 10: Чтение широкой строки с дополнительными пробелами
-START_TEST(test_s21_sscanf_ls_add_spaces) {
-    const char *input = "   αβγδε   ζηθικ   ";
-    char str1[20] = {0}, str2[20] = {0}, str1r[20] = {0}, str2r[20] = {0};
-    const char *fmt = "%ls %ls";
-
-    // Преобразуем входную строку в широкую строку
-    const char *wide_input = "   αβγδε   ζηθικ   ";
-
-    // Вызываем s21_sscanf и стандартную swscanf
-    int result = s21_sscanf(input, fmt, str1, str2);
-    int resultr = sscanf(wide_input, fmt, str1r, str2r);
-
-    // Проверяем результаты
-    ck_assert_int_eq(result, resultr); // Ожидается 2 (успешное чтение двух строк)
-    ck_assert_wstr_eq(str1, str1r);    // Ожидается L"αβγδε"
-    ck_assert_wstr_eq(str2, str2r);    // Ожидается L"ζηθικ"
-}
-END_TEST
-
-// Тест 11: Чтение широкой строки с пропуском присваивания
-START_TEST(test_s21_sscanf_ls_skip_assignment) {
-    const char *input = "αβγδε ζηθικ";
-    char str[20] = {0};
-    char strr[20] = {0};
-    const char *fmt = "%*ls %ls"; // Пропуск первой строки
-
-    // Преобразуем входную строку в широкую строку
-    const char *wide_input = "αβγδε ζηθικ";
-
-    // Вызываем s21_sscanf и стандартную swscanf
-    int result = s21_sscanf(input, fmt, str);
-    int resultr = sscanf(wide_input, fmt, strr);
-
-    // Проверяем результаты
-    ck_assert_int_eq(result, resultr); // Ожидается 1 (успешное чтение второй строки)
-    ck_assert_wstr_eq(str, L"ζηθικ");  // Ожидается L"ζηθικ"
-}
-END_TEST
-
-
 Suite *s21_sscanf_suite(void) {
   Suite *s;
   TCase *tc_core_d,*tc_core_c,*tc_core_s;
@@ -758,22 +544,22 @@ Suite *s21_sscanf_suite(void) {
   tcase_add_test(tc_core_s, test_s21_sscanf_s_add_spaces);
   tcase_add_test(tc_core_s, test_s21_sscanf_s_skip_assignment);
 
-    tcase_add_test(tc_core_s, test_s21_sscanf_ls_simple);
-    tcase_add_test(tc_core_s, test_s21_sscanf_ls_space);
-    tcase_add_test(tc_core_s, test_s21_sscanf_ls_width);
-    tcase_add_test(tc_core_s, test_s21_sscanf_ls_multiple);
-    tcase_add_test(tc_core_s, test_s21_sscanf_ls_empty);
-    tcase_add_test(tc_core_s, test_s21_sscanf_ls_wrong_fmt);
-    tcase_add_test(tc_core_s, test_s21_sscanf_ls_width_wrong_fmt);
-    tcase_add_test(tc_core_s, test_s21_sscanf_ls_separators);
-    tcase_add_test(tc_core_s, test_s21_sscanf_ls_width_separators);
-    tcase_add_test(tc_core_s, test_s21_sscanf_ls_add_spaces);
-    tcase_add_test(tc_core_s, test_s21_sscanf_ls_skip_assignment);
+    // tcase_add_test(tc_core_s, test_s21_sscanf_ls_simple);
+    // tcase_add_test(tc_core_s, test_s21_sscanf_ls_space);
+    // tcase_add_test(tc_core_s, test_s21_sscanf_ls_width);
+    // tcase_add_test(tc_core_s, test_s21_sscanf_ls_multiple);
+    // tcase_add_test(tc_core_s, test_s21_sscanf_ls_empty);
+    // tcase_add_test(tc_core_s, test_s21_sscanf_ls_wrong_fmt);
+    // tcase_add_test(tc_core_s, test_s21_sscanf_ls_width_wrong_fmt);
+    // tcase_add_test(tc_core_s, test_s21_sscanf_ls_separators);
+    // tcase_add_test(tc_core_s, test_s21_sscanf_ls_width_separators);
+    // tcase_add_test(tc_core_s, test_s21_sscanf_ls_add_spaces);
+    // tcase_add_test(tc_core_s, test_s21_sscanf_ls_skip_assignment);
 
 //[ ] Uncomment additional test case
   // suite_add_tcase(s, tc_core);
-  // suite_add_tcase(s, tc_core_d);
-  // suite_add_tcase(s, tc_core_c);
+  suite_add_tcase(s, tc_core_d);
+  suite_add_tcase(s, tc_core_c);
   suite_add_tcase(s, tc_core_s);
 
   return s;

@@ -491,7 +491,7 @@ END_TEST
 
 Suite *s21_sscanf_suite(void) {
   Suite *s;
-  TCase *tc_core_d,*tc_core_c,*tc_core_s;
+  TCase *tc_core_d, *tc_core_c, *tc_core_s;
 
   s = suite_create("s21_sscanf");
   // tc_core = tcase_create("Core");
@@ -544,19 +544,19 @@ Suite *s21_sscanf_suite(void) {
   tcase_add_test(tc_core_s, test_s21_sscanf_s_add_spaces);
   tcase_add_test(tc_core_s, test_s21_sscanf_s_skip_assignment);
 
-    // tcase_add_test(tc_core_s, test_s21_sscanf_ls_simple);
-    // tcase_add_test(tc_core_s, test_s21_sscanf_ls_space);
-    // tcase_add_test(tc_core_s, test_s21_sscanf_ls_width);
-    // tcase_add_test(tc_core_s, test_s21_sscanf_ls_multiple);
-    // tcase_add_test(tc_core_s, test_s21_sscanf_ls_empty);
-    // tcase_add_test(tc_core_s, test_s21_sscanf_ls_wrong_fmt);
-    // tcase_add_test(tc_core_s, test_s21_sscanf_ls_width_wrong_fmt);
-    // tcase_add_test(tc_core_s, test_s21_sscanf_ls_separators);
-    // tcase_add_test(tc_core_s, test_s21_sscanf_ls_width_separators);
-    // tcase_add_test(tc_core_s, test_s21_sscanf_ls_add_spaces);
-    // tcase_add_test(tc_core_s, test_s21_sscanf_ls_skip_assignment);
+  // tcase_add_test(tc_core_s, test_s21_sscanf_ls_simple);
+  // tcase_add_test(tc_core_s, test_s21_sscanf_ls_space);
+  // tcase_add_test(tc_core_s, test_s21_sscanf_ls_width);
+  // tcase_add_test(tc_core_s, test_s21_sscanf_ls_multiple);
+  // tcase_add_test(tc_core_s, test_s21_sscanf_ls_empty);
+  // tcase_add_test(tc_core_s, test_s21_sscanf_ls_wrong_fmt);
+  // tcase_add_test(tc_core_s, test_s21_sscanf_ls_width_wrong_fmt);
+  // tcase_add_test(tc_core_s, test_s21_sscanf_ls_separators);
+  // tcase_add_test(tc_core_s, test_s21_sscanf_ls_width_separators);
+  // tcase_add_test(tc_core_s, test_s21_sscanf_ls_add_spaces);
+  // tcase_add_test(tc_core_s, test_s21_sscanf_ls_skip_assignment);
 
-//[ ] Uncomment additional test case
+  //[ ] Uncomment additional test case
   // suite_add_tcase(s, tc_core);
   suite_add_tcase(s, tc_core_d);
   suite_add_tcase(s, tc_core_c);

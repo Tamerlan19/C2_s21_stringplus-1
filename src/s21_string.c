@@ -2,16 +2,21 @@
 #include "s21_string.h"
 #include <locale.h>
 #include <stdarg.h>
-#include <stdio.h>
+// #include <stdio.h>
+#include <string.h>
 
 float s21_pow(int x, int y);
 int get_number(const char *p, long int *res);
-int proc_spec_s(const char *str, va_list args, const struct Specifiers st_spec);
-int proc_spec_d(const char *str, va_list args, const struct Specifiers st_spec);
-int proc_spec_s(const char *str, va_list args, const struct Specifiers st_spec);
-int proc_spec_f(const char *str, va_list args, const struct Specifiers st_spec);
-int proc_spec_c(const char *str, va_list args, const struct Specifiers st_spec);
+int proc_spec_s(const char *str, va_list args, const Specifiers st_spec);
+int proc_spec_d(const char *str, va_list args, const Specifiers st_spec);
+int proc_spec_s(const char *str, va_list args, const Specifiers st_spec);
+int proc_spec_f(const char *str, va_list args, const Specifiers st_spec);
+int proc_spec_c(const char *str, va_list args, const Specifiers st_spec);
 int is_alpha(char c);
+int is_digit(char c);
+int is_space(char c);
+Specifiers parse_specifiers(const char *format);
+
 /**
  TODO: Part 1. string.h Functions
  - Оформи решение как статическую библиотеку с названием s21_string.a (с
@@ -208,94 +213,126 @@ void *s21_memcpy(void *dest, const void *src, s21_size_t n) {
   return dest;
 }
 
-
 int parse_specifiers_length(const char *format) {
-    int len = 0;
-    while (format[len] && !is_alpha(format[len]) && format[len] != '%') {
-        len++;
-    }
-    if (is_alpha(format[len])) {
-        len++; // Учитываем спецификатор
-    }
-    return len;
+  int len = 0;
+  while (format[len] && (format[len]!=' ' || format[len] != '%')) {
+    len++;
+  }
+  // if (is_alpha(format[len])) {
+  //   len++; // Учитываем спецификатор
+  // }
+  DEBUG_PRINT("len = %d, format= = %s\n", len, format);
+  return len;
 }
 
+void int_to_str(int num, char *str, int base) {
+  int i = 0;
+  int is_negative = 0;
+
+  // Обрабатываем 0 отдельно
+  if (num == 0) {
+    str[i++] = '0';
+    str[i] = '\0';
+    return;
+  }
+
+  // Обрабатываем отрицательные числа для десятичной системы
+  if (num < 0 && base == 10) {
+    is_negative = 1;
+    num = -num; // Преобразуем в положительное
+  }
+
+  // Преобразуем число в строку (обратный порядок)
+  while (num > 0) {
+    int digit = num % base;
+    str[i++] = (digit > 9) ? (digit - 10) + 'A' : digit + '0';
+    num /= base;
+  }
+
+  // Добавляем знак минус для десятичной системы
+  if (is_negative) {
+    str[i++] = '-';
+  }
+
+  str[i] = '\0'; // Завершаем строку
+
+  // Переворачиваем строку
+  int start = 0, end = i - 1;
+  while (start < end) {
+    char temp = str[start];
+    str[start] = str[end];
+    str[end] = temp;
+    start++;
+    end--;
+  }
+}
 int s21_sprintf(char *str, const char *format, ...) {
   // char *start = str;
-  struct Specifiers st_spec = {'*', -10, 0, '*', '*'};
+  Specifiers st_spec = {'*', -10, 0, '*', '*'};
   va_list ap;
   va_start(ap, format);
   int i = 0;
-while (*format) {
-        if (*format == '%') {
-            // Проверяем следующий символ после %
-            if (*(format + 1) == '%') {
-                str[i++] = '%';
-                format += 2;
-                continue;
-            }
+  while (*format) {
+    if (*format == '%') {
+      // Парсим спецификаторы
+      st_spec = parse_specifiers(format);
+      int spec_len = parse_specifiers_length(
+          format); // Функция должна вернуть количество символов, которые
+                   // занимает спецификатор
+      format += spec_len;
 
-            // Парсим спецификаторы
-            st_spec = parse_specifiers(format);
-            int spec_len = parse_specifiers_length(format); // Функция должна вернуть количество символов, которые занимает спецификатор
-            format += spec_len;
-
-            // Обработка спецификаторов
-            switch (st_spec.specifier) {
+      // Обработка спецификаторов
+      switch (st_spec.specifier) {
                 case 'd': {
                     int val = va_arg(ap, int);
-                    if (st_spec.width > 0) {
-                        char temp[1024];
-                        snprintf(temp, sizeof(temp), "%*d", st_spec.width, val);
-                        printf("DEBUG2: %s\n", temp);
-                        s21_strcpy(str + i, temp);
-                        i += s21_strlen(temp);
-                    } else {
-                        i += sprintf(str + i, "%d", val);
-                    }
+                    char temp[300];
+                    int_to_str(val, temp, 10);
+                    DEBUG_PRINT("val=%d; temp=|%s|\n", val, temp);
+                    s21_strcat(str + i, temp);
+                    i += s21_strlen(temp);
+                    str[i]= '\0';
                     break;
                 }
-                case 'f': {
-                    double val = va_arg(ap, double);
-                    if (st_spec.precision >= 0) {
-                        char temp[1024];
-                        snprintf(temp, sizeof(temp), "%.*f", st_spec.precision, val);
-                        s21_strcpy(str + i, temp);
-                        i += s21_strlen(temp);
-                    } else {
-                        i += sprintf(str + i, "%f", val);
-                    }
-                    break;
-                }
-                case 's': {
-                    char *val = va_arg(ap, char *);
-                    if (st_spec.width > 0) {
-                        char temp[1024];
-                        snprintf(temp, sizeof(temp), "%*s", st_spec.width, val);
-                        s21_strcpy(str + i, temp);
-                        i += s21_strlen(temp);
-                    } else {
-                        s21_strcpy(str + i, val);
-                        i += s21_strlen(val);
-                    }
-                    break;
-                }
-                default:
-                    str[i++] = *format;
-                    break;
-            }
+      case 'f': {
+        double val = va_arg(ap, double);
+        if (st_spec.precision >= 0) {
+          char temp[1024];
+          snprintf(temp, sizeof(temp), "%.*f", st_spec.precision, val);
+          s21_strcpy(str + i, temp);
+          i += s21_strlen(temp);
         } else {
-            str[i++] = *format;
+          i += sprintf(str + i, "%f", val);
         }
-        format++;
+        break;
+      }
+      case 's': {
+        char *val = va_arg(ap, char *);
+        if (st_spec.width > 0) {
+          char temp[1024];
+          snprintf(temp, sizeof(temp), "%*s", st_spec.width, val);
+          s21_strcpy(str + i, temp);
+          i += s21_strlen(temp);
+        } else {
+          s21_strcpy(str + i, val);
+          i += s21_strlen(val);
+        }
+        break;
+      }
+      default:
+        str[i++] = *format;
+        break;
+      }
+    } 
+    else {
+      str[i++] = *format;
     }
+    format++;
+  }
 
-    str[i] = '\0';
-    va_end(ap);
-    return i;
+  str[i] = '\0';
+  va_end(ap);
+  return i;
 }
-
-
 
 /**
  * @brief Parses the format string and extracts the specifiers.
@@ -303,14 +340,14 @@ while (*format) {
  * @param format The format string to parse.
  * @return A struct containing the parsed specifiers.
  */
-struct Specifiers parse_specifiers(const char *format) {
-  struct Specifiers st_spec = {'*', -10, 0, '*', '*'};
+Specifiers parse_specifiers(const char *format) {
+  Specifiers st_spec = {'*', -10, 0, '*', '*'};
   format++;
   // Flags
   if ((*(format) == '+' || *(format) == '-' || *(format) == ' ' ||
        *(format) == '#' || *(format) == '0')) {
     st_spec.flag = *(format);
-    // printf("DEBUG: FLAGS=%c\n", st_spec.flag);
+    // DEBUG_PRINT(" FLAGS=%c\n", st_spec.flag);
     format++;
   }
   if (*(format) == '*' || is_digit(*(format))) {
@@ -326,7 +363,7 @@ struct Specifiers parse_specifiers(const char *format) {
       }
     }
     // format++;
-    printf("DEBUG: Width=%i\n", st_spec.width);
+    DEBUG_PRINT("Width=%i\n", st_spec.width);
   }
   // Precision
   if (*(format) == '.') {
@@ -340,14 +377,14 @@ struct Specifiers parse_specifiers(const char *format) {
         format++;
       }
     }
-    // printf("DEBUG: Precision=%i\n", st_spec.precision);
+    // DEBUG_PRINT(" Precision=%i\n", st_spec.precision);
   }
 
   // Length
   if (*(format) == 'h' || *(format) == 'l' || *(format) == 'L') {
     st_spec.length = *(format);
     format++;
-    // printf("DEBUG: Length=%c\n", st_spec.length);
+    // DEBUG_PRINT(" Length=%c\n", st_spec.length);
   }
 
   // Specifiers
@@ -357,7 +394,7 @@ struct Specifiers parse_specifiers(const char *format) {
       *format == 'X' || *format == 'o' || *format == 'p') {
     st_spec.specifier = *format;
     format++;
-    printf("DEBUG: Specifier=%c\n", st_spec.specifier);
+    DEBUG_PRINT("Specifier=%c\n", st_spec.specifier);
   } else {
     st_spec.specifier = '0';
   }
@@ -367,10 +404,9 @@ struct Specifiers parse_specifiers(const char *format) {
 
 int is_digit(char c) { return (c >= '0' && c <= '9'); }
 
-int is_alpha(char c) { 
-  return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'); }
-
-
+int is_alpha(char c) {
+  return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
+}
 
 int is_space(char c) {
   return (c == ' ' || c == '\t' || c == '\n' || c == '\r');
@@ -438,10 +474,11 @@ TODO: Part 4. Дополнительно. Реализация функции ss
 [ ] %[*|ширина][длина]o.
 [ ] %[*|ширина][длина]p.
 */
+
 int s21_sscanf(const char *str, const char *format, ...) {
   va_list args;
   va_start(args, format);
-  struct Specifiers st_spec;
+  Specifiers st_spec;
   const char *p = str; // Указатель на входную строку
   const char *fmt = format; // Указатель на строку формата
   //%[*/ширина][длина]спецификатор.
@@ -449,19 +486,19 @@ int s21_sscanf(const char *str, const char *format, ...) {
 
   while (*fmt) {
     if (*fmt == '%') {
-      printf("\n");
+      DEBUG_PRINT("\n");
       st_spec = parse_specifiers(fmt);
       if (st_spec.width < -1) {
         st_spec.width = s21_strlen(p);
       }
-      // printf("\nDEBUG: Format string:%s\n", fmt);
-      printf("DEBUG: result=%d\n", res);
-      printf("DEBUG: str=%s\n", p);
-      printf("DEBUG: format=%s\n", fmt);
-      printf("DEBUG: !!! Flag=%c, Width=%i, Length=%c, Precision=%i, "
-             "Specifiers=%c\n",
-             st_spec.flag, st_spec.width, st_spec.length, st_spec.precision,
-             st_spec.specifier);
+      // DEBUG_PRINT("\nFormat string:%s\n", fmt);
+      DEBUG_PRINT(" result=%d\n", res);
+      DEBUG_PRINT(" str=%s\n", p);
+      DEBUG_PRINT(" format=%s\n", fmt);
+      DEBUG_PRINT(" !!! Flag=%c, Width=%i, Length=%c, Precision=%i, "
+                  "Specifiers=%c\n",
+                  st_spec.flag, st_spec.width, st_spec.length,
+                  st_spec.precision, st_spec.specifier);
       if (st_spec.specifier == 'c') {
         int step = 0;
         step = proc_spec_c(p, args, st_spec);
@@ -473,11 +510,11 @@ int s21_sscanf(const char *str, const char *format, ...) {
         } else if (step <= 0) {
           res--;
         }
-        printf("DEBUG: after process Char Result=%d\n", res);
+        DEBUG_PRINT(" after process Char Result=%d\n", res);
 
       } else if (st_spec.specifier == 'd') {
         while ((is_space(*p)) && *p != '-') {
-          printf("Noop symbol:|%c|\n", *p);
+          DEBUG_PRINT("Noop symbol:|%c|\n", *p);
           p++;
         }
         int step = 0;
@@ -490,11 +527,11 @@ int s21_sscanf(const char *str, const char *format, ...) {
         } else if (step < 0) {
           res--;
         }
-        printf("DEBUG: FINISH position=%s\n", p);
+        DEBUG_PRINT(" FINISH position=%s\n", p);
 
       } else if (st_spec.specifier == 'f') {
         while ((is_space(*p)) && *p != '-') {
-          printf("Noop symbol:|%c|\n", *p);
+          DEBUG_PRINT("Noop symbol:|%c|\n", *p);
           p++;
         }
         int step = 0;
@@ -509,7 +546,7 @@ int s21_sscanf(const char *str, const char *format, ...) {
         }
       } else if (st_spec.specifier == 's') {
         while ((is_space(*p)) && *p != '-') {
-          printf("Noop symbol:|%c|\n", *p);
+          DEBUG_PRINT("Noop symbol:|%c|\n", *p);
           p++;
         }
         int step = 0;
@@ -522,9 +559,9 @@ int s21_sscanf(const char *str, const char *format, ...) {
         } else if (step < 0) {
           res--;
         }
-        printf("DEBUG: after process string Result=%d\n", res);
+        DEBUG_PRINT(" after process string Result=%d\n", res);
       } else if (st_spec.specifier == '%') {
-        printf("DEBUG: Char=%c\n", *p);
+        DEBUG_PRINT(" Char=%c\n", *p);
         p++;
         fmt++;
       }
@@ -541,7 +578,7 @@ int s21_sscanf(const char *str, const char *format, ...) {
         if (*p == 'x' || *p == 'X') {
           p++;
         } else {
-          printf("DEBUG: octal number\n");
+          DEBUG_PRINT(" octal number\n");
           while ((*p >= '0' && *p <= '8')) {
             result = result * 8 + *p - '0';
             p++;
@@ -560,25 +597,26 @@ int s21_sscanf(const char *str, const char *format, ...) {
         *ch = result;
         p++;
         res++;
-        printf("DEBUG: Digit=%d\n", result);
+        DEBUG_PRINT(" Digit=%d\n", result);
       }
     }
 
     fmt++;
   }
-  printf("DEBUG: FINISH result=%d\n", res);
+  DEBUG_PRINT(" FINISH result=%d\n", res);
   return res;
 }
+
 int read_wchar(const char **p, wchar_t *wch) {
   int res = 0;
   int bytes_read = mbtowc(wch, *p, MB_CUR_MAX);
-  printf("DEBUG: wide Char wch=%x p=%s\n", *wch, *p);
+  DEBUG_PRINT(" wide Char wch=%x p=%s\n", *wch, *p);
   if (bytes_read <= 0) {
     res = -1;
   } else {
     *p += bytes_read;
   }
-  printf("DEBUG: result read_wchar=%d\n", res);
+  DEBUG_PRINT(" result read_wchar=%d\n", res);
   return res;
 }
 int get_number(const char *p, long int *res) {
@@ -615,11 +653,10 @@ float s21_pow(int x, int y) {
   return result;
 }
 
-int proc_spec_c(const char *str, va_list args,
-                const struct Specifiers st_spec) {
+int proc_spec_c(const char *str, va_list args, const Specifiers st_spec) {
   size_t max_len = s21_strlen(str);
   const char *p = str;
-  printf("DEBUG: String for decode=|%s|\n", str);
+  DEBUG_PRINT(" String for decode=|%s|\n", str);
   if (st_spec.width == asterisk) {
     if (st_spec.length == 'l') {
       wchar_t dummy;
@@ -636,13 +673,13 @@ int proc_spec_c(const char *str, va_list args,
       width = (width > (int)max_len) ? (int)max_len : width;
       wchar_t *wch = va_arg(args, wchar_t *);
       for (int i = 0; i < width; i++) {
-        printf("DEBUG: wide Char=%x\n", L'Ω');
+        DEBUG_PRINT(" wide Char=%x\n", L'Ω');
         if (read_wchar(&p, &wch[i]) != 0) {
           wch[i] = L'\0';
-          printf("DEBUG: read char symbol=%d\n", i);
+          DEBUG_PRINT(" read char symbol=%d\n", i);
           break;
         }
-        printf("DEBUG: wide Char=%x\n", (wchar_t)wch[i]);
+        DEBUG_PRINT(" wide Char=%x\n", (wchar_t)wch[i]);
       }
     } else {
       char *ch = va_arg(args, char *);
@@ -650,14 +687,13 @@ int proc_spec_c(const char *str, va_list args,
       s21_memcpy(ch, p, copy_size);
       ch[copy_size] = '\0';
       p += copy_size;
-      printf("DEBUG: ordinary Char=%c\n", *ch);
+      DEBUG_PRINT(" ordinary Char=%c\n", *ch);
     }
   }
   return p - str;
 }
 
-int proc_spec_f(const char *str, va_list args,
-                const struct Specifiers st_spec) {
+int proc_spec_f(const char *str, va_list args, const Specifiers st_spec) {
   char arg_str[s21_strlen(str) + 1];
   if (st_spec.width >= 0) {
     s21_memcpy(arg_str, str, st_spec.width);
@@ -666,27 +702,27 @@ int proc_spec_f(const char *str, va_list args,
     s21_memcpy(arg_str, str, st_spec.width);
   }
   const char *p = arg_str; // Указатель на входную строку
-  printf("DEBUG: String=%s\n", p);
+  DEBUG_PRINT(" String=%s\n", p);
   long int res = 0;
   int i = 0;
   long double result = 0.0;
   p += get_number(p, &res);
   result += res;
-  printf("DEBUG: RES_CELOE=%Lf\n", result);
+  DEBUG_PRINT(" RES_CELOE=%Lf\n", result);
   if (*p == '.') {
     p++;
     i++;
     int ost_div = get_number(p, &res);
-    printf("DEBUG: Ostatoc_div=%d\n", ost_div);
+    DEBUG_PRINT(" Ostatoc_div=%d\n", ost_div);
     result = result + res * (1 / s21_pow(10, ost_div));
     p += ost_div;
-    printf("DEBUG: String after get float=%s\n", p);
-    printf("DEBUG: RES_frac=%Lf\n", result);
+    DEBUG_PRINT(" String after get float=%s\n", p);
+    DEBUG_PRINT(" RES_frac=%Lf\n", result);
   }
   if (*p == 'e' || *p == 'E') {
     p++;
     p += get_number(p, &res);
-    printf("DEBUG: exp=%ld\n", res);
+    DEBUG_PRINT(" exp=%ld\n", res);
     result = result * s21_pow(10, (res));
   }
   if (p - arg_str > 0 && st_spec.width != asterisk) {
@@ -694,26 +730,25 @@ int proc_spec_f(const char *str, va_list args,
     *ch = result;
     p++;
     i++;
-    printf("DEBUG: Float=%Lf\n", result);
+    DEBUG_PRINT(" Float=%Lf\n", result);
   }
-  // printf("DEBUG: value Length=%ld\n", arg_str - p);
+  // DEBUG_PRINT(" value Length=%ld\n", arg_str - p);
   return p - arg_str;
 }
-int proc_spec_s(const char *str, va_list args,
-                const struct Specifiers st_spec) {
+int proc_spec_s(const char *str, va_list args, const Specifiers st_spec) {
   // const char *p = str; // Указатель на входную строку
   char arg_str[s21_strlen(str)];
   if (st_spec.width >= 0) {
     s21_memcpy(arg_str, str, st_spec.width);
     arg_str[st_spec.width] = '\0';
-  // } else {
-  //   s21_memcpy(arg_str, str, st_spec.width);
+    // } else {
+    //   s21_memcpy(arg_str, str, st_spec.width);
   }
 
   const char *p = arg_str;
   int res = 0;
   int i = 0;
-  printf("Size=%ld\n", s21_strlen(p));
+  DEBUG_PRINT("Size=%ld\n", s21_strlen(p));
   while (is_space(*p))
     p++;
   int width = st_spec.width;
@@ -723,7 +758,7 @@ int proc_spec_s(const char *str, va_list args,
   if (width == asterisk) {
     for (; !(is_space(*p)) && i <= width; i++, p++)
       ;
-    res=0;
+    res = 0;
   } else {
     if ((st_spec.length == 'l')) {
       wchar_t *ch = va_arg(args, wchar_t *);
@@ -735,7 +770,7 @@ int proc_spec_s(const char *str, va_list args,
       }
       *ch = L'\0';
       res++;
-      wprintf(L"DEBUG: wide String=%ls\n", ch);
+      wprintf(L"wide String=%ls\n", ch);
     } else {
       char *ch = va_arg(args, char *);
       while (*p && !is_space(*p) && i <= (width)) {
@@ -746,19 +781,17 @@ int proc_spec_s(const char *str, va_list args,
       }
       *ch = '\0';
       res++;
-      printf("DEBUG: String=%s\n", p);
+      DEBUG_PRINT(" String=%s\n", p);
     }
-    if (i==0) {
+    if (i == 0) {
       res = -1;
-    }
-    else
-    res = p - arg_str;
+    } else
+      res = p - arg_str;
   }
-  printf("DEBUG: value Step=%ld\n", p - arg_str);
+  DEBUG_PRINT(" value Step=%ld\n", p - arg_str);
   return res;
 }
-int proc_spec_d(const char *str, va_list args,
-                const struct Specifiers st_spec) {
+int proc_spec_d(const char *str, va_list args, const Specifiers st_spec) {
   int res = 0;
   s21_size_t i = 0;
   int width = st_spec.width;
@@ -776,14 +809,14 @@ int proc_spec_d(const char *str, va_list args,
   //   printf("Noop symbol:|%c|\n", *p);
   //   p++;
   // }
-  // printf("DEBUG: String str=|%s|\n", str);
-  // printf("DEBUG: String arg_str=|%s|\n", arg_str);
-  // printf("DEBUG: String copy with Width=%s\n", p);
-  printf("DEBUG: Input string for convert to int=|%s|\n", p);
+  // DEBUG_PRINT(" String str=|%s|\n", str);
+  // DEBUG_PRINT(" String arg_str=|%s|\n", arg_str);
+  // DEBUG_PRINT(" String copy with Width=%s\n", p);
+  DEBUG_PRINT(" Input string for convert to int=|%s|\n", p);
   int step = 0;
   step = get_number(p, &result);
   p += step;
-  printf("DEBUG: Width=%d result=%ld step=%d.\n", width, result, step);
+  DEBUG_PRINT(" Width=%d result=%ld step=%d.\n", width, result, step);
   i++;
   if (step > 0) {
     if (st_spec.width != asterisk) {

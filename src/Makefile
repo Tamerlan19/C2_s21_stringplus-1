@@ -1,6 +1,6 @@
 .PHONY = all, clean, test, s21_string.a, gcov_report
 CC = gcc
-CFLAGS = -Werror -Wall -Wextra -std=c11
+CFLAGS = -Werror -Wall -Wextra -std=c11 -DDEBUG
 TESTFLAGS = -lcheck -lsubunit -lm
 SRC_DIR =./
 SOURCES = test.c s21_string.c test_s21_string.c test_s21_sscanf.c test_s21_sprintf.c s21_string.h

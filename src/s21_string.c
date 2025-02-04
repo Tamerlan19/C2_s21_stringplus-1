@@ -17,6 +17,14 @@ int is_digit(char c);
 int is_space(char c);
 Specifiers parse_specifiers(const char *format);
 
+void monster_flags(const char *format, Specifiers *flags);
+void handle_char(char **buffer, Specifiers flags, int c);
+void handle_int(char **buffer, Specifiers flags, int d);
+void handle_float(char **buffer, Specifiers flags, double f);
+void handle_string(char **buffer, Specifiers flags, const char *s);
+void handle_unsigned(char **buffer, Specifiers flags, unsigned int u);
+void handle_percent(char **buffer, Specifiers flags);
+
 /**
  TODO: Part 1. string.h Functions
  - Оформи решение как статическую библиотеку с названием s21_string.a (с
@@ -266,73 +274,127 @@ void int_to_str(int num, char *str, int base) {
     end--;
   }
 }
-int s21_sprintf(char *str, const char *format, ...) {
-  // char *start = str;
-  Specifiers st_spec = {'*', -10, 0, '*', '*'};
-  va_list ap;
-  va_start(ap, format);
-  int i = 0;
-  while (*format) {
-    if (*format == '%') {
-      // Парсим спецификаторы
-      st_spec = parse_specifiers(format);
-      int spec_len = parse_specifiers_length(
-          format); // Функция должна вернуть количество символов, которые
-                   // занимает спецификатор
-      format += spec_len;
 
-      // Обработка спецификаторов
-      switch (st_spec.specifier) {
-                case 'd': {
-                    int val = va_arg(ap, int);
-                    char temp[300];
-                    int_to_str(val, temp, 10);
-                    DEBUG_PRINT("val=%d; temp=|%s|\n", val, temp);
-                    s21_strcat(str + i, temp);
-                    i += s21_strlen(temp);
-                    str[i]= '\0';
+
+int s21_sprintf(char *str, const char *format, ...) {
+    va_list args;
+    va_start(args, format);
+    char *buffer = str;
+    const char *ptr = format;
+    while (*ptr) {
+        if (*ptr == '%') {
+            ptr++;
+            Specifiers flags;
+            flags = parse_specifiers(format);
+            // monster_flags(ptr, &flags);
+            char spec = *ptr;
+            ptr++;
+            switch(flags.specifier) {
+                case 'c': {
+                    int c = va_arg(args, int);
+                    handle_char(&buffer, flags, c);
                     break;
                 }
-      case 'f': {
-        double val = va_arg(ap, double);
-        if (st_spec.precision >= 0) {
-          char temp[1024];
-          snprintf(temp, sizeof(temp), "%.*f", st_spec.precision, val);
-          s21_strcpy(str + i, temp);
-          i += s21_strlen(temp);
+                case 'd': {
+                    int d = va_arg(args, int);
+                    handle_int(&buffer, flags, d);
+                    break;
+                }
+                case 'f': {
+                    double f = va_arg(args, double);
+                    handle_float(&buffer, flags, f);
+                    break;
+                }
+                case 's': {
+                    const char *s = va_arg(args, const char *);
+                    handle_string(&buffer, flags, s);
+                    break;
+                }
+                case 'u': {
+                    unsigned int u = va_arg(args, unsigned int);
+                    handle_unsigned(&buffer, flags, u);
+                    break;
+                }
+                case '%': {
+                    handle_percent(&buffer, flags);
+                    break;
+                }
+                default:
+                    *buffer++ = spec;
+                    break;
+            }
         } else {
-          i += sprintf(str + i, "%f", val);
+            *buffer++ = *ptr++;
         }
-        break;
-      }
-      case 's': {
-        char *val = va_arg(ap, char *);
-        if (st_spec.width > 0) {
-          char temp[1024];
-          snprintf(temp, sizeof(temp), "%*s", st_spec.width, val);
-          s21_strcpy(str + i, temp);
-          i += s21_strlen(temp);
-        } else {
-          s21_strcpy(str + i, val);
-          i += s21_strlen(val);
-        }
-        break;
-      }
-      default:
-        str[i++] = *format;
-        break;
-      }
-    } 
-    else {
-      str[i++] = *format;
     }
-    format++;
-  }
-
-  str[i] = '\0';
-  va_end(ap);
-  return i;
+    *buffer = '\0';
+    va_end(args);
+    return (int)strlen(str);
 }
+
+
+void handle_char(char **buffer, Specifiers flags, int c) {
+  if (flags.width>0) {
+
+    *(*buffer)++ = (char)c;
+    **buffer = '\0';
+  }
+}
+
+void handle_int(char **buffer, Specifiers flags, int d) {
+    char tmp[100] = {0};
+    if (flags.precision >= 0) {
+        char fmt[20] = {0};
+        sprintf(fmt, "%%0%dd", flags.precision);
+        sprintf(tmp, fmt, d);
+    } else {
+        sprintf(tmp, "%d", d);
+    }
+    strcpy(*buffer, tmp);
+    *buffer += strlen(tmp);
+}
+
+void handle_float(char **buffer, Specifiers flags, double f) {
+    char tmp[200] = {0};
+    if (flags.precision >= 0) {
+        char fmt[20] = {0};
+        sprintf(fmt, "%%.%df", flags.precision);
+        sprintf(tmp, fmt, f);
+    } else {
+        sprintf(tmp, "%f", f);
+    }
+    strcpy(*buffer, tmp);
+    *buffer += strlen(tmp);
+}
+
+void handle_string(char **buffer, Specifiers flags, const char *s) {
+  if (flags.specifier == 's') {
+
+    if (s == 0) {
+        s = "(null)";
+    }
+    strcpy(*buffer, s);
+    *buffer += strlen(s);
+  }
+}
+
+void handle_unsigned(char **buffer, Specifiers flags, unsigned int u) {
+  if (flags.specifier == 'u') {
+    char tmp[100] = {0};
+    sprintf(tmp, "%u", u);
+    strcpy(*buffer, tmp);
+    *buffer += strlen(tmp);
+  }
+}
+
+void handle_percent(char **buffer, Specifiers flags) {
+  if (flags.specifier=='%'){
+
+    *(*buffer)++ = '%';
+    **buffer = '\0';
+  }
+}
+
 
 /**
  * @brief Parses the format string and extracts the specifiers.

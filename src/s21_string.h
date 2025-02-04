@@ -37,6 +37,9 @@ typedef struct {
   char specifier;
 } Specifiers;
 
+
+
+
 char *s21_strchr(const char *str, int ch);
 s21_size_t s21_strlen(const char *str);
 int s21_strncmp(const char *str1, const char *str2, s21_size_t n);

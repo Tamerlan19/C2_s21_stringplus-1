@@ -17,8 +17,10 @@ START_TEST(test_int_format) {
 END_TEST
 
 START_TEST(test_width_flag) {
+  // DEBUG_PRINT("\ntest_width_flag\n");
   char buffer[1024];
   s21_sprintf(buffer, "Number: %5d", 42);
+  DEBUG_PRINT("buffer = |%s|\n", buffer);
   ck_assert_str_eq(buffer, "Number:    42");
 }
 END_TEST
@@ -53,10 +55,11 @@ Suite *s21_sprintf_suite(void) {
 
   tcase_add_test(tc_core, test_basic_string);
   tcase_add_test(tc_core, test_int_format);
-  tcase_add_test(tc_core, test_width_flag);
+
   tcase_add_test(tc_core, test_precision_flag);
   tcase_add_test(tc_core, test_zero_padding);
   tcase_add_test(tc_core, test_left_alignment);
+  tcase_add_test(tc_core, test_width_flag);
 
   suite_add_tcase(s, tc_core);
 

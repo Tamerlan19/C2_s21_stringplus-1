@@ -15,7 +15,8 @@ int proc_spec_c(const char *str, va_list args, const Specifiers st_spec);
 int is_alpha(char c);
 int is_digit(char c);
 int is_space(char c);
-Specifiers parse_specifiers(const char *format);
+// Specifiers parse_specifiers(const char *format);
+int parse_specifiers(const char *format, Specifiers *st_spec);
 
 void monster_flags(const char *format, Specifiers *flags);
 void handle_char(char **buffer, Specifiers flags, int c);
@@ -282,54 +283,41 @@ int s21_sprintf(char *str, const char *format, ...) {
     char *buffer = str;
     const char *ptr = format;
     while (*ptr) {
+      // DEBUG_PRINT("ptr = %c\n", *ptr);
         if (*ptr == '%') {
-            ptr++;
-            Specifiers flags;
-            flags = parse_specifiers(format);
-            // monster_flags(ptr, &flags);
+            // ptr++;
+            Specifiers flags  = {'*', -10, 0, '*', '*'};;
+            // int t = parse_specifiers(ptr, &flags);
+            ptr += parse_specifiers(ptr, &flags);
+            // DEBUG_PRINT("Spec string_length = %d\n", t);
+            // DEBUG_PRINT("RESULT: Specifier=%c, Length=%c, Precision=%i,  Width=%d, Flags=%c\n", flags.specifier,flags.length,flags.precision,flags.width,flags.flag);
             char spec = *ptr;
-            ptr++;
-            switch(flags.specifier) {
-                case 'c': {
+                if (flags.specifier== 'c') {
                     int c = va_arg(args, int);
                     handle_char(&buffer, flags, c);
-                    break;
-                }
-                case 'd': {
+                } else if (flags.specifier== 'd') {
                     int d = va_arg(args, int);
                     handle_int(&buffer, flags, d);
-                    break;
-                }
-                case 'f': {
+                } else if (flags.specifier == 'f') {
                     double f = va_arg(args, double);
                     handle_float(&buffer, flags, f);
-                    break;
-                }
-                case 's': {
+                } else if (flags.specifier == 's') {
                     const char *s = va_arg(args, const char *);
                     handle_string(&buffer, flags, s);
-                    break;
-                }
-                case 'u': {
+                } else if (flags.specifier == 'u') {
                     unsigned int u = va_arg(args, unsigned int);
                     handle_unsigned(&buffer, flags, u);
-                    break;
-                }
-                case '%': {
+                } else if (flags.specifier == '%') {
                     handle_percent(&buffer, flags);
-                    break;
-                }
-                default:
+                }else
                     *buffer++ = spec;
-                    break;
-            }
         } else {
             *buffer++ = *ptr++;
         }
     }
     *buffer = '\0';
     va_end(args);
-    return (int)strlen(str);
+    return (int)s21_strlen(str);
 }
 
 
@@ -341,8 +329,16 @@ void handle_char(char **buffer, Specifiers flags, int c) {
   }
 }
 
+
+/**
+* @brief Handles the formatting of an integer according to the specified flags.
+*
+* @param buffer A pointer to the buffer where the formatted string will be stored.
+* @param flags The flags specifying the formatting options.
+* @param d The integer to be formatted.
+*/
 void handle_int(char **buffer, Specifiers flags, int d) {
-    char tmp[100] = {0};
+    char tmp[300] = {0};
     int is_negative = (d < 0);
     int num = (is_negative) ? -d : d; // Работаем с положительным числом
     int len = 0;
@@ -384,10 +380,10 @@ void handle_int(char **buffer, Specifiers flags, int d) {
     // Определяем общую длину с учетом ширины
     int total_width = flags.width > 0 ? flags.width : 0;
     int padding = total_width > len ? total_width - len : 0;
-    DEBUG_PRINT("padding= %d, total_width=%d", padding, total_width);
+    DEBUG_PRINT("padding= %d, total_width=%d\n", padding, total_width);
 
     // Копируем результат в буфер с учетом ширины
-    if (flags.flag) { // Левое выравнивание
+    if (flags.flag=='-' ) { // Левое выравнивание
         // Сначала копируем число
         for (int i = 0; i < len; i++) {
             *(*buffer + i) = tmp[i];
@@ -400,14 +396,12 @@ void handle_int(char **buffer, Specifiers flags, int d) {
             *buffer += 1;
         }
     } else { // Правое выравнивание
-        char fill_char = (flags.flag!='0' && !is_negative) ? '0' : ' '; // Определяем символ заполнения
-
+        char fill_char = (flags.flag=='0' && !is_negative) ? '0' : ' '; // Определяем символ заполнения
         // Сначала добавляем символы заполнения
         for (int i = 0; i < padding; i++) {
             *(*buffer) = fill_char;
             *buffer += 1;
         }
-
         // Затем копируем число
         for (int i = 0; i < len; i++) {
             *(*buffer + i) = tmp[i];
@@ -460,73 +454,77 @@ void handle_percent(char **buffer, Specifiers flags) {
   }
 }
 
-
 /**
- * @brief Parses the format string and extracts the specifiers.
- *
- * @param format The format string to parse.
- * @return A struct containing the parsed specifiers.
- */
-Specifiers parse_specifiers(const char *format) {
-  Specifiers st_spec = {'*', -10, 0, '*', '*'};
+* @brief Parses the format string and extracts the specifiers.
+*
+* @param fmt The format string to parse.
+* @param st_spec A pointer to a Specifiers struct to store the parsed specifiers.
+* @return The number of characters parsed.
+*/
+int parse_specifiers(const char *fmt, Specifiers *st_spec) {
+  // Specifiers st_spec = {'*', -10, 0, '*', '*'};
+  const char *format = fmt;
   format++;
+  DEBUG_PRINT("format=%s\n", format);
   // Flags
   if ((*(format) == '+' || *(format) == '-' || *(format) == ' ' ||
        *(format) == '#' || *(format) == '0')) {
-    st_spec.flag = *(format);
-    // DEBUG_PRINT(" FLAGS=%c\n", st_spec.flag);
+    st_spec->flag = *(format);
+    DEBUG_PRINT(" FLAGS=%c\n", st_spec->flag);
     format++;
   }
   if (*(format) == '*' || is_digit(*(format))) {
-    st_spec.width = 0;
+    st_spec->width = 0;
     if (*(format) == '*') {
 
-      st_spec.width = -1;
+      st_spec->width = -1;
       format++;
     } else {
       while (is_digit(*(format))) {
-        st_spec.width = st_spec.width * 10 + *(format) - '0';
+        st_spec->width = st_spec->width * 10 + *(format) - '0';
         format++;
       }
     }
     // format++;
-    DEBUG_PRINT("Width=%i\n", st_spec.width);
+    DEBUG_PRINT("Width=%i\n", st_spec->width);
   }
   // Precision
   if (*(format) == '.') {
     format++;
-    st_spec.precision = 0;
+    st_spec->precision = 0;
     if (*(format) == '*')
-      st_spec.precision = -1;
+      st_spec->precision = -1;
     else {
       while (is_digit(*(format))) {
-        st_spec.precision = st_spec.precision * 10 + *(format) - '0';
+        st_spec->precision = st_spec->precision * 10 + *(format) - '0';
         format++;
       }
     }
-    // DEBUG_PRINT(" Precision=%i\n", st_spec.precision);
+    DEBUG_PRINT(" Precision=%i\n", st_spec->precision);
   }
 
   // Length
   if (*(format) == 'h' || *(format) == 'l' || *(format) == 'L') {
-    st_spec.length = *(format);
+    st_spec->length = *(format);
     format++;
-    // DEBUG_PRINT(" Length=%c\n", st_spec.length);
+    DEBUG_PRINT(" Length=%c\n", st_spec->length);
   }
 
   // Specifiers
+    DEBUG_PRINT("format=%s\n", format);
   if (*format == 'c' || *format == 'd' || *format == 'i' || *format == 'f' ||
       *format == 's' || *format == 'u' || *format == '%' || *format == 'g' ||
       *format == 'G' || *format == 'e' || *format == 'E' || *format == 'x' ||
       *format == 'X' || *format == 'o' || *format == 'p') {
-    st_spec.specifier = *format;
+    st_spec->specifier = *format;
     format++;
-    DEBUG_PRINT("Specifier=%c\n", st_spec.specifier);
+    DEBUG_PRINT("Specifier=%c\n", st_spec->specifier);
   } else {
-    st_spec.specifier = '0';
+    st_spec->specifier = '0';
   }
-  format++;
-  return st_spec;
+  // format++;
+  DEBUG_PRINT("RESULT: Specifier=%c, Length=%c, Precision=%i,  Width=%d, Flags=%c\n", st_spec->specifier,st_spec->length,st_spec->precision,st_spec->width,st_spec->flag);
+  return format-fmt;
 }
 
 int is_digit(char c) { return (c >= '0' && c <= '9'); }
@@ -614,7 +612,8 @@ int s21_sscanf(const char *str, const char *format, ...) {
   while (*fmt) {
     if (*fmt == '%') {
       DEBUG_PRINT("\n");
-      st_spec = parse_specifiers(fmt);
+      parse_specifiers(fmt, &st_spec);
+      // st_spec = parse_specifiers(fmt);
       if (st_spec.width < -1) {
         st_spec.width = s21_strlen(p);
       }

@@ -120,7 +120,7 @@ void handle_int(char **buffer, batman flags, int d) {
     } else {
         sprintf(tmp, "%d", d);
     }
-    strcpy(*buffer, tmp);
+    s21_strcpy(*buffer, tmp);
     *buffer += strlen(tmp);
 }
 

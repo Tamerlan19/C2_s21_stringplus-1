@@ -343,15 +343,80 @@ void handle_char(char **buffer, Specifiers flags, int c) {
 
 void handle_int(char **buffer, Specifiers flags, int d) {
     char tmp[100] = {0};
-    if (flags.precision >= 0) {
-        char fmt[20] = {0};
-        sprintf(fmt, "%%0%dd", flags.precision);
-        sprintf(tmp, fmt, d);
+    int is_negative = (d < 0);
+    int num = (is_negative) ? -d : d; // Работаем с положительным числом
+    int len = 0;
+
+    // Преобразуем число в строку вручную
+    if (num == 0) {
+        tmp[len++] = '0';
     } else {
-        sprintf(tmp, "%d", d);
+        while (num > 0) {
+            tmp[len++] = '0' + (num % 10); // Получаем цифру и добавляем её в массив
+            num /= 10;
+        }
     }
-    strcpy(*buffer, tmp);
-    *buffer += strlen(tmp);
+
+    // Если число отрицательное, добавляем минус
+    if (is_negative) {
+        tmp[len++] = '-';
+    }
+
+    // Если задана точность, дополняем нулями слева
+    if (flags.precision >= 0 && len < flags.precision) {
+        int padding = flags.precision - len;
+        for (int i = len - 1; i >= 0; i--) {
+            tmp[i + padding] = tmp[i]; // Сдвигаем символы вправо
+        }
+        for (int i = 0; i < padding; i++) {
+            tmp[i] = '0'; // Добавляем нули
+        }
+        len += padding;
+    }
+
+    // Разворачиваем строку, так как мы записывали цифры в обратном порядке
+    for (int i = 0, j = len - 1; i < j; i++, j--) {
+        char temp = tmp[i];
+        tmp[i] = tmp[j];
+        tmp[j] = temp;
+    }
+
+    // Определяем общую длину с учетом ширины
+    int total_width = flags.width > 0 ? flags.width : 0;
+    int padding = total_width > len ? total_width - len : 0;
+    DEBUG_PRINT("padding= %d, total_width=%d", padding, total_width);
+
+    // Копируем результат в буфер с учетом ширины
+    if (flags.flag) { // Левое выравнивание
+        // Сначала копируем число
+        for (int i = 0; i < len; i++) {
+            *(*buffer + i) = tmp[i];
+        }
+        *buffer += len;
+
+        // Затем добавляем пробелы справа
+        for (int i = 0; i < padding; i++) {
+            *(*buffer) = ' ';
+            *buffer += 1;
+        }
+    } else { // Правое выравнивание
+        char fill_char = (flags.flag!='0' && !is_negative) ? '0' : ' '; // Определяем символ заполнения
+
+        // Сначала добавляем символы заполнения
+        for (int i = 0; i < padding; i++) {
+            *(*buffer) = fill_char;
+            *buffer += 1;
+        }
+
+        // Затем копируем число
+        for (int i = 0; i < len; i++) {
+            *(*buffer + i) = tmp[i];
+        }
+        *buffer += len;
+    }
+
+    // Добавляем завершающий нулевой символ, если необходимо
+    *(*buffer) = '\0';
 }
 
 void handle_float(char **buffer, Specifiers flags, double f) {

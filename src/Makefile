@@ -1,16 +1,17 @@
 .PHONY = all, clean, test, s21_string.a, gcov_report
 CC = gcc
-CFLAGS = -Werror -Wall -Wextra -std=c11
+CFLAGS = -Werror -Wall -Wextra -std=c11 -DDEBUG
 TESTFLAGS = -lcheck -lsubunit -lm
 SRC_DIR =./
-SOURCES = s21_string.c test_s21_string.c
-OBJS = $(SOURCES:.c=.o)
+SOURCES = test.c s21_string.c test_s21_string.c test_s21_sscanf.c test_s21_sprintf.c s21_string.h
+SRCS = test.c s21_string.c test_s21_string.c test_s21_sscanf.c test_s21_sprintf.c
+OBJS = $(SRCS:.c=.o)
 TARGET = ./
 
 
-#TODO: Оформи решение как статическую библиотеку с названием s21_string.a (с заголовочным файлом s21_string.h).
-#TODO: Предусмотри Makefile для сборки библиотеки и тестов (с целями all, clean, test, s21_string.a, gcov_report).
-#TODO: В цели gcov_report должен формироваться отчёт gcov в виде html страницы. Для этого unit-тесты должны запускаться с флагами gcov.
+# [x] Оформи решение как статическую библиотеку с названием s21_string.a (с заголовочным файлом s21_string.h).
+# [x] Предусмотри Makefile для сборки библиотеки и тестов (с целями all, clean, test, s21_string.a, gcov_report).
+# [ ] В цели gcov_report должен формироваться отчёт gcov в виде html страницы. Для этого unit-тесты должны запускаться с флагами gcov.
 
 all: s21_string.a
 
@@ -18,19 +19,20 @@ build: style cppcheck all
 
 s21_string.a: s21_string.o
 	ar rcs $(TARGET)$@ $^
+	rm $^
 
-test: s21_string.a test_s21_string.c
-	$(CC) $(CFLAGS) -o test_s21_string.exe test_s21_string.c -L. -l:s21_string.a $(TESTFLAGS)
-	./test_s21_string.exe
+test: s21_string.a test_s21_string.c test_s21_sscanf.c test_s21_sprintf.c
+	$(CC) $(CFLAGS) -o test.exe test.c test_s21_string.c test_s21_sscanf.c test_s21_sprintf.c -L. -l:s21_string.a $(TESTFLAGS)
+	./test.exe
 
 gcov_report: 
 	$(CC) $(CFLAGS) -fprofile-arcs -ftest-coverage -c s21_string.c -o s21_string.o
 	ar rcs $(TARGET)s21_string.a s21_string.o
-	$(CC) $(CFLAGS)  -fprofile-arcs -ftest-coverage  -o test_s21_string.exe test_s21_string.c -L. -l:s21_string.a $(TESTFLAGS)
-	./test_s21_string.exe
+	$(CC) $(CFLAGS)  -fprofile-arcs -ftest-coverage  -o test.exe test.c test_s21_string.c test_s21_sscanf.c test_s21_sprintf.c -L. -l:s21_string.a $(TESTFLAGS)
+	./test.exe
 	gcov s21_string.c
-	lcov --capture --directory ./ --output-file coverage.info
-	genhtml coverage.info --output-directory gcov_report
+	lcov --exclude "test*.c"  --capture --directory ./ --output-file flt-coverage.info
+	genhtml flt-coverage.info --output-directory gcov_report
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -41,7 +43,9 @@ rebuild: clean build
 
 clean:
 	rm -f $(OBJS) $(TARGET)/*.a $(TARGET)/*.gcov $(TARGET)/*.gcda $(TARGET)/*.gcno $(TARGET)/*.exe coverage.info
-	rm -r ./gcov_report/
+	@if [ -d "./gcov_report/" ]; then \
+		rm -r ./gcov_report/; \
+	fi
 
 style:
 	@for src in $(SOURCES) ; do \
@@ -59,7 +63,7 @@ check-style:
 
 cppcheck:
 		@FLS="" ; \
-		for src in $(SOURCES)  ; do \
+		for src in $(SOURCES) ; do \
 			FLS="$$FLS $(SRC_DIR)$$src" ; \
 		done ;\
 		echo "### Test cppcheck for files: $$FLS..."; \

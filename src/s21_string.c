@@ -61,9 +61,9 @@ occurrence of the character c (an unsigned char) in the string pointed to, by
 the argument str.
  - [x] int s21_strncmp(const char *str1, const char *str2, s21_size_t n)
 Compares at most the first n bytes of str1 and str2.
- - [ ] char *s21_strncpy(char *dest, const char *src, s21_size_t n)	Copies
+ - [x] char *s21_strncpy(char *dest, const char *src, s21_size_t n)	Copies
 up to n characters from the string pointed to, by src to dest.
- - [ ] s21_size_t s21_strcspn(const char *str1, const char *str2)
+ - [x] s21_size_t s21_strcspn(const char *str1, const char *str2)
 Calculates the length of the initial segment of str1 which consists entirely of
 characters not in str2.
  - [ ] 	char *s21_strerror(int errnum)	Searches an internal array for the error
@@ -114,6 +114,63 @@ TODO: Part 3. Дополнительно. Реализация некоторы�
 Точность: .*
 Длина: L
 */
+
+char *s21_strncat(char *dest, const char *src, s21_size_t n) {
+    if (dest && src) { // Проверяем, что обе строки не NULL
+        char *dest_end = dest;
+
+        // Находим конец строки dest
+        while (*dest_end) {
+            dest_end++;
+        }
+
+        // Копируем символы из src в dest, пока не достигнем n или '\0'
+        for (s21_size_t i = 0; i < n && *src; i++, src++, dest_end++) {
+            *dest_end = *src;
+        }
+
+        // Добавляем завершающий нулевой символ
+        *dest_end = '\0';
+    }
+
+    return dest; // Возвращаем указатель на dest
+}
+
+int contains_char(const char *str, char ch) {
+    while (*str) {
+        if (*str == ch) {
+            return 1; // Найден символ
+        }
+        str++;
+    }
+    return 0; 
+}
+
+s21_size_t s21_strcspn(const char *str1, const char *str2) {
+    s21_size_t count = 0;
+
+    if (str1 && str2) { // Проверяем, что обе строки не NULL
+        while (*str1 && !contains_char(str2, *str1)) {
+            count++;
+            str1++;
+        }
+    }
+
+    return count;
+}
+
+char *s21_strncpy(char *dest, const char *src, s21_size_t n) {
+    s21_size_t i = 0;
+    while (i < n && src[i] != '\0') {
+        dest[i] = src[i];
+        i++;
+    }
+    while (i < n) {
+        dest[i] = '\0';
+        i++;
+    }
+    return dest; 
+}
 
 s21_size_t s21_strlen(const char *str) {
   s21_size_t len = 0;

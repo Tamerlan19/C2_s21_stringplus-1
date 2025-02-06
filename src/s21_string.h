@@ -18,7 +18,6 @@
 #define DEBUG_PRINT(fmt, ...) ;
 #endif
 
-// Data type size_t
 #ifdef _WIN64
 typedef unsigned long s21_size_t; // 64-bit Windows
 #elif __x86_64__ || __ppc64__ || __aarch64__

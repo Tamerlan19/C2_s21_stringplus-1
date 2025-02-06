@@ -48,7 +48,7 @@ first occurrence of the character c (an unsigned char) in the first n bytes of
 the string pointed to, by the argument str.
  - [ ] int s21_memcmp(const void *str1, const void *str2, s21_size_t n)	Compares
 the first n bytes of str1 and str2.
- - [ ] void *s21_memcpy(void *dest, const void *src, s21_size_t n)	Copies n
+ - [x] void *s21_memcpy(void *dest, const void *src, s21_size_t n)	Copies n
 characters from src to dest.
  - [ ] void *s21_memset(void *str, int c, s21_size_t n)	Copies the character c
 (an unsigned char) to the first n characters of the string pointed to, by the

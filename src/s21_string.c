@@ -48,12 +48,12 @@ first occurrence of the character c (an unsigned char) in the first n bytes of
 the string pointed to, by the argument str.
  - [ ] int s21_memcmp(const void *str1, const void *str2, s21_size_t n)	Compares
 the first n bytes of str1 and str2.
- - [ ] void *s21_memcpy(void *dest, const void *src, s21_size_t n)	Copies n
+ - [x] void *s21_memcpy(void *dest, const void *src, s21_size_t n)	Copies n
 characters from src to dest.
- - [ ] void *s21_memset(void *str, int c, s21_size_t n)	Copies the character c
+ - [x] void *s21_memset(void *str, int c, s21_size_t n)	Copies the character c
 (an unsigned char) to the first n characters of the string pointed to, by the
 argument str.
- - [ ] char *s21_strncat(char *dest, const char *src, s21_size_t n)	Appends
+ - [x] char *s21_strncat(char *dest, const char *src, s21_size_t n)	Appends
 the string pointed to, by src to the end of the string pointed to, by dest up to
 n characters long.
  - [x] char *s21_strchr(const char *str, int c)	Searches for the first
@@ -114,6 +114,33 @@ TODO: Part 3. Дополнительно. Реализация некоторы�
 Точность: .*
 Длина: L
 */
+int s21_memcmp(const void *str1, const void *str2, s21_size_t n) {
+    if (str1 && str2) { // Проверяем, что оба указателя не NULL
+        const unsigned char *s1 = (const unsigned char *)str1;
+        const unsigned char *s2 = (const unsigned char *)str2;
+
+        for (s21_size_t i = 0; i < n; i++) {
+            if (s1[i] != s2[i]) { // Сравниваем байты
+                return (int)(s1[i] - s2[i]); // Возвращаем разницу между байтами
+            }
+        }
+    }
+
+    return 0; // Если все байты совпадают или n == 0, возвращаем 0
+}
+
+void *s21_memset(void *str, int c, s21_size_t n) {
+    if (str) { // Проверяем, что указатель не NULL
+        unsigned char *ptr = (unsigned char *)str; // Преобразуем указатель к типу unsigned char*
+        unsigned char value = (unsigned char)c;    // Преобразуем значение c к unsigned char
+
+        for (s21_size_t i = 0; i < n; i++) {
+            ptr[i] = value; // Записываем значение в каждый байт
+        }
+    }
+
+    return str; // Возвращаем исходный указатель
+}
 
 char *s21_strncat(char *dest, const char *src, s21_size_t n) {
     if (dest && src) { // Проверяем, что обе строки не NULL

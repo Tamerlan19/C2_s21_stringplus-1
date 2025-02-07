@@ -273,6 +273,65 @@ START_TEST(test_s21_memcmp_null_pointers) {
 }
 END_TEST
 
+START_TEST(test_s21_strncpy_short_src) {
+    char dest[50] = "Original";
+    const char *src = "Short";
+    s21_size_t n = 10;
+
+    s21_strncpy(dest, src, n);
+
+    // Сравниваем результат с ожидаемым значением
+    char expected[50] = "Short\0\0\0\0\0"; // Ожидаемая строка
+    ck_assert_str_eq(dest, expected);
+}
+END_TEST
+
+START_TEST(test_s21_strncpy_long_src) {
+    char dest[50] = "";
+    const char *src = "ThisIsALongString";
+    s21_size_t n = 5;
+
+    s21_strncpy(dest, src, n);
+
+    // Сравниваем результат с ожидаемым значением
+    char expected[50] = "ThisI"; // Ожидаемая строка (без завершающего \0)
+    ck_assert_str_eq(dest, expected); // Проверяем первые n символов
+}
+END_TEST
+
+// Тест: копирование с n = 0 (ничего не должно измениться)
+START_TEST(test_s21_strncpy_n_zero) {
+    char dest[50] = "Test";
+    const char *src = "New";
+    s21_size_t n = 0;
+
+    s21_strncpy(dest, src, n);
+    ck_assert_str_eq(dest, "Test");
+}
+END_TEST
+
+// Тест: копирование пустой строки
+START_TEST(test_s21_strncpy_empty_src) {
+    char dest[50] = "Original";
+    const char *src = "";
+    s21_size_t n = 5;
+
+    s21_strncpy(dest, src, n);
+    ck_assert_str_eq(dest, "\0\0\0\0\0iginal");
+}
+END_TEST
+
+// Тест: проверка NULL-указателей
+START_TEST(test_s21_strncpy_null_pointers) {
+    char dest[50] = "Original";
+    const char *src = NULL;
+    s21_size_t n = 5;
+
+    s21_strncpy(dest, src, n); // Функция должна вернуть dest без изменений
+    ck_assert_str_eq(dest, "Original");
+}
+END_TEST
+
 Suite *s21_string_suite(void) {
   Suite *s;
   TCase *tc_core;
@@ -304,7 +363,11 @@ Suite *s21_string_suite(void) {
   tcase_add_test(tc_core, test_s21_memcmp_partial_different);
   tcase_add_test(tc_core, test_s21_memcmp_zero_length);
   tcase_add_test(tc_core, test_s21_memcmp_null_pointers);
-
+  tcase_add_test(tc_core, test_s21_strncpy_short_src);
+  tcase_add_test(tc_core, test_s21_strncpy_long_src);
+  tcase_add_test(tc_core, test_s21_strncpy_n_zero);
+  tcase_add_test(tc_core, test_s21_strncpy_empty_src);
+  tcase_add_test(tc_core, test_s21_strncpy_null_pointers);
   // tcase_add_test(tc_sprintf, test_s21_sprintf_c);
 
   suite_add_tcase(s, tc_core);

@@ -332,6 +332,420 @@ START_TEST(test_s21_strncpy_null_pointers) {
 }
 END_TEST
 
+
+// Тест: конкатенация двух строк
+START_TEST(test_s21_strncat_basic_concatenation) {
+    char dest[50] = "Hello, ";
+    const char *src = "World!";
+    s21_size_t n = 6;
+
+    s21_strncat(dest, src, n);
+    ck_assert_str_eq(dest, "Hello, World!");
+}
+END_TEST
+
+// Тест: копирование части строки из src
+START_TEST(test_s21_strncat_partial_concatenation) {
+    char dest[50] = "Hello, ";
+    const char *src = "World!";
+    s21_size_t n = 5;
+
+    s21_strncat(dest, src, n);
+    ck_assert_str_eq(dest, "Hello, Worl");
+}
+END_TEST
+
+// Тест: копирование пустой строки
+START_TEST(test_s21_strncat_empty_src) {
+    char dest[50] = "Hello, ";
+    const char *src = "";
+    s21_size_t n = 10;
+
+    s21_strncat(dest, src, n);
+    ck_assert_str_eq(dest, "Hello, ");
+}
+END_TEST
+
+// Тест: копирование при n = 0
+START_TEST(test_s21_strncat_n_zero) {
+    char dest[50] = "Hello, ";
+    const char *src = "World!";
+    s21_size_t n = 0;
+
+    s21_strncat(dest, src, n);
+    ck_assert_str_eq(dest, "Hello, ");
+}
+END_TEST
+
+// Тест: проверка NULL-указателей
+START_TEST(test_s21_strncat_null_pointers) {
+    char dest[50] = "Hello, ";
+    const char *src = NULL;
+    s21_size_t n = 5;
+
+    s21_strncat(dest, src, n);
+    ck_assert_str_eq(dest, "Hello, "); // Должно остаться без изменений
+}
+END_TEST
+
+// Тест: проверка переполнения буфера (максимальная длина)
+START_TEST(test_s21_strncat_buffer_overflow) {
+    char dest[10] = "12345";
+    const char *src = "67890abcdef";
+    s21_size_t n = 10;
+
+    s21_strncat(dest, src, n);
+    ck_assert_str_eq(dest, "1234567890"); // Буфер ограничен размером 10 символов
+}
+END_TEST
+
+START_TEST(test_s21_strcspn_empty_str1) {
+    const char *str1 = "";
+    const char *str2 = "abc";
+    s21_size_t result = s21_strcspn(str1, str2);
+    size_t expected = strcspn(str1, str2);
+    ck_assert_uint_eq(result, expected);
+}
+END_TEST
+
+START_TEST(test_s21_strcspn_empty_str2) {
+    const char *str1 = "hello world";
+    const char *str2 = "";
+    s21_size_t result = s21_strcspn(str1, str2);
+    size_t expected = strcspn(str1, str2);
+    ck_assert_uint_eq(result, expected);
+}
+END_TEST
+
+START_TEST(test_s21_strcspn_no_match) {
+    const char *str1 = "abcdef";
+    const char *str2 = "xyz";
+    s21_size_t result = s21_strcspn(str1, str2);
+    size_t expected = strcspn(str1, str2);
+    ck_assert_uint_eq(result, expected);
+}
+END_TEST
+
+START_TEST(test_s21_strcspn_partial_match) {
+    const char *str1 = "hello world";
+    const char *str2 = "aeiou";
+    s21_size_t result = s21_strcspn(str1, str2);
+    size_t expected = strcspn(str1, str2);
+    ck_assert_uint_eq(result, expected);
+}
+END_TEST
+
+START_TEST(test_s21_strcspn_full_match) {
+    const char *str1 = "abc";
+    const char *str2 = "abcd";
+    s21_size_t result = s21_strcspn(str1, str2);
+    size_t expected = strcspn(str1, str2);
+    ck_assert_uint_eq(result, expected);
+}
+END_TEST
+
+START_TEST(test_s21_strcspn_null_str1) {
+    const char *str1 = NULL;
+    const char *str2 = "abc";
+    s21_size_t result = s21_strcspn(str1, str2);
+    size_t expected = 0; // По стандарту, если str1 == NULL, результат должен быть 0
+    ck_assert_uint_eq(result, expected);
+}
+END_TEST
+
+START_TEST(test_s21_strcspn_null_str2) {
+    const char *str1 = "hello world";
+    const char *str2 = NULL;
+    s21_size_t result = s21_strcspn(str1, str2);
+    size_t expected = 0; // По стандарту, если str2 == NULL, результат должен быть 0
+    ck_assert_uint_eq(result, expected);
+}
+END_TEST 
+
+START_TEST(test_s21_strcpy_normal) {
+    const char *src = "Hello, World!";
+    char dest[50] = {0}; // Обнуляем массив для надежности
+    char *result = s21_strcpy(dest, src);
+    ck_assert_ptr_ne(result, NULL); // Проверяем, что результат не NULL
+    ck_assert_str_eq(dest, src);    // Проверяем, что строки совпадают
+}
+END_TEST
+
+START_TEST(test_s21_strcpy_empty_string) {
+    const char *src = "";
+    char dest[50] = {0};
+    char *result = s21_strcpy(dest, src);
+    ck_assert_ptr_ne(result, NULL); // Проверяем, что результат не NULL
+    ck_assert_str_eq(dest, src);    // Проверяем, что строки совпадают
+}
+END_TEST
+
+START_TEST(test_s21_strcpy_null_src) {
+    char dest[50] = {0};
+    char *result = s21_strcpy(dest, NULL);
+    ck_assert_ptr_eq(result, NULL); // Проверяем, что результат равен NULL
+}
+END_TEST
+
+START_TEST(test_s21_strcpy_null_dest) {
+    const char *src = "Test";
+    char *result = s21_strcpy(NULL, src);
+    ck_assert_ptr_eq(result, NULL); // Проверяем, что результат равен NULL
+}
+END_TEST
+
+START_TEST(test_s21_strcpy_long_string) {
+    const char *src = "This is a very long string that we are copying to test the functionality of our function.";
+    char dest[200] = {0};
+    char *result = s21_strcpy(dest, src);
+    ck_assert_ptr_ne(result, NULL); // Проверяем, что результат не NULL
+    ck_assert_str_eq(dest, src);    // Проверяем, что строки совпадают
+}
+END_TEST
+
+// Тестовый кейс 1: Обычное использование
+START_TEST(test_s21_strcat_normal) {
+    char dest[50] = "Hello ";
+    const char *append = "World!";
+    char *result = s21_strcat(dest, append);
+    ck_assert_str_eq("Hello World!", result);
+}
+END_TEST
+
+// Тестовый кейс 2: Пустой destination
+START_TEST(test_s21_strcat_empty_dest) {
+    char dest[50] = "";
+    const char *append = "Test";
+    char *result = s21_strcat(dest, append);
+    ck_assert_str_eq("Test", result);
+}
+END_TEST
+
+// Тестовый кейс 3: Пустой append
+START_TEST(test_s21_strcat_empty_append) {
+    char dest[50] = "Original";
+    const char *append = "";
+    char *result = s21_strcat(dest, append);
+    ck_assert_str_eq("Original", result);
+}
+END_TEST
+
+// Тестовый кейс 4: Оба пустые строки
+START_TEST(test_s21_strcat_both_empty) {
+    char dest[50] = "";
+    const char *append = "";
+    char *result = s21_strcat(dest, append);
+    ck_assert_str_eq("", result);
+}
+END_TEST
+
+// Тестовый кейс 5: Длинная строка
+START_TEST(test_s21_strcat_long_string) {
+    char dest[100] = "This is a test string. ";
+    const char *append = "Let's see if it works correctly.";
+    char *result = s21_strcat(dest, append);
+    ck_assert_str_eq("This is a test string. Let's see if it works correctly.", result);
+}
+END_TEST
+
+// Тестовый кейс 6: NULL в append
+START_TEST(test_s21_strcat_null_append) {
+    char dest[50] = "Check for NULL";
+    const char *append = NULL;
+    char *result = s21_strcat(dest, append);
+    ck_assert_str_eq("Check for NULL", result); // Функция должна игнорировать NULL
+}
+END_TEST
+
+// Тестовый кейс 7: Ограниченный буфер (проверка на переполнение)
+START_TEST(test_s21_strcat_buffer_overflow) {
+    char dest[6] = "hello"; // Размер буфера - 6 символов
+    const char *append = " world"; // Слишком длинная строка для добавления
+    char *result = s21_strcat(dest, append);
+
+    // Если функция не обрабатывает переполнение, результат может быть непредсказуемым.
+    // Для корректной работы функции требуется проверка размера буфера.
+    ck_assert_str_eq("hello", result); // Предполагаем, что функция не изменяет исходную строку при переполнении
+}
+END_TEST
+
+// Тест 1: Копирование строки
+START_TEST(test_s21_memcpy_string) {
+    char src[] = "Hello, world!";
+    char dest[50] = {0};
+
+    s21_memcpy(dest, src, strlen(src) + 1); // Копируем строку с нулевым байтом
+
+    ck_assert_str_eq(dest, src); // Проверяем равенство строк
+}
+END_TEST
+
+// Тест 2: Копирование нулевого количества байт
+START_TEST(test_s21_memcpy_zero_bytes) {
+    char src[] = "Hello, world!";
+    char dest[50] = "Original content";
+
+    s21_memcpy(dest, src, 0); // Копируем 0 байт
+
+    ck_assert_str_eq(dest, "Original content"); // Содержимое dest не должно измениться
+}
+END_TEST
+
+// Тест 3: Копирование большого объема данных
+START_TEST(test_s21_memcpy_large_data) {
+    size_t size = 1024;
+    char *src = malloc(size);
+    char *dest = malloc(size);
+
+    for (size_t i = 0; i < size; i++) {
+        src[i] = 'A' + (i % 26); // Заполняем src случайными символами
+    }
+
+    s21_memcpy(dest, src, size);
+
+    for (size_t i = 0; i < size; i++) {
+        ck_assert_int_eq(dest[i], src[i]); // Проверяем каждый байт
+    }
+
+    free(src);
+    free(dest);
+}
+END_TEST
+
+// Тест 4: Пересечение областей памяти
+START_TEST(test_s21_memcpy_overlap) {
+    char buffer[10] = "abcdef";
+    s21_memcpy(buffer + 2, buffer, 5); // Пересечение областей памяти
+
+    // Ожидаемый результат может быть некорректным, так как memcpy не учитывает пересечение
+    ck_assert_str_eq(buffer, "ababcde");
+}
+END_TEST
+
+// Тест 5: Проверка на NULL-указатели
+START_TEST(test_s21_memcpy_null_pointers) {
+    char src[] = "Hello, world!";
+    char *dest = NULL;
+
+    ck_assert_ptr_eq(s21_memcpy(dest, src, 5), NULL); // Если dest == NULL, возвращаем NULL
+
+    dest = malloc(50);
+    memset(dest, 0, 50);
+
+    ck_assert_ptr_eq(s21_memcpy(dest, NULL, 5), NULL); // Если src == NULL, возвращаем NULL
+
+    free(dest);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_basic) {
+    char buffer[100];
+    s21_sprintf(buffer, "Hello, %s!", "world");
+    ck_assert_str_eq(buffer, "Hello, world!");
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_int) {
+    char buffer[100];
+    s21_sprintf(buffer, "Number: %d", 42);
+    ck_assert_str_eq(buffer, "Number: 42");
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_float) {
+    char buffer[100];
+    s21_sprintf(buffer, "Float: %.2f", 3.14159);
+    ck_assert_str_eq(buffer, "Float: 3.14");
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_width) {
+    char buffer[100];
+    s21_sprintf(buffer, "%10s", "test");
+    ck_assert_str_eq(buffer, "      test");
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_precision) {
+    char buffer[100];
+    s21_sprintf(buffer, "%.3s", "testing");
+    ck_assert_str_eq(buffer, "tes");
+}
+END_TEST
+
+// Тест 1: Чтение целого числа
+START_TEST(test_s21_sscanf_int) {
+    const char *str = "123 abc";
+    int num;
+    int res = s21_sscanf(str, "%d", &num);
+    ck_assert_int_eq(res, 1); // Проверяем количество успешно считанных полей
+    ck_assert_int_eq(num, 123); // Проверяем значение
+}
+END_TEST
+
+// Тест 2: Чтение строки
+START_TEST(test_s21_sscanf_string) {
+    const char *str = "hello world";
+    char word[50];
+    int res = s21_sscanf(str, "%s", word);
+    ck_assert_int_eq(res, 1); // Проверяем количество успешно считанных полей
+    ck_assert_str_eq(word, "hello"); // Проверяем значение
+}
+END_TEST
+
+// Тест 3: Чтение числа с плавающей точкой
+START_TEST(test_s21_sscanf_float) {
+    const char *str = "3.14";
+    double num;
+    int res = s21_sscanf(str, "%lf", &num);
+    ck_assert_int_eq(res, 1); // Проверяем количество успешно считанных полей
+    ck_assert_double_eq(num, 3.14); // Проверяем значение
+}
+END_TEST
+
+// Тест 4: Чтение символа
+START_TEST(test_s21_sscanf_char) {
+    const char *str = "a";
+    char ch;
+    int res = s21_sscanf(str, "%c", &ch);
+    ck_assert_int_eq(res, 1); // Проверяем количество успешно считанных полей
+    ck_assert_int_eq(ch, 'a'); // Проверяем значение
+}
+END_TEST
+
+// Тест 5: Обработка спецификатора ширины
+START_TEST(test_s21_sscanf_width) {
+    const char *str = "abcdef";
+    char word[10];
+    int res = s21_sscanf(str, "%4s", word);
+    ck_assert_int_eq(res, 1); // Проверяем количество успешно считанных полей
+    ck_assert_str_eq(word, "abcd"); // Проверяем значение
+}
+END_TEST
+
+// Тест 6: Автоматическое определение системы счисления (%i)
+START_TEST(test_s21_sscanf_int_with_base) {
+    const char *str = "0x1A";
+    int num;
+    int res = s21_sscanf(str, "%i", &num);
+    ck_assert_int_eq(res, 1); // Проверяем количество успешно считанных полей
+    ck_assert_int_eq(num, 26); // Проверяем значение (0x1A = 26)
+}
+END_TEST
+
+// Тест 7: Некорректные входные данные
+START_TEST(test_s21_sscanf_invalid_input) {
+    const char *str = "abc";
+    int num;
+    int res = s21_sscanf(str, "%d", &num);
+    ck_assert_int_eq(res, 0); // Проверяем, что ничего не было прочитано
+}
+END_TEST
+
+
+
+
+
 Suite *s21_string_suite(void) {
   Suite *s;
   TCase *tc_core;
@@ -363,14 +777,64 @@ Suite *s21_string_suite(void) {
   tcase_add_test(tc_core, test_s21_memcmp_partial_different);
   tcase_add_test(tc_core, test_s21_memcmp_zero_length);
   tcase_add_test(tc_core, test_s21_memcmp_null_pointers);
+
   tcase_add_test(tc_core, test_s21_strncpy_short_src);
   tcase_add_test(tc_core, test_s21_strncpy_long_src);
   tcase_add_test(tc_core, test_s21_strncpy_n_zero);
   tcase_add_test(tc_core, test_s21_strncpy_empty_src);
   tcase_add_test(tc_core, test_s21_strncpy_null_pointers);
-  // tcase_add_test(tc_sprintf, test_s21_sprintf_c);
 
-  suite_add_tcase(s, tc_core);
+  tcase_add_test(tc_core, test_s21_strncat_basic_concatenation);
+  tcase_add_test(tc_core, test_s21_strncat_partial_concatenation);
+  tcase_add_test(tc_core, test_s21_strncat_empty_src);
+  tcase_add_test(tc_core, test_s21_strncat_n_zero);
+  tcase_add_test(tc_core, test_s21_strncat_null_pointers);
+  tcase_add_test(tc_core, test_s21_strncat_buffer_overflow);
+
+  tcase_add_test(tc_core, test_s21_strcspn_empty_str1);
+  tcase_add_test(tc_core, test_s21_strcspn_empty_str2);
+  tcase_add_test(tc_core, test_s21_strcspn_no_match);
+  tcase_add_test(tc_core, test_s21_strcspn_partial_match);
+  tcase_add_test(tc_core, test_s21_strcspn_full_match);
+  tcase_add_test(tc_core, test_s21_strcspn_null_str1);
+  tcase_add_test(tc_core, test_s21_strcspn_null_str2);
+
+  tcase_add_test(tc_core, test_s21_strcpy_normal);
+  tcase_add_test(tc_core, test_s21_strcpy_empty_string);
+  tcase_add_test(tc_core, test_s21_strcpy_null_src);
+  tcase_add_test(tc_core, test_s21_strcpy_null_dest);
+  tcase_add_test(tc_core, test_s21_strcpy_long_string);
+
+  tcase_add_test(tc_core, test_s21_strcat_normal);
+  tcase_add_test(tc_core, test_s21_strcat_empty_dest);
+  tcase_add_test(tc_core, test_s21_strcat_empty_append);
+  tcase_add_test(tc_core, test_s21_strcat_both_empty);
+  tcase_add_test(tc_core, test_s21_strcat_long_string);
+  tcase_add_test(tc_core, test_s21_strcat_null_append);
+  tcase_add_test(tc_core, test_s21_strcat_buffer_overflow);
+
+tcase_add_test(tc_core, test_s21_memcpy_string);
+tcase_add_test(tc_core, test_s21_memcpy_zero_bytes);
+tcase_add_test(tc_core, test_s21_memcpy_large_data);
+tcase_add_test(tc_core, test_s21_memcpy_overlap);
+tcase_add_test(tc_core, test_s21_memcpy_null_pointers);
+
+tcase_add_test(tc_core, test_s21_sprintf_basic);
+tcase_add_test(tc_core, test_s21_sprintf_int);
+tcase_add_test(tc_core, test_s21_sprintf_float);
+tcase_add_test(tc_core, test_s21_sprintf_width);
+tcase_add_test(tc_core, test_s21_sprintf_precision);
+
+   tcase_add_test(tc_core, test_s21_sscanf_int);
+   tcase_add_test(tc_core, test_s21_sscanf_string);
+   tcase_add_test(tc_core, test_s21_sscanf_float);
+   tcase_add_test(tc_core, test_s21_sscanf_char);
+   tcase_add_test(tc_core, test_s21_sscanf_width);
+   tcase_add_test(tc_core, test_s21_sscanf_int_with_base);
+   tcase_add_test(tc_core, test_s21_sscanf_invalid_input);
+
+
+suite_add_tcase(s, tc_core);
 
   return s;
 }

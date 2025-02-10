@@ -1,1 +1,0 @@
-genhtml flt-coverage.info --output-directory gcov_report

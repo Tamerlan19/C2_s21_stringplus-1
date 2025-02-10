@@ -50,10 +50,10 @@ the string pointed to, by the argument str.
 the first n bytes of str1 and str2.
  - [x] void *s21_memcpy(void *dest, const void *src, s21_size_t n)	Copies n
 characters from src to dest.
- - [ ] void *s21_memset(void *str, int c, s21_size_t n)	Copies the character c
+ - [x] void *s21_memset(void *str, int c, s21_size_t n)	Copies the character c
 (an unsigned char) to the first n characters of the string pointed to, by the
 argument str.
- - [ ] char *s21_strncat(char *dest, const char *src, s21_size_t n)	Appends
+ - [x] char *s21_strncat(char *dest, const char *src, s21_size_t n)	Appends
 the string pointed to, by src to the end of the string pointed to, by dest up to
 n characters long.
  - [x] char *s21_strchr(const char *str, int c)	Searches for the first
@@ -61,9 +61,9 @@ occurrence of the character c (an unsigned char) in the string pointed to, by
 the argument str.
  - [x] int s21_strncmp(const char *str1, const char *str2, s21_size_t n)
 Compares at most the first n bytes of str1 and str2.
- - [ ] char *s21_strncpy(char *dest, const char *src, s21_size_t n)	Copies
+ - [x] char *s21_strncpy(char *dest, const char *src, s21_size_t n)	Copies
 up to n characters from the string pointed to, by src to dest.
- - [ ] s21_size_t s21_strcspn(const char *str1, const char *str2)
+ - [x] s21_size_t s21_strcspn(const char *str1, const char *str2)
 Calculates the length of the initial segment of str1 which consists entirely of
 characters not in str2.
  - [ ] 	char *s21_strerror(int errnum)	Searches an internal array for the error
@@ -114,6 +114,90 @@ TODO: Part 3. Дополнительно. Реализация некоторы�
 Точность: .*
 Длина: L
 */
+int s21_memcmp(const void *str1, const void *str2, s21_size_t n) {
+    if (str1 && str2) { // Проверяем, что оба указателя не NULL
+        const unsigned char *s1 = (const unsigned char *)str1;
+        const unsigned char *s2 = (const unsigned char *)str2;
+
+        for (s21_size_t i = 0; i < n; i++) {
+            if (s1[i] != s2[i]) { // Сравниваем байты
+                return (int)(s1[i] - s2[i]); // Возвращаем разницу между байтами
+            }
+        }
+    }
+
+    return 0; // Если все байты совпадают или n == 0, возвращаем 0
+}
+
+void *s21_memset(void *str, int c, s21_size_t n) {
+    if (str) { // Проверяем, что указатель не NULL
+        unsigned char *ptr = (unsigned char *)str; // Преобразуем указатель к типу unsigned char*
+        unsigned char value = (unsigned char)c;    // Преобразуем значение c к unsigned char
+
+        for (s21_size_t i = 0; i < n; i++) {
+            ptr[i] = value; // Записываем значение в каждый байт
+        }
+    }
+
+    return str; // Возвращаем исходный указатель
+}
+
+char *s21_strncat(char *dest, const char *src, s21_size_t n) {
+    if (dest && src) { // Проверяем, что обе строки не NULL
+        char *dest_end = dest;
+
+        // Находим конец строки dest
+        while (*dest_end) {
+            dest_end++;
+        }
+
+        // Копируем символы из src в dest, пока не достигнем n или '\0'
+        for (s21_size_t i = 0; i < n && *src; i++, src++, dest_end++) {
+            *dest_end = *src;
+        }
+
+        // Добавляем завершающий нулевой символ
+        *dest_end = '\0';
+    }
+
+    return dest; // Возвращаем указатель на dest
+}
+
+int contains_char(const char *str, char ch) {
+    while (*str) {
+        if (*str == ch) {
+            return 1; // Найден символ
+        }
+        str++;
+    }
+    return 0; 
+}
+
+s21_size_t s21_strcspn(const char *str1, const char *str2) {
+    s21_size_t count = 0;
+
+    if (str1 && str2) { // Проверяем, что обе строки не NULL
+        while (*str1 && !contains_char(str2, *str1)) {
+            count++;
+            str1++;
+        }
+    }
+
+    return count;
+}
+
+char *s21_strncpy(char *dest, const char *src, s21_size_t n) {
+    s21_size_t i = 0;
+    while (i < n && src[i] != '\0') {
+        dest[i] = src[i];
+        i++;
+    }
+    while (i < n) {
+        dest[i] = '\0';
+        i++;
+    }
+    return dest; 
+}
 
 s21_size_t s21_strlen(const char *str) {
   s21_size_t len = 0;
@@ -321,13 +405,7 @@ int s21_sprintf(char *str, const char *format, ...) {
 }
 
 
-void handle_char(char **buffer, Specifiers flags, int c) {
-  if (flags.width>0) {
 
-    *(*buffer)++ = (char)c;
-    **buffer = '\0';
-  }
-}
 
 
 /**
@@ -413,39 +491,167 @@ void handle_int(char **buffer, Specifiers flags, int d) {
     *(*buffer) = '\0';
 }
 
+
 void handle_float(char **buffer, Specifiers flags, double f) {
     char tmp[200] = {0};
+    int len = 0;
+
+    // Преобразуем число в строку вручную
     if (flags.precision >= 0) {
-        char fmt[20] = {0};
-        sprintf(fmt, "%%.%df", flags.precision);
-        sprintf(tmp, fmt, f);
+        // Используем массив для хранения целой части и дробной части
+        long int_part = (long)f;
+        double frac_part = f - int_part;
+
+        // Преобразуем целую часть
+        if (int_part == 0) {
+            tmp[len++] = '0';
+        } else {
+            int int_len = 0;
+            if (int_part < 0) {
+                tmp[len++] = '-';
+                int_part = -int_part;
+            }
+            long n = int_part;
+            while (n > 0) {
+                tmp[int_len++] = '0' + (n % 10);
+                n /= 10;
+            }
+            for (int i = 0; i < int_len / 2; i++) {
+                char temp = tmp[i];
+                tmp[i] = tmp[int_len - i - 1];
+                tmp[int_len - i - 1] = temp;
+            }
+            len += int_len;
+        }
+
+        // Добавляем точку
+        tmp[len++] = '.';
+
+        // Преобразуем дробную часть
+        for (int i = 0; i < flags.precision; i++) {
+            frac_part *= 10;
+            int digit = (int)frac_part;
+            tmp[len++] = '0' + digit;
+            frac_part -= digit;
+        }
     } else {
-        sprintf(tmp, "%f", f);
+        // Если точность не указана, используем значение по умолчанию
+        sprintf(tmp, "%f", f); // Можно заменить на ручную реализацию
+        len = strlen(tmp);
     }
-    strcpy(*buffer, tmp);
-    *buffer += strlen(tmp);
+
+    // Добавляем '+' только если флаг установлен
+    if (flags.flag == '+') {
+        memmove(tmp + 1, tmp, len);
+        tmp[0] = '+';
+        len++;
+    }
+
+    // Обработка ширины и выравнивания
+    int total_width = flags.width > 0 ? flags.width : 0;
+    int padding = total_width > len ? total_width - len : 0;
+
+    if (flags.flag & '-') { // Левое выравнивание
+        memcpy(*buffer, tmp, len);
+        *buffer += len;
+        memset(*buffer, ' ', padding);
+        *buffer += padding;
+    } else { // Правое выравнивание
+        char fill_char = (flags.flag & '0') ? '0' : ' ';
+        memset(*buffer, fill_char, padding);
+        *buffer += padding;
+        memcpy(*buffer, tmp, len);
+        *buffer += len;
+    }
+
+    **buffer = '\0';
 }
 
 void handle_string(char **buffer, Specifiers flags, const char *s) {
-  if (flags.specifier == 's') {
-
-    if (s == 0) {
+    if (s == NULL) {
         s = "(null)";
     }
-    strcpy(*buffer, s);
-    *buffer += strlen(s);
-  }
+
+    int len = strlen(s);
+
+    // Применяем точность, если она указана
+    if (flags.precision >= 0 && len > flags.precision) {
+        len = flags.precision;
+    }
+
+    // Определяем общую длину с учетом ширины
+    int total_width = flags.width > 0 ? flags.width : 0;
+    int padding = total_width > len ? total_width - len : 0;
+
+    if (flags.flag & '-') { // Левое выравнивание
+        memcpy(*buffer, s, len);
+        *buffer += len;
+        memset(*buffer, ' ', padding);
+        *buffer += padding;
+    } else { // Правое выравнивание
+        memset(*buffer, ' ', padding);
+        *buffer += padding;
+        memcpy(*buffer, s, len);
+        *buffer += len;
+    }
+
+    **buffer = '\0';
 }
 
 void handle_unsigned(char **buffer, Specifiers flags, unsigned int u) {
-  if (flags.specifier == 'u') {
     char tmp[100] = {0};
-    sprintf(tmp, "%u", u);
-    strcpy(*buffer, tmp);
-    *buffer += strlen(tmp);
-  }
-}
+    if (flags.precision >= 0) {
+        char fmt[20] = {0};
+        sprintf(fmt, "%%.%du", flags.precision);
+        sprintf(tmp, fmt, u);
+    } else {
+        sprintf(tmp, "%u", u);
+    }
 
+    int len = strlen(tmp);
+
+    // Определяем общую длину с учетом ширины
+    int total_width = flags.width > 0 ? flags.width : 0;
+    int padding = total_width > len ? total_width - len : 0;
+
+    if (flags.flag & '-') { // Левое выравнивание
+        memcpy(*buffer, tmp, len);
+        *buffer += len;
+        memset(*buffer, ' ', padding);
+        *buffer += padding;
+    } else { // Правое выравнивание
+        char fill_char = (flags.flag & '0') ? '0' : ' ';
+        memset(*buffer, fill_char, padding);
+        *buffer += padding;
+        memcpy(*buffer, tmp, len);
+        *buffer += len;
+    }
+
+    **buffer = '\0';
+}
+void handle_char(char **buffer, Specifiers flags, int c) {
+    char tmp[2] = {(char)c, '\0'};
+    int len = 1;
+
+    // Определяем общую длину с учетом ширины
+    int total_width = flags.width > 0 ? flags.width : 0;
+    int padding = total_width > len ? total_width - len : 0;
+
+    if (flags.flag == '-') { // Левое выравнивание
+        memcpy(*buffer, tmp, len);
+        *buffer += len;
+        memset(*buffer, ' ', padding);
+        *buffer += padding;
+    } else { // Правое выравнивание
+        char fill_char = (flags.flag == '0') ? '0' : ' ';
+        memset(*buffer, fill_char, padding);
+        *buffer += padding;
+        memcpy(*buffer, tmp, len);
+        *buffer += len;
+    }
+
+    **buffer = '\0';
+}
 void handle_percent(char **buffer, Specifiers flags) {
   if (flags.specifier=='%'){
 
@@ -453,6 +659,7 @@ void handle_percent(char **buffer, Specifiers flags) {
     **buffer = '\0';
   }
 }
+
 
 /**
 * @brief Parses the format string and extracts the specifiers.

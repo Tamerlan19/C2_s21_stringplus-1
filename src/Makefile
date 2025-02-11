@@ -42,7 +42,7 @@ gcov_report:
 rebuild: clean build
 
 clean:
-	rm -f $(OBJS) $(TARGET)/*.a $(TARGET)/*.gcov $(TARGET)/*.gcda $(TARGET)/*.gcno $(TARGET)/*.exe coverage.info
+	rm -f $(OBJS) $(TARGET)/*.a $(TARGET)/*.gcov $(TARGET)/*.gcda $(TARGET)/*.gcno $(TARGET)/*.exe *.info
 	@if [ -d "./gcov_report/" ]; then \
 		rm -r ./gcov_report/; \
 	fi

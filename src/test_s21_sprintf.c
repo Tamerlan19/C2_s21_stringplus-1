@@ -91,6 +91,33 @@ START_TEST(test_s21_sprintf_negative_width) {
 }
 END_TEST
 
+START_TEST(test_s21_sprintf_basic) {
+    char buffer[100];
+    s21_sprintf(buffer, "Hello, %s!", "world");
+    ck_assert_str_eq(buffer, "Hello, world!");
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_int) {
+    char buffer[100];
+    s21_sprintf(buffer, "Number: %d", 42);
+    ck_assert_str_eq(buffer, "Number: 42");
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_float) {
+    char buffer[100];
+    s21_sprintf(buffer, "Float: %.2f", 3.14159);
+    ck_assert_str_eq(buffer, "Float: 3.14");
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_precision) {
+    char buffer[100];
+    s21_sprintf(buffer, "%.3s", "testing");
+    ck_assert_str_eq(buffer, "tes");
+}
+END_TEST
 
 Suite *s21_sprintf_suite(void) {
   Suite *s;

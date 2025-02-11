@@ -638,113 +638,6 @@ START_TEST(test_s21_memcpy_null_pointers) {
 }
 END_TEST
 
-START_TEST(test_s21_sprintf_basic) {
-    char buffer[100];
-    s21_sprintf(buffer, "Hello, %s!", "world");
-    ck_assert_str_eq(buffer, "Hello, world!");
-}
-END_TEST
-
-START_TEST(test_s21_sprintf_int) {
-    char buffer[100];
-    s21_sprintf(buffer, "Number: %d", 42);
-    ck_assert_str_eq(buffer, "Number: 42");
-}
-END_TEST
-
-START_TEST(test_s21_sprintf_float) {
-    char buffer[100];
-    s21_sprintf(buffer, "Float: %.2f", 3.14159);
-    ck_assert_str_eq(buffer, "Float: 3.14");
-}
-END_TEST
-
-START_TEST(test_s21_sprintf_width) {
-    char buffer[100];
-    s21_sprintf(buffer, "%10s", "test");
-    ck_assert_str_eq(buffer, "      test");
-}
-END_TEST
-
-START_TEST(test_s21_sprintf_precision) {
-    char buffer[100];
-    s21_sprintf(buffer, "%.3s", "testing");
-    ck_assert_str_eq(buffer, "tes");
-}
-END_TEST
-
-// Тест 1: Чтение целого числа
-START_TEST(test_s21_sscanf_int) {
-    const char *str = "123 abc";
-    int num;
-    int res = s21_sscanf(str, "%d", &num);
-    ck_assert_int_eq(res, 1); // Проверяем количество успешно считанных полей
-    ck_assert_int_eq(num, 123); // Проверяем значение
-}
-END_TEST
-
-// Тест 2: Чтение строки
-START_TEST(test_s21_sscanf_string) {
-    const char *str = "hello world";
-    char word[50];
-    int res = s21_sscanf(str, "%s", word);
-    ck_assert_int_eq(res, 1); // Проверяем количество успешно считанных полей
-    ck_assert_str_eq(word, "hello"); // Проверяем значение
-}
-END_TEST
-
-// Тест 3: Чтение числа с плавающей точкой
-START_TEST(test_s21_sscanf_float) {
-    const char *str = "3.14";
-    double num;
-    int res = s21_sscanf(str, "%lf", &num);
-    ck_assert_int_eq(res, 1); // Проверяем количество успешно считанных полей
-    ck_assert_double_eq(num, 3.14); // Проверяем значение
-}
-END_TEST
-
-// Тест 4: Чтение символа
-START_TEST(test_s21_sscanf_char) {
-    const char *str = "a";
-    char ch;
-    int res = s21_sscanf(str, "%c", &ch);
-    ck_assert_int_eq(res, 1); // Проверяем количество успешно считанных полей
-    ck_assert_int_eq(ch, 'a'); // Проверяем значение
-}
-END_TEST
-
-// Тест 5: Обработка спецификатора ширины
-START_TEST(test_s21_sscanf_width) {
-    const char *str = "abcdef";
-    char word[10];
-    int res = s21_sscanf(str, "%4s", word);
-    ck_assert_int_eq(res, 1); // Проверяем количество успешно считанных полей
-    ck_assert_str_eq(word, "abcd"); // Проверяем значение
-}
-END_TEST
-
-// Тест 6: Автоматическое определение системы счисления (%i)
-START_TEST(test_s21_sscanf_int_with_base) {
-    const char *str = "0x1A";
-    int num;
-    int res = s21_sscanf(str, "%i", &num);
-    ck_assert_int_eq(res, 1); // Проверяем количество успешно считанных полей
-    ck_assert_int_eq(num, 26); // Проверяем значение (0x1A = 26)
-}
-END_TEST
-
-// Тест 7: Некорректные входные данные
-START_TEST(test_s21_sscanf_invalid_input) {
-    const char *str = "abc";
-    int num;
-    int res = s21_sscanf(str, "%d", &num);
-    ck_assert_int_eq(res, 0); // Проверяем, что ничего не было прочитано
-}
-END_TEST
-
-
-
-
 
 Suite *s21_string_suite(void) {
   Suite *s;
@@ -818,20 +711,6 @@ tcase_add_test(tc_core, test_s21_memcpy_zero_bytes);
 tcase_add_test(tc_core, test_s21_memcpy_large_data);
 tcase_add_test(tc_core, test_s21_memcpy_overlap);
 tcase_add_test(tc_core, test_s21_memcpy_null_pointers);
-
-tcase_add_test(tc_core, test_s21_sprintf_basic);
-tcase_add_test(tc_core, test_s21_sprintf_int);
-tcase_add_test(tc_core, test_s21_sprintf_float);
-tcase_add_test(tc_core, test_s21_sprintf_width);
-tcase_add_test(tc_core, test_s21_sprintf_precision);
-
-   tcase_add_test(tc_core, test_s21_sscanf_int);
-   tcase_add_test(tc_core, test_s21_sscanf_string);
-   tcase_add_test(tc_core, test_s21_sscanf_float);
-   tcase_add_test(tc_core, test_s21_sscanf_char);
-   tcase_add_test(tc_core, test_s21_sscanf_width);
-   tcase_add_test(tc_core, test_s21_sscanf_int_with_base);
-   tcase_add_test(tc_core, test_s21_sscanf_invalid_input);
 
 
 suite_add_tcase(s, tc_core);

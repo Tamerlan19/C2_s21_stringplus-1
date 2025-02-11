@@ -46,6 +46,41 @@ START_TEST(test_left_alignment) {
 }
 END_TEST
 
+START_TEST(test_s21_sprintf_basic) {
+    char buffer[100];
+    s21_sprintf(buffer, "Hello, %s!", "world");
+    ck_assert_str_eq(buffer, "Hello, world!");
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_int) {
+    char buffer[100];
+    s21_sprintf(buffer, "Number: %d", 42);
+    ck_assert_str_eq(buffer, "Number: 42");
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_float) {
+    char buffer[100];
+    s21_sprintf(buffer, "Float: %.2f", 3.14159);
+    ck_assert_str_eq(buffer, "Float: 3.14");
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_width) {
+    char buffer[100];
+    s21_sprintf(buffer, "%10s", "test");
+    ck_assert_str_eq(buffer, "      test");
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_precision) {
+    char buffer[100];
+    s21_sprintf(buffer, "%.3s", "testing");
+    ck_assert_str_eq(buffer, "tes");
+}
+END_TEST
+
 Suite *s21_sprintf_suite(void) {
   Suite *s;
   TCase *tc_core;
@@ -60,6 +95,12 @@ Suite *s21_sprintf_suite(void) {
   tcase_add_test(tc_core, test_zero_padding);
   tcase_add_test(tc_core, test_left_alignment);
   tcase_add_test(tc_core, test_width_flag);
+
+  tcase_add_test(tc_core, test_s21_sprintf_basic);
+  tcase_add_test(tc_core, test_s21_sprintf_int);
+  tcase_add_test(tc_core, test_s21_sprintf_float);
+  tcase_add_test(tc_core, test_s21_sprintf_width);
+  tcase_add_test(tc_core, test_s21_sprintf_precision);
 
   suite_add_tcase(s, tc_core);
 

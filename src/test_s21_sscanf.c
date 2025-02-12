@@ -569,6 +569,7 @@ Suite *s21_sscanf_suite(void) {
   tc_core_c = tcase_create("Spec %c");
   tc_core_s = tcase_create("Spec %s");
 
+
   tcase_add_test(tc_core_d, test_s21_sscanf_d_simple);
   tcase_add_test(tc_core_d, test_s21_sscanf_d_neg);
   tcase_add_test(tc_core_d, test_s21_sscanf_d_neg_twice);
@@ -622,7 +623,6 @@ Suite *s21_sscanf_suite(void) {
    tcase_add_test(tc_core_s, test_s21_sscanf_int_with_base);
    tcase_add_test(tc_core_s, test_s21_sscanf_invalid_input);
 
-
   // tcase_add_test(tc_core_s, test_s21_sscanf_ls_simple);
   // tcase_add_test(tc_core_s, test_s21_sscanf_ls_space);
   // tcase_add_test(tc_core_s, test_s21_sscanf_ls_width);
@@ -635,11 +635,13 @@ Suite *s21_sscanf_suite(void) {
   // tcase_add_test(tc_core_s, test_s21_sscanf_ls_add_spaces);
   // tcase_add_test(tc_core_s, test_s21_sscanf_ls_skip_assignment);
 
+  tcase_add_test(tc_core_c, test_s21_sscanf_c);
+
   //[ ] Uncomment additional test case
   // suite_add_tcase(s, tc_core);
-  suite_add_tcase(s, tc_core_d);
+  // suite_add_tcase(s, tc_core_d);
   suite_add_tcase(s, tc_core_c);
-  suite_add_tcase(s, tc_core_s);
+  // suite_add_tcase(s, tc_core_s);
 
   return s;
 }

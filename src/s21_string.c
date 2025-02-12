@@ -583,18 +583,16 @@ void handle_string(char **buffer, Specifiers flags, const char *s) {
     int padding = total_width > len ? total_width - len : 0;
     DEBUG_PRINT("TEST. len = %d, padding = %d, string= %s\n", len, padding, s);
     if (flags.flag == '-') { // Левое выравнивание
-        memcpy(*buffer, s, len);
+        s21_memcpy(*buffer, s, len);
         *buffer += len;
-        memset(*buffer, ' ', padding);
+        s21_memset(*buffer, ' ', padding);
         *buffer += padding;
     } else { // Правое выравнивание
 
-        memset(*buffer, ' ', padding);
+        s21_memset(*buffer, ' ', padding);
         *buffer += padding;
     DEBUG_PRINT("Right padding\n");
-        // memset(*buffer, '1', 2);
-        // *buffer += 2;        
-        memcpy(*buffer, s, len);
+        s21_memcpy(*buffer, s, len);
         *buffer += len;
     }
 
@@ -813,7 +811,7 @@ TODO: Part 4. Дополнительно. Реализация функции ss
 int s21_sscanf(const char *str, const char *format, ...) {
   va_list args;
   va_start(args, format);
-  Specifiers st_spec;
+  Specifiers st_spec = {'*', -10, -1, '*', '*'};
   const char *p = str; // Указатель на входную строку
   const char *fmt = format; // Указатель на строку формата
   //%[*/ширина][длина]спецификатор.
@@ -823,6 +821,7 @@ int s21_sscanf(const char *str, const char *format, ...) {
     if (*fmt == '%') {
       DEBUG_PRINT("\n");
       parse_specifiers(fmt, &st_spec);
+      
       // st_spec = parse_specifiers(fmt);
       if (st_spec.width < -1) {
         st_spec.width = s21_strlen(p);
@@ -838,6 +837,7 @@ int s21_sscanf(const char *str, const char *format, ...) {
       if (st_spec.specifier == 'c') {
         int step = 0;
         step = proc_spec_c(p, args, st_spec);
+        DEBUG_PRINT(" after process Char step=%d\n", res);
         if (step > 0) {
           p = p + step;
           if (st_spec.width != asterisk) {
@@ -901,7 +901,7 @@ int s21_sscanf(const char *str, const char *format, ...) {
         p++;
         fmt++;
       }
-    } else if (st_spec.specifier == 'i') {
+      } else if (st_spec.specifier == 'i') {
       int znak = 1;
       int i = 0;
       int result = 0;
@@ -990,6 +990,7 @@ float s21_pow(int x, int y) {
 }
 
 int proc_spec_c(const char *str, va_list args, const Specifiers st_spec) {
+
   size_t max_len = s21_strlen(str);
   const char *p = str;
   DEBUG_PRINT(" String for decode=|%s|\n", str);

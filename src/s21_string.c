@@ -600,34 +600,52 @@ void handle_string(char **buffer, Specifiers flags, const char *s) {
 }
 
 void handle_unsigned(char **buffer, Specifiers flags, unsigned int u) {
-    char tmp[100] = {0};
-    if (flags.precision >= 0) {
-        char fmt[20] = {0};
-        sprintf(fmt, "%%.%du", flags.precision);
-        sprintf(tmp, fmt, u);
+    char tmp[100] = {0}; // Буфер для временного хранения числа
+    int len = 0;         // Длина числа в строковом представлении
+
+    // Шаг 1: Преобразуем число в строку
+    char *ptr = tmp + sizeof(tmp) - 1; // Начинаем с конца массива
+    *ptr = '\0';                      // Завершающий нулевой символ
+
+    if (u == 0 && flags.precision == 0) {
+        // Если число равно 0 и точность равна 0, результат должен быть пустой строкой
+        len = 0;
     } else {
-        sprintf(tmp, "%u", u);
+        unsigned int num = u;
+        do {
+            *--ptr = '0' + (num % 10); // Преобразуем цифру в символ
+            num /= 10;
+            len++;
+        } while (num > 0);
+
+        // Применяем точность (precision)
+        if (flags.precision >= 0 && len < flags.precision) {
+            int pad = flags.precision - len;
+            memmove(ptr + pad, ptr, len); // Сдвигаем число вправо
+            memset(ptr, '0', pad);       // Дополняем нулями слева
+            len += pad;
+        }
     }
 
-    int len = strlen(tmp);
-
-    // Определяем общую длину с учетом ширины
+    // Шаг 2: Определяем общую длину с учетом ширины
     int total_width = flags.width > 0 ? flags.width : 0;
     int padding = total_width > len ? total_width - len : 0;
 
+    // Шаг 3: Выравнивание
     if (flags.flag & '-') { // Левое выравнивание
-        memcpy(*buffer, tmp, len);
+        memcpy(*buffer, ptr, len);
         *buffer += len;
         memset(*buffer, ' ', padding);
         *buffer += padding;
     } else { // Правое выравнивание
-        char fill_char = (flags.flag & '0') ? '0' : ' ';
+        char fill_char = (flags.flag & '0') && !(flags.flag & '-') ? '0' : ' ';
         memset(*buffer, fill_char, padding);
         *buffer += padding;
-        memcpy(*buffer, tmp, len);
+        memcpy(*buffer, ptr, len);
         *buffer += len;
     }
 
+    // Шаг 4: Завершающий нулевой символ
     **buffer = '\0';
 }
 void handle_char(char **buffer, Specifiers flags, int c) {

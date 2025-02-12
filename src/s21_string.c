@@ -366,15 +366,16 @@ int s21_sprintf(char *str, const char *format, ...) {
     va_start(args, format);
     char *buffer = str;
     const char *ptr = format;
+      DEBUG_PRINT("ptr = %s\n", ptr);
+      DEBUG_PRINT("format = %s\n", format);
     while (*ptr) {
-      // DEBUG_PRINT("ptr = %c\n", *ptr);
         if (*ptr == '%') {
             // ptr++;
-            Specifiers flags  = {'*', -10, 0, '*', '*'};;
+            Specifiers flags  = {'*', -10, -1, '*', '*'};
             // int t = parse_specifiers(ptr, &flags);
             ptr += parse_specifiers(ptr, &flags);
-            // DEBUG_PRINT("Spec string_length = %d\n", t);
-            // DEBUG_PRINT("RESULT: Specifier=%c, Length=%c, Precision=%i,  Width=%d, Flags=%c\n", flags.specifier,flags.length,flags.precision,flags.width,flags.flag);
+            // DEBUG_PRINT("Spec string_length = %s\n", t);
+            DEBUG_PRINT("RESULT: Specifier=%c, Length=%c, Precision=%i,  Width=%d, Flags=%c\n", flags.specifier,flags.length,flags.precision,flags.width,flags.flag);
             char spec = *ptr;
                 if (flags.specifier== 'c') {
                     int c = va_arg(args, int);
@@ -551,13 +552,13 @@ void handle_float(char **buffer, Specifiers flags, double f) {
     int total_width = flags.width > 0 ? flags.width : 0;
     int padding = total_width > len ? total_width - len : 0;
 
-    if (flags.flag & '-') { // Левое выравнивание
+    if (flags.flag == '-') { // Левое выравнивание
         memcpy(*buffer, tmp, len);
         *buffer += len;
         memset(*buffer, ' ', padding);
         *buffer += padding;
     } else { // Правое выравнивание
-        char fill_char = (flags.flag & '0') ? '0' : ' ';
+        char fill_char = (flags.flag == '0') ? '0' : ' ';
         memset(*buffer, fill_char, padding);
         *buffer += padding;
         memcpy(*buffer, tmp, len);
@@ -571,26 +572,28 @@ void handle_string(char **buffer, Specifiers flags, const char *s) {
     if (s == NULL) {
         s = "(null)";
     }
-
-    int len = strlen(s);
-
+    int len = s21_strlen(s);
+    DEBUG_PRINT("len = %d\n", len);
     // Применяем точность, если она указана
     if (flags.precision >= 0 && len > flags.precision) {
         len = flags.precision;
     }
-
     // Определяем общую длину с учетом ширины
     int total_width = flags.width > 0 ? flags.width : 0;
     int padding = total_width > len ? total_width - len : 0;
-
-    if (flags.flag & '-') { // Левое выравнивание
+    DEBUG_PRINT("TEST. len = %d, padding = %d, string= %s\n", len, padding, s);
+    if (flags.flag == '-') { // Левое выравнивание
         memcpy(*buffer, s, len);
         *buffer += len;
         memset(*buffer, ' ', padding);
         *buffer += padding;
     } else { // Правое выравнивание
+
         memset(*buffer, ' ', padding);
         *buffer += padding;
+    DEBUG_PRINT("Right padding\n");
+        // memset(*buffer, '1', 2);
+        // *buffer += 2;        
         memcpy(*buffer, s, len);
         *buffer += len;
     }

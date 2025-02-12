@@ -140,11 +140,11 @@ Suite *s21_sprintf_suite(void) {
     tcase_add_test(tc_core, test_s21_sprintf_min_width_one);
     tcase_add_test(tc_core, test_s21_sprintf_negative_width);
 
-  tcase_add_test(tc_core, test_s21_sprintf_basic);
   tcase_add_test(tc_core, test_s21_sprintf_int);
   tcase_add_test(tc_core, test_s21_sprintf_float);
   tcase_add_test(tc_core, test_s21_sprintf_width);
   tcase_add_test(tc_core, test_s21_sprintf_precision);
+  tcase_add_test(tc_core, test_s21_sprintf_basic);
 
   suite_add_tcase(s, tc_core);
 

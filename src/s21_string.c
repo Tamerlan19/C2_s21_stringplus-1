@@ -370,7 +370,7 @@ int s21_sprintf(char *str, const char *format, ...) {
       // DEBUG_PRINT("ptr = %c\n", *ptr);
         if (*ptr == '%') {
             // ptr++;
-            Specifiers flags  = {'*', -10, 0, '*', '*'};;
+            Specifiers flags  = {'*', -10, -1, '*', '*'};
             // int t = parse_specifiers(ptr, &flags);
             ptr += parse_specifiers(ptr, &flags);
             // DEBUG_PRINT("Spec string_length = %d\n", t);
@@ -583,7 +583,7 @@ void handle_string(char **buffer, Specifiers flags, const char *s) {
     int total_width = flags.width > 0 ? flags.width : 0;
     int padding = total_width > len ? total_width - len : 0;
 
-    if (flags.flag & '-') { // Левое выравнивание
+    if (flags.flag == '-') { // Левое выравнивание
         memcpy(*buffer, s, len);
         *buffer += len;
         memset(*buffer, ' ', padding);
@@ -614,7 +614,7 @@ void handle_unsigned(char **buffer, Specifiers flags, unsigned int u) {
     int total_width = flags.width > 0 ? flags.width : 0;
     int padding = total_width > len ? total_width - len : 0;
 
-    if (flags.flag & '-') { // Левое выравнивание
+    if (flags.flag == '-') { // Левое выравнивание
         memcpy(*buffer, tmp, len);
         *buffer += len;
         memset(*buffer, ' ', padding);
@@ -638,15 +638,15 @@ void handle_char(char **buffer, Specifiers flags, int c) {
     int padding = total_width > len ? total_width - len : 0;
 
     if (flags.flag == '-') { // Левое выравнивание
-        memcpy(*buffer, tmp, len);
+        s21_memcpy(*buffer, tmp, len);
         *buffer += len;
-        memset(*buffer, ' ', padding);
+        s21_memset(*buffer, ' ', padding);
         *buffer += padding;
     } else { // Правое выравнивание
         char fill_char = (flags.flag == '0') ? '0' : ' ';
-        memset(*buffer, fill_char, padding);
+        s21_memset(*buffer, fill_char, padding);
         *buffer += padding;
-        memcpy(*buffer, tmp, len);
+        s21_memcpy(*buffer, tmp, len);
         *buffer += len;
     }
 
@@ -810,7 +810,7 @@ TODO: Part 4. Дополнительно. Реализация функции ss
 int s21_sscanf(const char *str, const char *format, ...) {
   va_list args;
   va_start(args, format);
-  Specifiers st_spec;
+  Specifiers st_spec = {'*', -10, -1, '*', '*'};;
   const char *p = str; // Указатель на входную строку
   const char *fmt = format; // Указатель на строку формата
   //%[*/ширина][длина]спецификатор.

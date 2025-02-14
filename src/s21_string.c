@@ -631,13 +631,14 @@ void handle_unsigned(char **buffer, Specifiers flags, unsigned int u) {
     int padding = total_width > len ? total_width - len : 0;
 
     // Шаг 3: Выравнивание
+    char fill_char = (flags.flag == '0') ? '0' : ' ';
     if (flags.flag == '-') { // Левое выравнивание
         memcpy(*buffer, ptr, len);          // Копируем число
         *buffer += len;
-        memset(*buffer, ' ', padding);      // Добавляем пробелы справа
+        memset(*buffer, fill_char, padding);      // Добавляем пробелы справа
         *buffer += padding;
     } else { // Правое выравнивание (по умолчанию)
-        memset(*buffer, ' ', padding);      // Добавляем пробелы слева
+        memset(*buffer, fill_char, padding);      // Добавляем пробелы слева
         *buffer += padding;
         memcpy(*buffer, ptr, len);          // Копируем число
         *buffer += len;

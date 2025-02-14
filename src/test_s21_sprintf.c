@@ -130,7 +130,7 @@ END_TEST
 START_TEST(test_s21_sprintf_u_with_width) {
     char buffer[1024];
     s21_sprintf(buffer, "Number: %5u", 45);
-    ck_assert_str_eq(buffer, "Number:   45");
+    ck_assert_str_eq(buffer, "Number:    45");
 }
 END_TEST
 

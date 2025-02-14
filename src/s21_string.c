@@ -606,7 +606,6 @@ void handle_unsigned(char **buffer, Specifiers flags, unsigned int u) {
     // Шаг 1: Преобразуем число в строку
     char *ptr = tmp + sizeof(tmp) - 1; // Начинаем с конца массива
     *ptr = '\0';                      // Завершающий нулевой символ
-
     if (u == 0 && flags.precision == 0) {
         // Если число равно 0 и точность равна 0, результат должен быть пустой строкой
         len = 0;
@@ -632,16 +631,15 @@ void handle_unsigned(char **buffer, Specifiers flags, unsigned int u) {
     int padding = total_width > len ? total_width - len : 0;
 
     // Шаг 3: Выравнивание
-    if (flags.flag & '-') { // Левое выравнивание
-        memcpy(*buffer, ptr, len);
+    if (flags.flag == '-') { // Левое выравнивание
+        memcpy(*buffer, ptr, len);          // Копируем число
         *buffer += len;
-        memset(*buffer, ' ', padding);
+        memset(*buffer, ' ', padding);      // Добавляем пробелы справа
         *buffer += padding;
-    } else { // Правое выравнивание
-        char fill_char = (flags.flag & '0') && !(flags.flag & '-') ? '0' : ' ';
-        memset(*buffer, fill_char, padding);
+    } else { // Правое выравнивание (по умолчанию)
+        memset(*buffer, ' ', padding);      // Добавляем пробелы слева
         *buffer += padding;
-        memcpy(*buffer, ptr, len);
+        memcpy(*buffer, ptr, len);          // Копируем число
         *buffer += len;
     }
 

@@ -706,11 +706,11 @@ Suite *s21_string_suite(void) {
   tcase_add_test(tc_core, test_s21_strcat_null_append);
   tcase_add_test(tc_core, test_s21_strcat_buffer_overflow);
 
-tcase_add_test(tc_core, test_s21_memcpy_string);
-tcase_add_test(tc_core, test_s21_memcpy_zero_bytes);
-tcase_add_test(tc_core, test_s21_memcpy_large_data);
-tcase_add_test(tc_core, test_s21_memcpy_overlap);
-tcase_add_test(tc_core, test_s21_memcpy_null_pointers);
+  tcase_add_test(tc_core, test_s21_memcpy_string);
+  tcase_add_test(tc_core, test_s21_memcpy_zero_bytes);
+  tcase_add_test(tc_core, test_s21_memcpy_large_data);
+  tcase_add_test(tc_core, test_s21_memcpy_overlap);
+  tcase_add_test(tc_core, test_s21_memcpy_null_pointers);
 
 
 suite_add_tcase(s, tc_core);

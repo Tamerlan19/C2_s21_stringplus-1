@@ -669,7 +669,6 @@ void handle_percent(char **buffer, Specifiers flags) {
 * @return The number of characters parsed.
 */
 int parse_specifiers(const char *fmt, Specifiers *st_spec) {
-  // Specifiers st_spec = {'*', -10, 0, '*', '*'};
   const char *format = fmt;
   format++;
   DEBUG_PRINT("format=%s\n", format);
@@ -683,7 +682,6 @@ int parse_specifiers(const char *fmt, Specifiers *st_spec) {
   if (*(format) == '*' || is_digit(*(format))) {
     st_spec->width = 0;
     if (*(format) == '*') {
-
       st_spec->width = -1;
       format++;
     } else {
@@ -810,7 +808,7 @@ TODO: Part 4. Дополнительно. Реализация функции ss
 int s21_sscanf(const char *str, const char *format, ...) {
   va_list args;
   va_start(args, format);
-  Specifiers st_spec = {'*', -10, -1, '*', '*'};;
+  
   const char *p = str; // Указатель на входную строку
   const char *fmt = format; // Указатель на строку формата
   //%[*/ширина][длина]спецификатор.
@@ -819,9 +817,10 @@ int s21_sscanf(const char *str, const char *format, ...) {
   while (*fmt) {
     if (*fmt == '%') {
       DEBUG_PRINT("\n");
-      parse_specifiers(fmt, &st_spec);
+      Specifiers st_spec = {' ', 1, -1, '*', '*'};
+      fmt += parse_specifiers(fmt, &st_spec);
       // st_spec = parse_specifiers(fmt);
-      if (st_spec.width < -1) {
+      if (st_spec.width < asterisk) {
         st_spec.width = s21_strlen(p);
       }
       // DEBUG_PRINT("\nFormat string:%s\n", fmt);
@@ -840,8 +839,8 @@ int s21_sscanf(const char *str, const char *format, ...) {
           if (st_spec.width != asterisk) {
             res++;
           }
-        } else if (step <= 0) {
-          res--;
+        } else if (step <= 0 && res==0) {
+          res=-1;
         }
         DEBUG_PRINT(" after process Char Result=%d\n", res);
 
@@ -897,13 +896,12 @@ int s21_sscanf(const char *str, const char *format, ...) {
         DEBUG_PRINT(" Char=%c\n", *p);
         p++;
         fmt++;
-      }
-    } else if (st_spec.specifier == 'i') {
-      int znak = 1;
-      int i = 0;
-      int result = 0;
-      if (*p == '-') {
-        znak = -1;
+      } else if (st_spec.specifier == 'i') {
+        int znak = 1;
+        int i = 0;
+        int result = 0;
+        if (*p == '-') {
+          znak = -1;
         p++;
       }
       if (*p == '0') {
@@ -933,8 +931,9 @@ int s21_sscanf(const char *str, const char *format, ...) {
         DEBUG_PRINT(" Digit=%d\n", result);
       }
     }
+  }
 
-    fmt++;
+    // fmt++;
   }
   DEBUG_PRINT(" FINISH result=%d\n", res);
   return res;
@@ -998,10 +997,10 @@ int proc_spec_c(const char *str, va_list args, const Specifiers st_spec) {
           break;
       }
     } else {
-      p += st_spec.width > 0 ? st_spec.width : 1;
+      p += st_spec.width >= 0 ? st_spec.width : 1;
     }
   } else {
-    int width = st_spec.width > 0 ? st_spec.width : 1;
+    int width = st_spec.width >= 0 ? st_spec.width : 1;
     if ((st_spec.length == 'l')) {
       width = (width > (int)max_len) ? (int)max_len : width;
       wchar_t *wch = va_arg(args, wchar_t *);
@@ -1017,12 +1016,14 @@ int proc_spec_c(const char *str, va_list args, const Specifiers st_spec) {
     } else {
       char *ch = va_arg(args, char *);
       size_t copy_size = (size_t)width > max_len ? max_len : (size_t)width;
+      DEBUG_PRINT(" copy_size=%d, max_size=%d, width=%d\n", (int)copy_size, (int)max_len, (int)width);
       s21_memcpy(ch, p, copy_size);
       ch[copy_size] = '\0';
       p += copy_size;
-      DEBUG_PRINT(" ordinary Char=%c\n", *ch);
+      DEBUG_PRINT("RESULT: val arg=%s\n", ch);
     }
   }
+
   return p - str;
 }
 

@@ -679,18 +679,21 @@ int parse_specifiers(const char *fmt, Specifiers *st_spec) {
     DEBUG_PRINT(" FLAGS=%c\n", st_spec->flag);
     format++;
   }
+  // Width
   if (*(format) == '*' || is_digit(*(format))) {
-    st_spec->width = 0;
     if (*(format) == '*') {
-      st_spec->width = -1;
+      st_spec->flag = '*';
       format++;
-    } else {
+    } 
+    if (is_digit(*(format))) {
+        st_spec->width = 0;
       while (is_digit(*(format))) {
+        DEBUG_PRINT("reading Width symbol=%c\n", *(format));
         st_spec->width = st_spec->width * 10 + *(format) - '0';
         format++;
       }
+      DEBUG_PRINT("reading Width=%i\n", st_spec->width);
     }
-    // format++;
     DEBUG_PRINT("Width=%i\n", st_spec->width);
   }
   // Precision
@@ -728,7 +731,7 @@ int parse_specifiers(const char *fmt, Specifiers *st_spec) {
     st_spec->specifier = '0';
   }
   // format++;
-  DEBUG_PRINT("RESULT: Specifier=%c, Length=%c, Precision=%i,  Width=%d, Flags=%c\n", st_spec->specifier,st_spec->length,st_spec->precision,st_spec->width,st_spec->flag);
+  DEBUG_PRINT("RESULT parse_specifiers(): Specifier=%c, Length=%c, Precision=%i,  Width=%d, Flags=%c\n", st_spec->specifier,st_spec->length,st_spec->precision,st_spec->width,st_spec->flag);
   return format-fmt;
 }
 
@@ -834,12 +837,13 @@ int s21_sscanf(const char *str, const char *format, ...) {
       if (st_spec.specifier == 'c') {
         int step = 0;
         step = proc_spec_c(p, args, st_spec);
-        if (step > 0) {
+        DEBUG_PRINT("result proc_spec_c=%d\n", step);
+        if (step >= 0) {
           p = p + step;
-          if (st_spec.width != asterisk) {
+          if (st_spec.flag != asterisk) {
             res++;
           }
-        } else if (step <= 0 && res==0) {
+        } else if (step < 0 && res==0) {
           res=-1;
         }
         DEBUG_PRINT(" after process Char Result=%d\n", res);
@@ -986,10 +990,11 @@ float s21_pow(int x, int y) {
 }
 
 int proc_spec_c(const char *str, va_list args, const Specifiers st_spec) {
+  int res = 0;
   size_t max_len = s21_strlen(str);
   const char *p = str;
   DEBUG_PRINT(" String for decode=|%s|\n", str);
-  if (st_spec.width == asterisk) {
+  if (st_spec.flag == '*') {
     if (st_spec.length == 'l') {
       wchar_t dummy;
       for (int i = 0; i < st_spec.width && *p; i++) {
@@ -999,6 +1004,7 @@ int proc_spec_c(const char *str, va_list args, const Specifiers st_spec) {
     } else {
       p += st_spec.width >= 0 ? st_spec.width : 1;
     }
+      res = 0;
   } else {
     int width = st_spec.width >= 0 ? st_spec.width : 1;
     if ((st_spec.length == 'l')) {
@@ -1020,11 +1026,12 @@ int proc_spec_c(const char *str, va_list args, const Specifiers st_spec) {
       s21_memcpy(ch, p, copy_size);
       ch[copy_size] = '\0';
       p += copy_size;
-      DEBUG_PRINT("RESULT: val arg=%s\n", ch);
     }
   }
-
-  return p - str;
+    res = p - str;
+// DEBUG_PRINT("RESULT: =%d\n", res);
+      DEBUG_PRINT("RESULT: proc_spec_c=%d\n", res);
+  return res;
 }
 
 int proc_spec_f(const char *str, va_list args, const Specifiers st_spec) {

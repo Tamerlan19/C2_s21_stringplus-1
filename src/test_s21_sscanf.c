@@ -302,6 +302,7 @@ START_TEST(test_s21_sscanf_c) {
   // 3. Подавление присваивания
   count = s21_sscanf("X", "%*c");
   ck_assert_int_eq(count, 0);
+  
   count = s21_sscanf("XYZ", "%*c%*c%c", &c);
   ck_assert_int_eq(count, 1);
   ck_assert_int_eq(c, 'Z');
@@ -588,13 +589,14 @@ END_TEST
 
 Suite *s21_sscanf_suite(void) {
   Suite *s;
-  TCase *tc_core_d, *tc_core_c, *tc_core_s;
+  TCase *tc_core_d, *tc_core_c, *tc_core_s, *tc_debug;
 
   s = suite_create("s21_sscanf");
   // tc_core = tcase_create("Core");
   tc_core_d = tcase_create("Spec %d");
   tc_core_c = tcase_create("Spec %c");
   tc_core_s = tcase_create("Spec %s");
+  tc_debug = tcase_create("Debug");
 
   tcase_add_test(tc_core_d, test_s21_sscanf_d_simple);
   tcase_add_test(tc_core_d, test_s21_sscanf_d_neg);
@@ -665,7 +667,10 @@ Suite *s21_sscanf_suite(void) {
   // suite_add_tcase(s, tc_core);
   // suite_add_tcase(s, tc_core_d);
   // suite_add_tcase(s, tc_core_s);
-  suite_add_tcase(s, tc_core_c);
+  // suite_add_tcase(s, tc_core_c);
+
+  tcase_add_test(tc_debug,test_s21_sscanf_c);
+  suite_add_tcase(s, tc_debug);
 
   return s;
 }

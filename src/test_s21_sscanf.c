@@ -667,10 +667,10 @@ Suite *s21_sscanf_suite(void) {
   // suite_add_tcase(s, tc_core);
   // suite_add_tcase(s, tc_core_d);
   // suite_add_tcase(s, tc_core_s);
-  // suite_add_tcase(s, tc_core_c);
+  suite_add_tcase(s, tc_core_c);
 
   tcase_add_test(tc_debug,test_s21_sscanf_c);
-  suite_add_tcase(s, tc_debug);
+  // suite_add_tcase(s, tc_debug);
 
   return s;
 }

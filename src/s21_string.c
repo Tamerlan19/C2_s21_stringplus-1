@@ -200,7 +200,19 @@ char *s21_strpbrk(const char *str1, const char *str2) {
   return NULL;  
 }
 char *s21_strerror(int errnum){};
-char *s21_strrchr(const char *str, int c){};
+
+char *s21_strrchr(const char *str, int c){
+  char *rtn = NULL;
+
+
+  if (str != NULL) {
+    for (int str_lenght = s21_strlen(str); *str && *str != c; str_lenght-- ) {
+    }
+    if (*str != '\0')
+      rtn = str;
+  }
+  return rtn;
+};
 char *s21_strstr(const char *haystack, const char *needle){};
 char *s21_strtok(char *str, const char *delim){};
 
@@ -256,8 +268,8 @@ void *s21_insert(const char *src, const char *str, size_t start_index) {
     return NULL;
   }
 
-  size_t src_length = strlen(src);
-  size_t str_length = strlen(str);
+  size_t src_length = s21_strlen(src);
+  size_t str_length = s21_strlen(str);
   if (start_index < 0 || start_index > src_length) {//проверяю, что длина вставки не больше длины самого массива и индекс не отрицательный
     return NULL;
   }
@@ -268,21 +280,55 @@ void *s21_insert(const char *src, const char *str, size_t start_index) {
     return NULL;
   }
 
-  memcpy(result, src, start_index);//копирую src в result на start_index байтов 
+  s21_memcpy(result, src, start_index);//копирую src в result на start_index байтов 
 
-  memcpy(result + start_index, str, str_length);//копирует массив str в result начиная с start_index и вплоть до str_lenght
+  s21_memcpy(result + start_index, str, str_length);//копирует массив str в result начиная с start_index и вплоть до str_lenght
 
-  memcpy(result + start_index + str_length, src + start_index, src_length - start_index);//копирует оставшуюся часть массива
+  s21_memcpy(result + start_index + str_length, src + start_index, src_length - start_index);//копирует оставшуюся часть массива
 
   result[result_lenght] = '\0';
 
   return (void *)result;
 };
 
-void *s21_trimconst(char *src, const char *trim_chars){
-  if (src == NULL || trim_chars == NULL)
+void *s21_trim(const char *src, const char *trim_chars){
+  if (src == NULL || trim_chars == NULL)//проверяю на корректность переданной строки
   {
     return NULL;
   }
+  size_t src_length = s21_strlen(src);
+  size_t trim_length = s21_strlen(trim_chars);//длины строк
+
+  
+  if (trim_length == 0) {
+    trim_chars = " \t\n\r";
+    trim_length = s21_strlen(trim_chars);
+  }
+
+  
+  size_t start = 0;//определяю начало
+  while (start < src_length && strchr(trim_chars, src[start]) != NULL) {
+    start++;
+  }
+
+  
+  size_t end = src_length;//определяю конец, пропускаю символы из trim
+  while (end > start && strchr(trim_chars, src[end - 1]) != NULL) {
+    end--;
+  }
+
+  
+  size_t result_length = end - start;//память под строку
+  char *result = (char *)malloc(result_length + 1);
+  if (result == NULL) {
+    return NULL;
+  }
+
+
+  s21_memcpy(result, src + start, result_length);
+  result[result_length] = '\0';
+
+  return (void *)result;
+
   
 };

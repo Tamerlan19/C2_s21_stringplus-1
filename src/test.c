@@ -1,33 +1,61 @@
+#include "s21_string.h"
+#include <check.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-char *s21_strpbrk(const char *str1, const char *str2) {
-  for (size_t i = 0; str1[i] != '\0'; i++) {
-    for (size_t j = 0; str2[j] != '\0'; j++) {
-      if (str1[i] == str2[j]) {
-        return (char *)&str1[i];
-      }
-    }
+
+Suite *s21_string_suite(void);
+Suite *s21_sprintf_suite(void);
+Suite *s21_sscanf_suite(void);
+
+int main(void) {
+  int number_failed = 0, failed_sum = 0;
+
+  SRunner *sr;
+
+  // [ ]: Uncomment test case suite
+  // sr = srunner_create(s21_string_suite());
+  // srunner_run_all(sr, CK_NORMAL);
+  // number_failed = srunner_ntests_failed(sr);
+  // srunner_free(sr);
+  // if (number_failed != 0) {
+  //   printf("Suite \"s21_string_suite\" failed: %d tests.\n\n",
+  //   number_failed);
+  // } else {
+  //   printf("Suite \"s21_string_suite\" passed!\n\n");
+  // }
+  // failed_sum += number_failed;
+
+  sr = srunner_create(s21_sprintf_suite());
+  srunner_run_all(sr, CK_NORMAL);
+  number_failed = srunner_ntests_failed(sr);
+  srunner_free(sr);
+  if (number_failed != 0) {
+    printf("Suite \"s21_printf_suite\" failed: %d tests.\n\n", number_failed);
+  } else {
+    printf("Suite \"s21_printf_suite\" passed!\n\n");
   }
-  return NULL;
-}
-int main() {
-  const char *str1 = "232432";
-  const char *str2 = "";
+  failed_sum += number_failed;
 
-  char *result1 = strpbrk(str1, str2);
-  char *result2 = strpbrk(str1, str2);
+  // [ ]: Uncomment test case suite
+  // sr = srunner_create(s21_sscanf_suite());
+  // srunner_run_all(sr, CK_NORMAL);
+  // number_failed = srunner_ntests_failed(sr);
+  // srunner_free(sr);
+  // if (number_failed != 0) {
+  //   printf("Suite \"s21_scanf_suite\" failed: %d tests.\n\n", number_failed);
+  // } else {
+  //   printf("Suite \"s21_scanf_suite\" passed!\n\n");
+  // }
+  // failed_sum += number_failed;
 
-  if (result1) // Проверяем, что указатель не NULL
-    printf("First trim: %c\n", *result1);
-  else if (result1 == NULL) {
-    printf("No matching character found.\n");
-  }
+  // if (failed_sum != 0) {
+  //   printf("FAIL! %d tests is failed.\n", failed_sum);
+  // } else {
+  //   printf("PASS!\n");
+  // }
 
-  if (result2) // Проверяем, что указатель не NULL
-    printf("First trim: %c\n", *result2);
-  else if (result2 == NULL) {
-    printf("No matching character found.\n");
-  }
-
+  // [ ]: REMOVE return 0
+  //   return (failed_sum == 0) ? 0 : 1;
   return 0;
 }

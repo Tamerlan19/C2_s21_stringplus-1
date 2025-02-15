@@ -31,7 +31,8 @@ int main(void) {
   // number_failed = srunner_ntests_failed(sr);
   // srunner_free(sr);
   // if (number_failed != 0) {
-  //   printf("Suite \"s21_printf_suite\" failed: %d tests.\n\n", number_failed);
+  //   printf("Suite \"s21_printf_suite\" failed: %d tests.\n\n",
+  //   number_failed);
   // } else {
   //   printf("Suite \"s21_printf_suite\" passed!\n\n");
   // }

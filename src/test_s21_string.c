@@ -153,123 +153,122 @@ START_TEST(test_s21_strcmp) {
 END_TEST
 
 int compare_memory(const void *a, const void *b, s21_size_t n) {
-    return memcmp(a, b, n) == 0;
+  return memcmp(a, b, n) == 0;
 }
 
 // Тестовый случай 1: Заполнение нулями
 START_TEST(test_s21_memset_zero_fill) {
-    char buffer[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    s21_memset(buffer, 0, 10);
+  char buffer[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+  s21_memset(buffer, 0, 10);
 
-    char expected[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-    ck_assert(s21_memcmp(buffer, expected, 10) == 1);
+  char expected[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  ck_assert(s21_memcmp(buffer, expected, 10) == 1);
 }
 END_TEST
 
 // Тестовый случай 2: Частичное заполнение
 START_TEST(test_s21_memset_partial_fill) {
-    char buffer[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    s21_memset(buffer, 'A', 5);
+  char buffer[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+  s21_memset(buffer, 'A', 5);
 
-    char expected[10] = {'A', 'A', 'A', 'A', 'A', 6, 7, 8, 9, 10};
-    ck_assert(compare_memory(buffer, expected, 10) == 1);
+  char expected[10] = {'A', 'A', 'A', 'A', 'A', 6, 7, 8, 9, 10};
+  ck_assert(compare_memory(buffer, expected, 10) == 1);
 }
 END_TEST
 
 // Тестовый случай 3: Заполнение символом
 START_TEST(test_s21_memset_char_fill) {
-    char buffer[10];
-    s21_memset(buffer, 'X', 10);
+  char buffer[10];
+  s21_memset(buffer, 'X', 10);
 
-    char expected[10] = {'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'};
-    ck_assert(compare_memory(buffer, expected, 10) == 1);
+  char expected[10] = {'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'};
+  ck_assert(compare_memory(buffer, expected, 10) == 1);
 }
 END_TEST
 
 // Тестовый случай 4: Нулевая длина
 START_TEST(test_s21_memset_zero_length) {
-    char buffer[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    s21_memset(buffer, 'A', 0);
+  char buffer[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+  s21_memset(buffer, 'A', 0);
 
-    char expected[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-    ck_assert(compare_memory(buffer, expected, 10) == 1);
+  char expected[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+  ck_assert(compare_memory(buffer, expected, 10) == 1);
 }
 END_TEST
 
 // Тестовый случай 5: NULL-указатель
 START_TEST(test_s21_memset_null_pointer) {
-    char *buffer = NULL;
-    s21_memset(buffer, 'A', 10); // Функция должна безопасно обрабатывать NULL
+  char *buffer = NULL;
+  s21_memset(buffer, 'A', 10); // Функция должна безопасно обрабатывать NULL
 
-    // Проверяем, что программа не завершилась с ошибкой
-    ck_assert_ptr_eq(buffer, NULL);
+  // Проверяем, что программа не завершилась с ошибкой
+  ck_assert_ptr_eq(buffer, NULL);
 }
 END_TEST
 
-
 // Test Case 1: Identical memory blocks
 START_TEST(test_s21_memcmp_identical_blocks) {
-    char buffer1[] = "abcdef";
-    char buffer2[] = "abcdef";
-    s21_size_t n = 6;
+  char buffer1[] = "abcdef";
+  char buffer2[] = "abcdef";
+  s21_size_t n = 6;
 
-    int result = s21_memcmp(buffer1, buffer2, n);
-    ck_assert_int_eq(result, 0); // Expected result is 0 (equal)
+  int result = s21_memcmp(buffer1, buffer2, n);
+  ck_assert_int_eq(result, 0); // Expected result is 0 (equal)
 }
 END_TEST
 
 // Test Case 2: Different memory blocks
 START_TEST(test_s21_memcmp_different_blocks) {
-    char buffer1[] = "abcde";
-    char buffer2[] = "abcdz";
-    s21_size_t n = 5;
+  char buffer1[] = "abcde";
+  char buffer2[] = "abcdz";
+  s21_size_t n = 5;
 
-    int result = s21_memcmp(buffer1, buffer2, n);
-    ck_assert_int_lt(result, 0); // 'e' < 'z', so result should be negative
+  int result = s21_memcmp(buffer1, buffer2, n);
+  ck_assert_int_lt(result, 0); // 'e' < 'z', so result should be negative
 }
 END_TEST
 
 // Test Case 3: Partial comparison with identical bytes
 START_TEST(test_s21_memcmp_partial_identical) {
-    char buffer1[] = "abcdefgh";
-    char buffer2[] = "abcdefxy";
-    s21_size_t n = 6;
+  char buffer1[] = "abcdefgh";
+  char buffer2[] = "abcdefxy";
+  s21_size_t n = 6;
 
-    int result = s21_memcmp(buffer1, buffer2, n);
-    ck_assert_int_eq(result, 0); // First 6 bytes are identical
+  int result = s21_memcmp(buffer1, buffer2, n);
+  ck_assert_int_eq(result, 0); // First 6 bytes are identical
 }
 END_TEST
 
 // Test Case 4: Partial comparison with different bytes
 START_TEST(test_s21_memcmp_partial_different) {
-    char buffer1[] = "abcdefg";
-    char buffer2[] = "abcdefh";
-    s21_size_t n = 7;
+  char buffer1[] = "abcdefg";
+  char buffer2[] = "abcdefh";
+  s21_size_t n = 7;
 
-    int result = s21_memcmp(buffer1, buffer2, n);
-    ck_assert_int_lt(result, 0); // 'g' < 'h', so result should be negative
+  int result = s21_memcmp(buffer1, buffer2, n);
+  ck_assert_int_lt(result, 0); // 'g' < 'h', so result should be negative
 }
 END_TEST
 
 // Test Case 5: Comparison with n = 0
 START_TEST(test_s21_memcmp_zero_length) {
-    char buffer1[] = "abcdef";
-    char buffer2[] = "ABCDEF";
-    s21_size_t n = 0;
+  char buffer1[] = "abcdef";
+  char buffer2[] = "ABCDEF";
+  s21_size_t n = 0;
 
-    int result = s21_memcmp(buffer1, buffer2, n);
-    ck_assert_int_eq(result, 0); // If n == 0, result should always be 0
+  int result = s21_memcmp(buffer1, buffer2, n);
+  ck_assert_int_eq(result, 0); // If n == 0, result should always be 0
 }
 END_TEST
 
 // Test Case 6: NULL pointers
 START_TEST(test_s21_memcmp_null_pointers) {
-    char buffer1[] = "abcdef";
-    const void *null_ptr = NULL;
-    s21_size_t n = 6;
+  char buffer1[] = "abcdef";
+  const void *null_ptr = NULL;
+  s21_size_t n = 6;
 
-    int result = s21_memcmp(null_ptr, buffer1, n);
-    ck_assert_int_eq(result, 0); // Function should handle NULL safely
+  int result = s21_memcmp(null_ptr, buffer1, n);
+  ck_assert_int_eq(result, 0); // Function should handle NULL safely
 }
 END_TEST
 

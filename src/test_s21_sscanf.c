@@ -302,7 +302,7 @@ START_TEST(test_s21_sscanf_c) {
   // 3. Подавление присваивания
   count = s21_sscanf("X", "%*c");
   ck_assert_int_eq(count, 0);
-  
+
   count = s21_sscanf("XYZ", "%*c%*c%c", &c);
   ck_assert_int_eq(count, 1);
   ck_assert_int_eq(c, 'Z');
@@ -367,7 +367,7 @@ START_TEST(test_s21_sscanf_c_edge) {
   ck_assert_str_eq(str, "Hi");
 
   // 3. Чтение символа с шириной и подавлением присваивания
-  char t=' ';
+  char t = ' ';
   count = s21_sscanf("Hello", "%*3c%c", &t);
   ck_assert_int_eq(t, 'l');
   ck_assert_int_eq(count, 1);
@@ -492,29 +492,13 @@ START_TEST(test_s21_sscanf_s_add_spaces) {
 }
 END_TEST
 
-
-// // Функция для сравнения строк
-// static int compare_strings(const char *a, const char *b) {
-//   if (a == NULL && b == NULL) return 1;
-//   if (a == NULL || b == NULL) return 0;
-//   return strcmp(a, b) == 0;
-// }
-
-// // Функция для сравнения wide-строк
-// static int compare_wstrings(const wchar_t *a, const wchar_t *b) {
-//   if (a == NULL && b == NULL) return 1;
-//   if (a == NULL || b == NULL) return 0;
-//   return wcscmp(a, b) == 0;
-// }
-
 // Тест: Чтение одного символа без модификаторов
 START_TEST(s21_test_sscanf_c_single_char) {
   const char *input = "abc";
   char c;
-
   int result = s21_sscanf(input, "%c", &c);
   ck_assert_int_eq(result, 1); // Успешно прочитан один символ
-  ck_assert_int_eq(c, 'a');    // Проверяем значение символа
+  ck_assert_int_eq(c, 'a'); // Проверяем значение символа
   printf("Test s21_test_sscanf_c_single_char passed.\n");
 }
 END_TEST
@@ -552,22 +536,24 @@ END_TEST
 
 // Тест: Чтение wide-символа с модификатором 'l'
 START_TEST(s21_test_sscanf_c_wide_char) {
+  setlocale(LC_ALL, "en_US.utf8");
   const char *input = "Ωβγ"; // UTF-8 представление 'Ω', 'β', 'γ'
   wchar_t wc;
 
-  int result = sscanf(input, "%lc", &wc);
+  int result = s21_sscanf(input, "%lc", &wc);
   ck_assert_int_eq(result, 1); // Успешно прочитан один wide-символ
-  ck_assert_int_eq(wc, L'Ω');  // Проверяем значение wide-символа
+  ck_assert_int_eq(wc, L'Ω'); // Проверяем значение wide-символа
   printf("Test s21_test_sscanf_c_wide_char passed.\n");
 }
 END_TEST
 
 // Тест: Чтение нескольких wide-символов с ограничением по ширине
 START_TEST(s21_test_sscanf_c_wide_chars_with_width) {
+  setlocale(LC_ALL, "en_US.utf8");
   const char *input = "Ωβγδ"; // UTF-8 представление 'Ω', 'β', 'γ', 'δ'
   wchar_t wc[2];
 
-  int result = sscanf(input, "%2lc", wc);
+  int result = s21_sscanf(input, "%2lc", wc);
   ck_assert_int_eq(result, 1); // Успешно прочитан один wide-символ
   ck_assert_int_eq(wc[0], L'Ω'); // Проверяем значение первого wide-символа
   printf("Test s21_test_sscanf_c_wide_chars_with_width passed.\n");
@@ -579,19 +565,186 @@ START_TEST(s21_test_sscanf_c_ignore_flag) {
   const char *input = "abc";
   char c;
 
-  int result = sscanf(input, "%*c%c", &c);
+  int result = s21_sscanf(input, "%*c%c", &c);
   ck_assert_int_eq(result, 1); // Успешно прочитан один символ
-  ck_assert_int_eq(c, 'b');    // Первый символ проигнорирован
+  ck_assert_int_eq(c, 'b'); // Первый символ проигнорирован
   printf("Test s21_test_sscanf_c_ignore_flag passed.\n");
 }
 END_TEST
 
+static int compare_wstrings(const wchar_t *a, const wchar_t *b) {
+  if (a == NULL && b == NULL)
+    return 1;
+  if (a == NULL || b == NULL)
+    return 0;
+  return wcscmp(a, b) == 0;
+}
+
+// Тест: Простое чтение wide-строки
+START_TEST(test_s21_sscanf_ls_simple) {
+  setlocale(LC_ALL, "en_US.utf8");
+  const char *input = "Hello Wide World";
+  wchar_t wstr_s21[50], wstr_sscanf[50];
+  char *fmt = "%ls"; // Форматная строка
+
+  // Проверяем s21_sscanf
+  int result_s21 = s21_sscanf(input, fmt, wstr_s21);
+  // Проверяем sscanf
+  int result_sscanf = sscanf(input, fmt, wstr_sscanf);
+
+  ck_assert_int_eq(
+      result_s21, result_sscanf); // Сравниваем количество прочитанных элементов
+  ck_assert(
+      compare_wstrings(wstr_s21, wstr_sscanf)); // Сравниваем значения строк
+  printf("Test test_s21_sscanf_ls_simple passed.\n");
+}
+END_TEST
+
+// Тест: Чтение wide-строки с пробелами
+START_TEST(test_s21_sscanf_ls_space) {
+  setlocale(LC_ALL, "en_US.utf8");
+  const char *input = "   Hello   ";
+  wchar_t wstr_s21[50], wstr_sscanf[50];
+  char *fmt = "%ls"; // Форматная строка
+
+  int result_s21 = s21_sscanf(input, fmt, wstr_s21);
+  int result_sscanf = sscanf(input, fmt, wstr_sscanf);
+
+  ck_assert_int_eq(result_s21, result_sscanf);
+  ck_assert(compare_wstrings(wstr_s21, wstr_sscanf));
+  printf("Test test_s21_sscanf_ls_space passed.\n");
+}
+END_TEST
+
+// Тест: Чтение wide-строки с ограничением по ширине
+START_TEST(test_s21_sscanf_ls_width) {
+  setlocale(LC_ALL, "en_US.utf8");
+  const char *input = "HelloWideWorld";
+  wchar_t wstr_s21[50], wstr_sscanf[50];
+  char *fmt = "%4ls"; // Форматная строка
+
+  int result_s21 = s21_sscanf(input, fmt, wstr_s21);
+  int result_sscanf = sscanf(input, fmt, wstr_sscanf);
+
+  ck_assert_int_eq(result_s21, result_sscanf);
+  ck_assert(compare_wstrings(wstr_s21, wstr_sscanf));
+  printf("Test test_s21_sscanf_ls_width passed.\n");
+}
+END_TEST
+
+// Тест: Чтение нескольких wide-строк
+START_TEST(test_s21_sscanf_ls_multiple) {
+  setlocale(LC_ALL, "en_US.utf8");
+  const char *input = "Hello Wide World";
+  wchar_t wstr1_s21[50], wstr2_s21[50], wstr3_s21[50];
+  wchar_t wstr1_sscanf[50], wstr2_sscanf[50], wstr3_sscanf[50];
+  char *fmt = "%ls %ls %ls"; // Форматная строка
+
+  int result_s21 = s21_sscanf(input, fmt, wstr1_s21, wstr2_s21, wstr3_s21);
+  int result_sscanf =
+      sscanf(input, fmt, wstr1_sscanf, wstr2_sscanf, wstr3_sscanf);
+
+  ck_assert_int_eq(result_s21, result_sscanf);
+  ck_assert(compare_wstrings(wstr1_s21, wstr1_sscanf));
+  ck_assert(compare_wstrings(wstr2_s21, wstr2_sscanf));
+  ck_assert(compare_wstrings(wstr3_s21, wstr3_sscanf));
+  printf("Test test_s21_sscanf_ls_multiple passed.\n");
+}
+END_TEST
+
+// Тест: Чтение пустой строки
+START_TEST(test_s21_sscanf_ls_empty) {
+  setlocale(LC_ALL, "en_US.utf8");
+  const char *input = "";
+  wchar_t wstr_s21[50] = {0}, wstr_sscanf[50] = {0};
+  char *fmt = "%ls"; // Форматная строка
+
+  int result_s21 = s21_sscanf(input, fmt, wstr_s21);
+  int result_sscanf = sscanf(input, fmt, wstr_sscanf);
+
+  ck_assert_int_eq(result_s21, result_sscanf);
+  ck_assert(compare_wstrings(wstr_s21, wstr_sscanf));
+  // ck_assert_(wstr_s21, wstr_sscanf);
+  printf("Test test_s21_sscanf_ls_empty passed.\n");
+}
+END_TEST
+
+// Тест: Неверный формат строки
+START_TEST(test_s21_sscanf_ls_wrong_fmt) {
+  setlocale(LC_ALL, "en_US.utf8");
+  const char *input = "Hello";
+  wchar_t wstr_s21[50], wstr_sscanf[50];
+  char *fmt = "%l"; // Неверный формат
+
+  int result_s21 = s21_sscanf(input, fmt, wstr_s21);
+  int result_sscanf = sscanf(input, fmt, wstr_sscanf);
+
+  ck_assert_int_eq(result_s21, result_sscanf);
+  printf("Test test_s21_sscanf_ls_wrong_fmt passed.\n");
+}
+END_TEST
+
+// Тест: Чтение wide-строки с разделителями
+START_TEST(test_s21_sscanf_ls_separators) {
+  setlocale(LC_ALL, "en_US.utf8");
+  const char *input = "Hello, Wide: World!";
+  wchar_t wstr1_s21[50], wstr2_s21[50], wstr3_s21[50];
+  wchar_t wstr1_sscanf[50], wstr2_sscanf[50], wstr3_sscanf[50];
+  char *fmt = "%ls, %ls: %ls"; // Форматная строка
+
+  int result_s21 = s21_sscanf(input, fmt, wstr1_s21, wstr2_s21, wstr3_s21);
+  int result_sscanf =
+      sscanf(input, fmt, wstr1_sscanf, wstr2_sscanf, wstr3_sscanf);
+
+  ck_assert_int_eq(result_s21, result_sscanf);
+  ck_assert(compare_wstrings(wstr1_s21, wstr1_sscanf));
+  ck_assert(compare_wstrings(wstr2_s21, wstr2_sscanf));
+  ck_assert(compare_wstrings(wstr3_s21, wstr3_sscanf));
+  printf("Test test_s21_sscanf_ls_separators passed.\n");
+}
+END_TEST
+
+// Тест: Чтение wide-строки с шириной и разделителями
+START_TEST(test_s21_sscanf_ls_width_separators) {
+  setlocale(LC_ALL, "en_US.utf8");
+  const char *input = "Hello, Wide: World!";
+  wchar_t wstr1_s21[50], wstr2_s21[50], wstr3_s21[50];
+  wchar_t wstr1_sscanf[50], wstr2_sscanf[50], wstr3_sscanf[50];
+  char *fmt = "%4ls, %3ls %5ls"; // Форматная строка
+
+  int result_s21 = s21_sscanf(input, fmt, wstr1_s21, wstr2_s21, wstr3_s21);
+  int result_sscanf =
+      sscanf(input, fmt, wstr1_sscanf, wstr2_sscanf, wstr3_sscanf);
+
+  ck_assert_int_eq(result_s21, result_sscanf);
+  ck_assert(compare_wstrings(wstr1_s21, wstr1_sscanf));
+  ck_assert(compare_wstrings(wstr2_s21, wstr2_sscanf));
+  ck_assert(compare_wstrings(wstr3_s21, wstr3_sscanf));
+  printf("Test test_s21_sscanf_ls_width_separators passed.\n");
+}
+END_TEST
+
+// Тест: Пропуск присваивания (%*ls)
+START_TEST(test_s21_sscanf_ls_skip_assignment) {
+  setlocale(LC_ALL, "en_US.utf8");
+  const char *input = "Hello Wide World";
+  wchar_t wstr_s21[50] = {0}, wstr_sscanf[50] = {0};
+  char *fmt = "%*ls %ls"; // Форматная строка
+
+  int result_s21 = s21_sscanf(input, fmt, wstr_s21);
+  int result_sscanf = sscanf(input, fmt, wstr_sscanf);
+
+  ck_assert_int_eq(result_s21, result_sscanf);
+  ck_assert(compare_wstrings(wstr_s21, wstr_sscanf));
+  printf("Test test_s21_sscanf_ls_skip_assignment passed.\n");
+}
+END_TEST
 
 Suite *s21_sscanf_suite(void) {
-  Suite *s;
+  Suite *suite;
   TCase *tc_core_d, *tc_core_c, *tc_core_s, *tc_debug;
 
-  s = suite_create("s21_sscanf");
+  suite = suite_create("s21_sscanf");
   // tc_core = tcase_create("Core");
   tc_core_d = tcase_create("Spec %d");
   tc_core_c = tcase_create("Spec %c");
@@ -629,7 +782,7 @@ Suite *s21_sscanf_suite(void) {
   tcase_add_test(tc_core_c, test_s21_sscanf_lc);
   tcase_add_test(tc_core_c, test_s21_sscanf_c_error);
   tcase_add_test(tc_core_c, test_s21_sscanf_complex);
-  
+
   tcase_add_test(tc_core_c, s21_test_sscanf_c_single_char);
   tcase_add_test(tc_core_c, s21_test_sscanf_c_skip_with_width);
   tcase_add_test(tc_core_c, s21_test_sscanf_c_wide_char);
@@ -637,7 +790,7 @@ Suite *s21_sscanf_suite(void) {
   tcase_add_test(tc_core_c, s21_test_sscanf_c_ignore_flag);
   tcase_add_test(tc_core_c, s21_test_sscanf_c_four_chars);
   tcase_add_test(tc_core_c, test_s21_sscanf_c_edge);
-  
+
   tcase_add_test(tc_core_s, test_s21_sscanf_s_simple);
   tcase_add_test(tc_core_s, test_s21_sscanf_s_space);
   tcase_add_test(tc_core_s, test_s21_sscanf_s_width);
@@ -650,27 +803,25 @@ Suite *s21_sscanf_suite(void) {
   tcase_add_test(tc_core_s, test_s21_sscanf_s_add_spaces);
   tcase_add_test(tc_core_s, test_s21_sscanf_s_skip_assignment);
 
-  
-  // tcase_add_test(tc_core_s, test_s21_sscanf_ls_simple);
-  // tcase_add_test(tc_core_s, test_s21_sscanf_ls_space);
-  // tcase_add_test(tc_core_s, test_s21_sscanf_ls_width);
-  // tcase_add_test(tc_core_s, test_s21_sscanf_ls_multiple);
-  // tcase_add_test(tc_core_s, test_s21_sscanf_ls_empty);
-  // tcase_add_test(tc_core_s, test_s21_sscanf_ls_wrong_fmt);
-  // tcase_add_test(tc_core_s, test_s21_sscanf_ls_width_wrong_fmt);
-  // tcase_add_test(tc_core_s, test_s21_sscanf_ls_separators);
-  // tcase_add_test(tc_core_s, test_s21_sscanf_ls_width_separators);
-  // tcase_add_test(tc_core_s, test_s21_sscanf_ls_add_spaces);
-  // tcase_add_test(tc_core_s, test_s21_sscanf_ls_skip_assignment);
+  tcase_add_test(tc_core_s, test_s21_sscanf_ls_simple);
+  tcase_add_test(tc_core_s, test_s21_sscanf_ls_space);
+  tcase_add_test(tc_core_s, test_s21_sscanf_ls_width);
+  tcase_add_test(tc_core_s, test_s21_sscanf_ls_multiple);
+  tcase_add_test(tc_core_s, test_s21_sscanf_ls_empty);
+  tcase_add_test(tc_core_s, test_s21_sscanf_ls_wrong_fmt);
+  tcase_add_test(tc_core_s, test_s21_sscanf_ls_separators);
+  tcase_add_test(tc_core_s, test_s21_sscanf_ls_width_separators);
+  tcase_add_test(tc_core_s, test_s21_sscanf_ls_skip_assignment);
+
+  tcase_add_test(tc_debug, test_s21_sscanf_ls_empty);
 
   //[ ] Uncomment additional test case
   // suite_add_tcase(s, tc_core);
-  // suite_add_tcase(s, tc_core_d);
-  // suite_add_tcase(s, tc_core_s);
-  suite_add_tcase(s, tc_core_c);
+  suite_add_tcase(suite, tc_core_c);
+  suite_add_tcase(suite, tc_core_d);
+  suite_add_tcase(suite, tc_core_s);
 
-  tcase_add_test(tc_debug,test_s21_sscanf_c);
-  // suite_add_tcase(s, tc_debug);
+  suite_add_tcase(suite, tc_debug);
 
-  return s;
+  return suite;
 }

@@ -45,52 +45,51 @@ START_TEST(test_left_alignment) {
   ck_assert_str_eq(buffer, "Number: 42   ");
 }
 START_TEST(test_s21_sprintf_simple_char) {
-    char buffer[256] = {0};
-    s21_sprintf(buffer, "%c", 'A'); // Передаем буфер явно
-    ck_assert_str_eq(buffer, "A");
+  char buffer[256] = {0};
+  s21_sprintf(buffer, "%c", 'A'); // Передаем буфер явно
+  ck_assert_str_eq(buffer, "A");
 }
 END_TEST
 
 // Тест 2: Ширина больше одного символа
 START_TEST(test_s21_sprintf_width) {
-    char buffer[256] = {0};
-    s21_sprintf(buffer, "%5c", 'B'); // Передаем буфер явно
-    ck_assert_str_eq(buffer, "    B");
+  char buffer[256] = {0};
+  s21_sprintf(buffer, "%5c", 'B'); // Передаем буфер явно
+  ck_assert_str_eq(buffer, "    B");
 }
 END_TEST
 
 // Тест 3: Левое выравнивание
 START_TEST(test_s21_sprintf_left_align) {
-    char buffer[256] = {0};
-    s21_sprintf(buffer, "%-5c", 'C'); // Передаем буфер явно
-    ck_assert_str_eq(buffer, "C    ");
+  char buffer[256] = {0};
+  s21_sprintf(buffer, "%-5c", 'C'); // Передаем буфер явно
+  ck_assert_str_eq(buffer, "C    ");
 }
 END_TEST
 
 // Тест 4: Заполнение нулями
 START_TEST(test_s21_sprintf_zero_padding) {
-    char buffer[256] = {0};
-    s21_sprintf(buffer, "%05c", 'D'); // Передаем буфер явно
-    ck_assert_str_eq(buffer, "0000D");
+  char buffer[256] = {0};
+  s21_sprintf(buffer, "%05c", 'D'); // Передаем буфер явно
+  ck_assert_str_eq(buffer, "0000D");
 }
 END_TEST
 
 // Тест 5: Минимальная ширина равна единице
 START_TEST(test_s21_sprintf_min_width_one) {
-    char buffer[256] = {0};
-    s21_sprintf(buffer, "%1c", 'E'); // Передаем буфер явно
-    ck_assert_str_eq(buffer, "E");
+  char buffer[256] = {0};
+  s21_sprintf(buffer, "%1c", 'E'); // Передаем буфер явно
+  ck_assert_str_eq(buffer, "E");
 }
 END_TEST
 
 // Тест 6: Отрицательная ширина (должна игнорироваться)
 START_TEST(test_s21_sprintf_negative_width) {
-    char buffer[256] = {0};
-    s21_sprintf(buffer, "%-5c", 'F'); // Передаем буфер явно
-    ck_assert_str_eq(buffer, "F    ");
+  char buffer[256] = {0};
+  s21_sprintf(buffer, "%-5c", 'F'); // Передаем буфер явно
+  ck_assert_str_eq(buffer, "F    ");
 }
 END_TEST
-
 
 Suite *s21_sprintf_suite(void) {
   Suite *s;
@@ -106,12 +105,12 @@ Suite *s21_sprintf_suite(void) {
   tcase_add_test(tc_core, test_zero_padding);
   tcase_add_test(tc_core, test_left_alignment);
   tcase_add_test(tc_core, test_width_flag);
- tcase_add_test(tc_core, test_s21_sprintf_simple_char);
-    tcase_add_test(tc_core, test_s21_sprintf_width);
-    tcase_add_test(tc_core, test_s21_sprintf_left_align);
-    tcase_add_test(tc_core, test_s21_sprintf_zero_padding);
-    tcase_add_test(tc_core, test_s21_sprintf_min_width_one);
-    tcase_add_test(tc_core, test_s21_sprintf_negative_width);
+  tcase_add_test(tc_core, test_s21_sprintf_simple_char);
+  tcase_add_test(tc_core, test_s21_sprintf_width);
+  tcase_add_test(tc_core, test_s21_sprintf_left_align);
+  tcase_add_test(tc_core, test_s21_sprintf_zero_padding);
+  tcase_add_test(tc_core, test_s21_sprintf_min_width_one);
+  tcase_add_test(tc_core, test_s21_sprintf_negative_width);
 
   suite_add_tcase(s, tc_core);
 

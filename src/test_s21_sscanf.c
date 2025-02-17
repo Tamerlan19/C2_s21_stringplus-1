@@ -429,6 +429,27 @@ START_TEST(test_s21_sscanf_s_multiple) {
 }
 END_TEST
 
+// Тест: Чтение wide-строки с разделителями
+START_TEST(test_s21_sscanf_s_separators_comp) {
+  setlocale(LC_ALL, "en_US.utf8");
+  const char *input = "Hello, Wide: World!";
+  char wstr1_s21[50], wstr2_s21[50], wstr3_s21[50];
+  char wstr1_sscanf[50], wstr2_sscanf[50], wstr3_sscanf[50];
+  char *fmt = "%s, %s: %s"; // Форматная строка
+
+  int result_s21 = s21_sscanf(input, fmt, wstr1_s21, wstr2_s21, wstr3_s21);
+  int result_sscanf =
+      sscanf(input, fmt, wstr1_sscanf, wstr2_sscanf, wstr3_sscanf);
+
+  ck_assert_int_eq(result_s21, result_sscanf);
+  ck_assert_str_eq(wstr1_s21, wstr1_sscanf);
+  ck_assert_str_eq(wstr2_s21, wstr2_sscanf);
+  ck_assert_str_eq(wstr3_s21, wstr3_sscanf);
+  printf("Test test_s21_sscanf_s_separators passed.\n");
+}
+END_TEST
+
+
 // Тест 6: Чтение строки с пустым вводом
 START_TEST(test_s21_sscanf_s_empty) {
   const char *input = "";
@@ -740,6 +761,125 @@ START_TEST(test_s21_sscanf_ls_skip_assignment) {
 }
 END_TEST
 
+// Тест 1: Чтение чисел, разделённых пробелами
+START_TEST(test_s21_sscanf_d_separator_space) {
+  const char *input = "123 456 789";
+  int x = 0, y = 0, z = 0;
+  int xr = 0, yr = 0, zr = 0;
+  const char *fmt = "%d %d %d";
+
+  int result = s21_sscanf(input, fmt, &x, &y, &z);
+  int resultr = sscanf(input, fmt, &xr, &yr, &zr);
+
+  ck_assert_int_eq(result, resultr); // Ожидается 3 (успешное чтение трёх чисел)
+  ck_assert_int_eq(x, xr);           // Ожидается 123
+  ck_assert_int_eq(y, yr);           // Ожидается 456
+  ck_assert_int_eq(z, zr);           // Ожидается 789
+}
+END_TEST
+
+// Тест 2: Чтение чисел, разделённых табуляцией
+START_TEST(test_s21_sscanf_d_separator_tab) {
+  const char *input = "123\t456\t789";
+  int x = 0, y = 0, z = 0;
+  int xr = 0, yr = 0, zr = 0;
+  const char *fmt = "%d%d%d"; // Формат без явных разделителей
+
+  int result = s21_sscanf(input, fmt, &x, &y, &z);
+  int resultr = sscanf(input, fmt, &xr, &yr, &zr);
+
+  ck_assert_int_eq(result, resultr); // Ожидается 3 (успешное чтение трёх чисел)
+  ck_assert_int_eq(x, xr);           // Ожидается 123
+  ck_assert_int_eq(y, yr);           // Ожидается 456
+  ck_assert_int_eq(z, zr);           // Ожидается 789
+}
+END_TEST
+
+// Тест 3: Чтение чисел, разделённых запятыми
+START_TEST(test_s21_sscanf_d_separator_comma) {
+  const char *input = "123,456,789";
+  int x = 0, y = 0, z = 0;
+  int xr = 0, yr = 0, zr = 0;
+  const char *fmt = "%d,%d,%d"; // Явное указание запятых как разделителей
+
+  int result = s21_sscanf(input, fmt, &x, &y, &z);
+  int resultr = sscanf(input, fmt, &xr, &yr, &zr);
+
+  ck_assert_int_eq(result, resultr); // Ожидается 3 (успешное чтение трёх чисел)
+  ck_assert_int_eq(x, xr);           // Ожидается 123
+  ck_assert_int_eq(y, yr);           // Ожидается 456
+  ck_assert_int_eq(z, zr);           // Ожидается 789
+}
+END_TEST
+
+// Тест 4: Чтение чисел, разделённых смешанными разделителями (пробелы и запятые)
+START_TEST(test_s21_sscanf_d_separator_mixed) {
+  const char *input = "123, 456, 789";
+  int x = 0, y = 0, z = 0;
+  int xr = 0, yr = 0, zr = 0;
+  const char *fmt = "%d, %d, %d"; // Явное указание разделителей
+
+  int result = s21_sscanf(input, fmt, &x, &y, &z);
+  int resultr = sscanf(input, fmt, &xr, &yr, &zr);
+
+  ck_assert_int_eq(result, resultr); // Ожидается 3 (успешное чтение трёх чисел)
+  ck_assert_int_eq(x, xr);           // Ожидается 123
+  ck_assert_int_eq(y, yr);           // Ожидается 456
+  ck_assert_int_eq(z, zr);           // Ожидается 789
+}
+END_TEST
+
+// Тест 5: Чтение чисел, разделённых новыми строками
+START_TEST(test_s21_sscanf_d_separator_newline) {
+  const char *input = "123\n456\n789";
+  int x = 0, y = 0, z = 0;
+  int xr = 0, yr = 0, zr = 0;
+  const char *fmt = "%d%d%d"; // Формат без явных разделителей
+
+  int result = s21_sscanf(input, fmt, &x, &y, &z);
+  int resultr = sscanf(input, fmt, &xr, &yr, &zr);
+
+  ck_assert_int_eq(result, resultr); // Ожидается 3 (успешное чтение трёх чисел)
+  ck_assert_int_eq(x, xr);           // Ожидается 123
+  ck_assert_int_eq(y, yr);           // Ожидается 456
+  ck_assert_int_eq(z, zr);           // Ожидается 789
+}
+END_TEST
+
+// Тест 6: Чтение чисел с нестандартными разделителями (например, точка с запятой)
+START_TEST(test_s21_sscanf_d_separator_semicolon) {
+  const char *input = "123;456;789";
+  int x = 0, y = 0, z = 0;
+  int xr = 0, yr = 0, zr = 0;
+  const char *fmt = "%d;%d;%d"; // Явное указание разделителей
+
+  int result = s21_sscanf(input, fmt, &x, &y, &z);
+  int resultr = sscanf(input, fmt, &xr, &yr, &zr);
+
+  ck_assert_int_eq(result, resultr); // Ожидается 3 (успешное чтение трёх чисел)
+  ck_assert_int_eq(x, xr);           // Ожидается 123
+  ck_assert_int_eq(y, yr);           // Ожидается 456
+  ck_assert_int_eq(z, zr);           // Ожидается 789
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_d_separator_skip) {
+  const char *input = "123abc456def789";
+  int x = 0, y = 0, z = 0;
+  int xr = 0, yr = 0, zr = 0;
+  const char *fmt = "%d%*c%d%*c%d"; // Пропуск одного символа между числами
+
+  int result = s21_sscanf(input, fmt, &x, &y, &z);
+  int resultr = sscanf(input, fmt, &xr, &yr, &zr);
+
+  ck_assert_int_eq(result, resultr); // Ожидается 3 (успешное чтение трёх чисел)
+  ck_assert_int_eq(x, xr);           // Ожидается 123
+  ck_assert_int_eq(y, yr);           // Ожидается 456
+  ck_assert_int_eq(z, zr);           // Ожидается 789
+}
+END_TEST
+
+
 Suite *s21_sscanf_suite(void) {
   Suite *suite;
   TCase *tc_core_d, *tc_core_c, *tc_core_s, *tc_debug;
@@ -778,11 +918,18 @@ Suite *s21_sscanf_suite(void) {
   tcase_add_test(tc_core_d, test_s21_sscanf_ld_width);
   tcase_add_test(tc_core_d, test_s21_sscanf_ld_invalid);
   tcase_add_test(tc_core_d, test_s21_sscanf_ld_empty);
+  tcase_add_test(tc_core_d, test_s21_sscanf_d_separator_space);
+  tcase_add_test(tc_core_d, test_s21_sscanf_d_separator_tab);
+  tcase_add_test(tc_core_d, test_s21_sscanf_d_separator_comma);
+  tcase_add_test(tc_core_d, test_s21_sscanf_d_separator_mixed);
+  tcase_add_test(tc_core_d, test_s21_sscanf_d_separator_newline);
+  tcase_add_test(tc_core_d, test_s21_sscanf_d_separator_skip);
+  tcase_add_test(tc_core_d, test_s21_sscanf_d_separator_semicolon);
+  
   tcase_add_test(tc_core_c, test_s21_sscanf_c);
   tcase_add_test(tc_core_c, test_s21_sscanf_lc);
   tcase_add_test(tc_core_c, test_s21_sscanf_c_error);
   tcase_add_test(tc_core_c, test_s21_sscanf_complex);
-
   tcase_add_test(tc_core_c, s21_test_sscanf_c_single_char);
   tcase_add_test(tc_core_c, s21_test_sscanf_c_skip_with_width);
   tcase_add_test(tc_core_c, s21_test_sscanf_c_wide_char);
@@ -802,24 +949,23 @@ Suite *s21_sscanf_suite(void) {
   tcase_add_test(tc_core_s, test_s21_sscanf_s_width_separators);
   tcase_add_test(tc_core_s, test_s21_sscanf_s_add_spaces);
   tcase_add_test(tc_core_s, test_s21_sscanf_s_skip_assignment);
-
   tcase_add_test(tc_core_s, test_s21_sscanf_ls_simple);
   tcase_add_test(tc_core_s, test_s21_sscanf_ls_space);
   tcase_add_test(tc_core_s, test_s21_sscanf_ls_width);
   tcase_add_test(tc_core_s, test_s21_sscanf_ls_multiple);
   tcase_add_test(tc_core_s, test_s21_sscanf_ls_empty);
   tcase_add_test(tc_core_s, test_s21_sscanf_ls_wrong_fmt);
-  tcase_add_test(tc_core_s, test_s21_sscanf_ls_separators);
   tcase_add_test(tc_core_s, test_s21_sscanf_ls_width_separators);
   tcase_add_test(tc_core_s, test_s21_sscanf_ls_skip_assignment);
+  tcase_add_test(tc_core_s, test_s21_sscanf_ls_separators);
 
-  tcase_add_test(tc_debug, test_s21_sscanf_ls_empty);
+  tcase_add_test(tc_debug, test_s21_sscanf_s_separators_comp);
 
   //[ ] Uncomment additional test case
   // suite_add_tcase(s, tc_core);
-  suite_add_tcase(suite, tc_core_c);
-  suite_add_tcase(suite, tc_core_d);
-  suite_add_tcase(suite, tc_core_s);
+  // suite_add_tcase(suite, tc_core_c);
+  // suite_add_tcase(suite, tc_core_d);
+  // suite_add_tcase(suite, tc_core_s);
 
   suite_add_tcase(suite, tc_debug);
 

@@ -372,7 +372,7 @@ int s21_sprintf(char *str, const char *format, ...) {
   while (*ptr) {
     if (*ptr == '%') {
       // ptr++;
-      Specifiers flags = {'*', -10, -1, '*', '*'};
+      Specifiers flags = {'*', -10, -1, '*', '*',' '};
       // int t = parse_specifiers(ptr, &flags);
       ptr += parse_specifiers(ptr, &flags);
       // DEBUG_PRINT("Spec string_length = %s\n", t);
@@ -747,6 +747,11 @@ int parse_specifiers(const char *fmt, Specifiers *st_spec) {
     st_spec->specifier = *format;
     format++;
     DEBUG_PRINT("Specifier=%c\n", st_spec->specifier);
+    if(*(format) != '%'){
+      st_spec->separator = *(format);
+      DEBUG_PRINT(" Separator=%c\n", st_spec->separator);
+      format++;     
+    }
   } else {
     st_spec->specifier = '0';
   }
@@ -806,20 +811,29 @@ int s21_sscanf(const char *str, const char *format, ...) {
   const char *fmt = format; // Указатель на строку формата
   //%[*/ширина][длина]спецификатор.
   int res = 0;
+if (p != S21_NULL){
+
 
   while (*fmt) {
+    // Skip separator in format string for non char types
+    if (*fmt==*p){
+      fmt++;
+      p++;
+    }
+
     while ((is_space(*fmt))) {
-      DEBUG_PRINT("Noop symbol:|%c|\n", *p);
+      DEBUG_PRINT("Noop symbol:|%c|\n", *fmt);
       fmt++;
       // fmt++;
     }
+
     if (*fmt == '%') {
-      Specifiers st_spec = {' ', -10, -1, '*', '*'};
+      Specifiers st_spec = {' ', -10, -1, '*', '*',' '};
       DEBUG_PRINT("\n");
       DEBUG_PRINT(" str=%s\n", p);
       DEBUG_PRINT(" format=%s\n", fmt);
-
       fmt += parse_specifiers(fmt, &st_spec);
+      DEBUG_PRINT("format after parse =%s\n", fmt);
       // st_spec = parse_specifiers(fmt);
       // if (st_spec.width < 0) {
       //   st_spec.width = s21_strlen(p);
@@ -889,6 +903,8 @@ int s21_sscanf(const char *str, const char *format, ...) {
           res = -1;
         }
         DEBUG_PRINT(" after process string Result=%d\n", res);
+        DEBUG_PRINT(" p=|%s|\n", p);
+        DEBUG_PRINT(" fmt=|%s|\n", fmt);
       } else if (st_spec.specifier == '%') {
         DEBUG_PRINT(" Char=%c\n", *p);
         p++;
@@ -932,6 +948,7 @@ int s21_sscanf(const char *str, const char *format, ...) {
     }
     // fmt++; // noop not % symbols
   }
+}
   DEBUG_PRINT(" FINISH result=%d\n", res);
   return res;
 }
@@ -1076,16 +1093,7 @@ int proc_spec_f(const char *str, va_list args, const Specifiers st_spec) {
   return p - arg_str;
 }
 int proc_spec_s(const char *str, va_list args, const Specifiers st_spec) {
-  // const char *p = str; // Указатель на входную строку
   int width = st_spec.width >= 0 ? st_spec.width : (int)s21_strlen(str);
-  // char arg_str[s21_strlen(str)];
-  // if (st_spec.width >= 0) {
-  //   s21_memcpy(arg_str, str, st_spec.width);
-  //   arg_str[st_spec.width] = '\0';
-  //   // } else {
-  //   //   s21_memcpy(arg_str, str, st_spec.width);
-  // }
-
   const char *p = str;
   int res = 0;
   int i = 0;
@@ -1121,15 +1129,19 @@ int proc_spec_s(const char *str, va_list args, const Specifiers st_spec) {
       DEBUG_PRINT("wide String=%ls\n", ch);
     } else {
       char *ch = va_arg(args, char *);
-      while (*p && !is_space(*p) && i < (width)) {
+      while (*p && !is_space(*p) && i < (width) && *p!=st_spec.separator) {
         *ch = *p;
         p++;
         ch++;
         i++;
       }
+      if (*p == st_spec.separator) {
+        DEBUG_PRINT(" Specificator=%c is find. Process symbol +1\n", st_spec.separator);
+        p++;
+      }
       *ch = '\0';
       res++;
-      DEBUG_PRINT("String=%s\n", ch);
+      DEBUG_PRINT("String=%s\n", ch-i);
     }
     if (i == 0) {
       res = -1;

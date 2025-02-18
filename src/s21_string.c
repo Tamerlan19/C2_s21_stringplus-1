@@ -400,7 +400,7 @@ int s21_sprintf(char *str, const char *format, ...) {
             *buffer++ = *ptr++;
         }
     }
-  }
+  
   *buffer = '\0';
   va_end(args);
   return (int)s21_strlen(str);
@@ -493,88 +493,80 @@ void handle_int(char **buffer, Specifiers flags, int d) {
 }
 
 void handle_float(char **buffer, Specifiers flags, double f) {
-  char tmp[200] = {0};
-  int len = 0;
+    char tmp[200] = {0};
+    int len = 0;
 
-  // Преобразуем число в строку вручную
-  if (flags.precision >= 0) {
-    // Используем массив для хранения целой части и дробной части
-    long int_part = (long)f;
-    double frac_part = f - int_part;
+    // Преобразуем число в строку вручную
+    if (flags.precision >= 0) {
+        // Используем массив для хранения целой части и дробной части
+        long int_part = (long)f;
+        double frac_part = f - int_part;
 
-    // Преобразуем целую часть
-    if (int_part == 0) {
-      tmp[len++] = '0';
+        // Преобразуем целую часть
+        if (int_part == 0) {
+            tmp[len++] = '0';
+        } else {
+            int int_len = 0;
+            if (int_part < 0) {
+                tmp[len++] = '-';
+                int_part = -int_part;
+            }
+            long n = int_part;
+            while (n > 0) {
+                tmp[int_len++] = '0' + (n % 10);
+                n /= 10;
+            }
+            for (int i = 0; i < int_len / 2; i++) {
+                char temp = tmp[i];
+                tmp[i] = tmp[int_len - i - 1];
+                tmp[int_len - i - 1] = temp;
+            }
+            len += int_len;
+        }
+
+        // Добавляем точку
+        tmp[len++] = '.';
+
+        // Преобразуем дробную часть
+        for (int i = 0; i < flags.precision; i++) {
+            frac_part *= 10;
+            int digit = (int)frac_part;
+            tmp[len++] = '0' + digit;
+            frac_part -= digit;
+        }
     } else {
-      int int_len = 0;
-      if (int_part < 0) {
-        tmp[len++] = '-';
-        int_part = -int_part;
-      }
-      long n = int_part;
-      while (n > 0) {
-        tmp[int_len++] = '0' + (n % 10);
-        n /= 10;
-      }
-      for (int i = 0; i < int_len / 2; i++) {
-        char temp = tmp[i];
-        tmp[i] = tmp[int_len - i - 1];
-        tmp[int_len - i - 1] = temp;
-      }
-      len += int_len;
+        // Если точность не указана, используем значение по умолчанию
+        sprintf(tmp, "%f", f); // Можно заменить на ручную реализацию
+        len = strlen(tmp);
     }
 
-    // Добавляем точку
-    tmp[len++] = '.';
-
-    // Преобразуем дробную часть
-    for (int i = 0; i < flags.precision; i++) {
-      frac_part *= 10;
-      int digit = (int)frac_part;
-      tmp[len++] = '0' + digit;
-      frac_part -= digit;
+    // Добавляем '+' только если флаг установлен
+    if (flags.flag == '+') {
+        memmove(tmp + 1, tmp, len);
+        tmp[0] = '+';
+        len++;
     }
-  } else {
-    // Если точность не указана, используем значение по умолчанию
-    sprintf(tmp, "%f", f); // Можно заменить на ручную реализацию
-    len = strlen(tmp);
-  }
 
-  // Добавляем '+' только если флаг установлен
-  if (flags.flag == '+') {
-    memmove(tmp + 1, tmp, len);
-    tmp[0] = '+';
-    len++;
-  }
+    // Обработка ширины и выравнивания
+    int total_width = flags.width > 0 ? flags.width : 0;
+    int padding = total_width > len ? total_width - len : 0;
 
     if (flags.flag == '-') { // Левое выравнивание
-        memcpy(*buffer, tmp, len);
+        s21_memcpy(*buffer, tmp, len);
         *buffer += len;
-        memset(*buffer, ' ', padding);
+        s21_memset(*buffer, ' ', padding);
         *buffer += padding;
     } else { // Правое выравнивание
         char fill_char = (flags.flag == '0') ? '0' : ' ';
-        memset(*buffer, fill_char, padding);
+        s21_memset(*buffer, fill_char, padding);
         *buffer += padding;
-        memcpy(*buffer, tmp, len);
+        s21_memcpy(*buffer, tmp, len);
         *buffer += len;
     }
 
-  if (flags.flag == '-') { // Левое выравнивание
-    memcpy(*buffer, tmp, len);
-    *buffer += len;
-    memset(*buffer, ' ', padding);
-    *buffer += padding;
-  } else { // Правое выравнивание
-    char fill_char = (flags.flag == '0') ? '0' : ' ';
-    memset(*buffer, fill_char, padding);
-    *buffer += padding;
-    memcpy(*buffer, tmp, len);
-    *buffer += len;
-  }
-
-  **buffer = '\0';
+    **buffer = '\0';
 }
+
 
 void handle_string(char **buffer, Specifiers flags, const char *s) {
     if (s == NULL) {
@@ -633,7 +625,7 @@ void handle_unsigned(char **buffer, Specifiers flags, unsigned int u) {
             len += pad;
         }
     }
-  }
+  
 
   // Шаг 2: Определяем общую длину с учетом ширины
   int total_width = flags.width > 0 ? flags.width : 0;
@@ -822,7 +814,7 @@ TODO: Part 4. Дополнительно. Реализация функции ss
 int s21_sscanf(const char *str, const char *format, ...) {
   va_list args;
   va_start(args, format);
-  Specifiers st_spec = {'*', -10, -1, '*', '*'};
+  // Specifiers st_spec = {'*', -10, -1, '*', '*'};
   const char *p = str; // Указатель на входную строку
   const char *fmt = format; // Указатель на строку формата
   //%[*/ширина][длина]спецификатор.

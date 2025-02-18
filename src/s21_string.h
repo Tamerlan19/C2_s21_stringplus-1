@@ -26,8 +26,6 @@ typedef unsigned long s21_size_t; // 64-bit Linux/macOS
 typedef unsigned int s21_size_t; // 32-bit
 #endif
 
-// #define asterisk -1 // for width='*'
-
 typedef struct {
   char flag;
   int width;

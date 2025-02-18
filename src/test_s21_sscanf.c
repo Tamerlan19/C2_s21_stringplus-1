@@ -900,6 +900,7 @@ Suite *s21_sscanf_suite(void) {
   tc_core_s = tcase_create("Spec %s");
   tc_debug = tcase_create("Debug");
 
+
   tcase_add_test(tc_core_d, test_s21_sscanf_d_simple);
   tcase_add_test(tc_core_d, test_s21_sscanf_d_neg);
   tcase_add_test(tc_core_d, test_s21_sscanf_d_neg_twice);
@@ -970,6 +971,8 @@ Suite *s21_sscanf_suite(void) {
   tcase_add_test(tc_core_s, test_s21_sscanf_ls_separators);
 
   tcase_add_test(tc_debug, test_s21_sscanf_ls_separators);
+
+  tcase_add_test(tc_core_c, test_s21_sscanf_c);
 
   //[ ] Uncomment additional test case
   // suite_add_tcase(s, tc_core);

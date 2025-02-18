@@ -362,45 +362,43 @@ void int_to_str(int num, char *str, int base) {
 }
 
 int s21_sprintf(char *str, const char *format, ...) {
-  va_list args;
-  va_start(args, format);
-  char *buffer = str;
-  const char *ptr = format;
-  DEBUG_PRINT("ptr = %s\n", ptr);
-  DEBUG_PRINT("format = %s\n", format);
-  while (*ptr) {
-    if (*ptr == '%') {
-      // ptr++;
-      Specifiers flags = {'*', -10, -1, '*', '*'};
-      // int t = parse_specifiers(ptr, &flags);
-      ptr += parse_specifiers(ptr, &flags);
-      // DEBUG_PRINT("Spec string_length = %s\n", t);
-      DEBUG_PRINT("RESULT: Specifier=%c, Length=%c, Precision=%i,  Width=%d, "
-                  "Flags=%c\n",
-                  flags.specifier, flags.length, flags.precision, flags.width,
-                  flags.flag);
-      char spec = *ptr;
-      if (flags.specifier == 'c') {
-        int c = va_arg(args, int);
-        handle_char(&buffer, flags, c);
-      } else if (flags.specifier == 'd') {
-        int d = va_arg(args, int);
-        handle_int(&buffer, flags, d);
-      } else if (flags.specifier == 'f') {
-        double f = va_arg(args, double);
-        handle_float(&buffer, flags, f);
-      } else if (flags.specifier == 's') {
-        const char *s = va_arg(args, const char *);
-        handle_string(&buffer, flags, s);
-      } else if (flags.specifier == 'u') {
-        unsigned int u = va_arg(args, unsigned int);
-        handle_unsigned(&buffer, flags, u);
-      } else if (flags.specifier == '%') {
-        handle_percent(&buffer, flags);
-      } else
-        *buffer++ = spec;
-    } else {
-      *buffer++ = *ptr++;
+    va_list args;
+    va_start(args, format);
+    char *buffer = str;
+    const char *ptr = format;
+      DEBUG_PRINT("ptr = %s\n", ptr);
+      DEBUG_PRINT("format = %s\n", format);
+    while (*ptr) {
+        if (*ptr == '%') {
+            // ptr++;
+            Specifiers flags  = {'*', -10, -1, '*', '*'};
+            // int t = parse_specifiers(ptr, &flags);
+            ptr += parse_specifiers(ptr, &flags);
+            // DEBUG_PRINT("Spec string_length = %s\n", t);
+            DEBUG_PRINT("RESULT: Specifier=%c, Length=%c, Precision=%i,  Width=%d, Flags=%c\n", flags.specifier,flags.length,flags.precision,flags.width,flags.flag);
+            char spec = *ptr;
+                if (flags.specifier== 'c') {
+                    int c = va_arg(args, int);
+                    handle_char(&buffer, flags, c);
+                } else if (flags.specifier== 'd') {
+                    int d = va_arg(args, int);
+                    handle_int(&buffer, flags, d);
+                } else if (flags.specifier == 'f') {
+                    double f = va_arg(args, double);
+                    handle_float(&buffer, flags, f);
+                } else if (flags.specifier == 's') {
+                    const char *s = va_arg(args, const char *);
+                    handle_string(&buffer, flags, s);
+                } else if (flags.specifier == 'u') {
+                    unsigned int u = va_arg(args, unsigned int);
+                    handle_unsigned(&buffer, flags, u);
+                } else if (flags.specifier == '%') {
+                    handle_percent(&buffer, flags);
+                }else
+                    *buffer++ = spec;
+        } else {
+            *buffer++ = *ptr++;
+        }
     }
   }
   *buffer = '\0';
@@ -549,9 +547,18 @@ void handle_float(char **buffer, Specifiers flags, double f) {
     len++;
   }
 
-  // Обработка ширины и выравнивания
-  int total_width = flags.width > 0 ? flags.width : 0;
-  int padding = total_width > len ? total_width - len : 0;
+    if (flags.flag == '-') { // Левое выравнивание
+        memcpy(*buffer, tmp, len);
+        *buffer += len;
+        memset(*buffer, ' ', padding);
+        *buffer += padding;
+    } else { // Правое выравнивание
+        char fill_char = (flags.flag == '0') ? '0' : ' ';
+        memset(*buffer, fill_char, padding);
+        *buffer += padding;
+        memcpy(*buffer, tmp, len);
+        *buffer += len;
+    }
 
   if (flags.flag == '-') { // Левое выравнивание
     memcpy(*buffer, tmp, len);
@@ -570,62 +577,61 @@ void handle_float(char **buffer, Specifiers flags, double f) {
 }
 
 void handle_string(char **buffer, Specifiers flags, const char *s) {
-  if (s == NULL) {
-    s = "(null)";
-  }
-  int len = s21_strlen(s);
-  DEBUG_PRINT("len = %d\n", len);
-  // Применяем точность, если она указана
-  if (flags.precision >= 0 && len > flags.precision) {
-    len = flags.precision;
-  }
-  // Определяем общую длину с учетом ширины
-  int total_width = flags.width > 0 ? flags.width : 0;
-  int padding = total_width > len ? total_width - len : 0;
-  DEBUG_PRINT("TEST. len = %d, padding = %d, string= %s\n", len, padding, s);
-  if (flags.flag == '-') { // Левое выравнивание
-    s21_memcpy(*buffer, s, len);
-    *buffer += len;
-    s21_memset(*buffer, ' ', padding);
-    *buffer += padding;
-  } else { // Правое выравнивание
+    if (s == NULL) {
+        s = "(null)";
+    }
+    int len = s21_strlen(s);
+    DEBUG_PRINT("len = %d\n", len);
+    // Применяем точность, если она указана
+    if (flags.precision >= 0 && len > flags.precision) {
+        len = flags.precision;
+    }
+    // Определяем общую длину с учетом ширины
+    int total_width = flags.width > 0 ? flags.width : 0;
+    int padding = total_width > len ? total_width - len : 0;
+    DEBUG_PRINT("TEST. len = %d, padding = %d, string= %s\n", len, padding, s);
+    if (flags.flag == '-') { // Левое выравнивание
+        s21_memcpy(*buffer, s, len);
+        *buffer += len;
+        s21_memset(*buffer, ' ', padding);
+        *buffer += padding;
+    } else { // Правое выравнивание
 
-    s21_memset(*buffer, ' ', padding);
-    *buffer += padding;
+        s21_memset(*buffer, ' ', padding);
+        *buffer += padding;
     DEBUG_PRINT("Right padding\n");
-    s21_memcpy(*buffer, s, len);
-    *buffer += len;
-  }
+        s21_memcpy(*buffer, s, len);
+        *buffer += len;
+    }
 
-  **buffer = '\0';
+    **buffer = '\0';
 }
 
 void handle_unsigned(char **buffer, Specifiers flags, unsigned int u) {
-  char tmp[100] = {0}; // Буфер для временного хранения числа
-  int len = 0; // Длина числа в строковом представлении
+    char tmp[100] = {0}; // Буфер для временного хранения числа
+    int len = 0;         // Длина числа в строковом представлении
 
-  // Шаг 1: Преобразуем число в строку
-  char *ptr = tmp + sizeof(tmp) - 1; // Начинаем с конца массива
-  *ptr = '\0'; // Завершающий нулевой символ
+    // Шаг 1: Преобразуем число в строку
+    char *ptr = tmp + sizeof(tmp) - 1; // Начинаем с конца массива
+    *ptr = '\0';                      // Завершающий нулевой символ
+    if (u == 0 && flags.precision == 0) {
+        // Если число равно 0 и точность равна 0, результат должен быть пустой строкой
+        len = 0;
+    } else {
+        unsigned int num = u;
+        do {
+            *--ptr = '0' + (num % 10); // Преобразуем цифру в символ
+            num /= 10;
+            len++;
+        } while (num > 0);
 
-  if (u == 0 && flags.precision == 0) {
-    // Если число равно 0 и точность равна 0, результат должен быть пустой
-    // строкой
-    len = 0;
-  } else {
-    unsigned int num = u;
-    do {
-      *--ptr = '0' + (num % 10); // Преобразуем цифру в символ
-      num /= 10;
-      len++;
-    } while (num > 0);
-
-    // Применяем точность (precision)
-    if (flags.precision >= 0 && len < flags.precision) {
-      int pad = flags.precision - len;
-      memmove(ptr + pad, ptr, len); // Сдвигаем число вправо
-      memset(ptr, '0', pad); // Дополняем нулями слева
-      len += pad;
+        // Применяем точность (precision)
+        if (flags.precision >= 0 && len < flags.precision) {
+            int pad = flags.precision - len;
+            memmove(ptr + pad, ptr, len); // Сдвигаем число вправо
+            memset(ptr, '0', pad);       // Дополняем нулями слева
+            len += pad;
+        }
     }
   }
 
@@ -816,6 +822,7 @@ TODO: Part 4. Дополнительно. Реализация функции ss
 int s21_sscanf(const char *str, const char *format, ...) {
   va_list args;
   va_start(args, format);
+  Specifiers st_spec = {'*', -10, -1, '*', '*'};
   const char *p = str; // Указатель на входную строку
   const char *fmt = format; // Указатель на строку формата
   //%[*/ширина][длина]спецификатор.
@@ -1016,6 +1023,7 @@ float s21_pow(int x, int y) {
 }
 
 int proc_spec_c(const char *str, va_list args, const Specifiers st_spec) {
+
   size_t max_len = s21_strlen(str);
   const char *p = str;
   DEBUG_PRINT(": String for decode=|%s|\n", str);

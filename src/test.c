@@ -48,11 +48,11 @@ int main(void) {
   }
   failed_sum += number_failed;
 
-  if (failed_sum != 0) {
-    printf("FAIL! %d tests is failed.\n", failed_sum);
-  } else {
-    printf("PASS!\n");
-  }
+  // if (failed_sum != 0) {
+  //   printf("FAIL! %d tests is failed.\n", failed_sum);
+  // } else {
+  //   printf("PASS!\n");
+  // }
 
   // [ ]: REMOVE return 0
   //   return (failed_sum == 0) ? 0 : 1;

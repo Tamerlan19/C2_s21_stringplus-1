@@ -1,45 +1,44 @@
 #include "s21_string.h"
 #include <check.h>
 #include <stdio.h>
+#include <string.h>
 
-START_TEST(test_basic_string) {
+START_TEST(test_s21_sprintf_basic_string) {
   char buffer[1024];
   s21_sprintf(buffer, "Hello, World!");
   ck_assert_str_eq(buffer, "Hello, World!");
 }
 END_TEST
 
-START_TEST(test_int_format) {
+START_TEST(test_s21_sprintf_d_int_format) {
   char buffer[1024] = {0};
   s21_sprintf(buffer, "Number: %d", 42);
   ck_assert_str_eq(buffer, "Number: 42");
 }
 END_TEST
 
-START_TEST(test_width_flag) {
-  // DEBUG_PRINT("\ntest_width_flag\n");
+START_TEST(test_s21_sprintf_d_width_flag) {
   char buffer[1024];
   s21_sprintf(buffer, "Number: %5d", 42);
-  DEBUG_PRINT("buffer = |%s|\n", buffer);
   ck_assert_str_eq(buffer, "Number:    42");
 }
 END_TEST
 
-START_TEST(test_precision_flag) {
+START_TEST(test_s21_sprintf_f_precision_flag) {
   char buffer[1024];
   s21_sprintf(buffer, "Float: %.2f", 3.14159);
   ck_assert_str_eq(buffer, "Float: 3.14");
 }
 END_TEST
 
-START_TEST(test_zero_padding) {
+START_TEST(test_s21_sprintf_d_zero_padding) {
   char buffer[1024];
   s21_sprintf(buffer, "Number: %05d", 42);
   ck_assert_str_eq(buffer, "Number: 00042");
 }
 END_TEST
 
-START_TEST(test_left_alignment) {
+START_TEST(test_s21_sprintf_d_left_alignment) {
   char buffer[1024];
   s21_sprintf(buffer, "Number: %-5d", 42);
   ck_assert_str_eq(buffer, "Number: 42   ");
@@ -98,8 +97,35 @@ Suite *s21_sprintf_suite(void) {
   s = suite_create("s21_sprintf");
   tc_core = tcase_create("Core");
 
-  tcase_add_test(tc_core, test_basic_string);
-  tcase_add_test(tc_core, test_int_format);
+tcase_add_test(tc_core, test_s21_sprintf_basic_string);
+tcase_add_test(tc_core, test_s21_sprintf_d_int_format);
+tcase_add_test(tc_core, test_s21_sprintf_d_int);
+tcase_add_test(tc_core, test_s21_sprintf_d_left_alignment);
+tcase_add_test(tc_core, test_s21_sprintf_d_width_flag);
+tcase_add_test(tc_core,test_s21_sprintf_d_zero_padding);
+
+tcase_add_test(tc_core, test_s21_sprintf_c_zero_padding);
+tcase_add_test(tc_core, test_s21_sprintf_c_simple_char);
+tcase_add_test(tc_core, test_s21_sprintf_c_width);
+tcase_add_test(tc_core, test_s21_sprintf_c_left_align);
+tcase_add_test(tc_core, test_s21_sprintf_c_zero_padding);
+tcase_add_test(tc_core, test_s21_sprintf_c_min_width_one);
+tcase_add_test(tc_core, test_s21_sprintf_c_negative_width);
+tcase_add_test(tc_core, test_s21_sprintf_c_width);
+
+tcase_add_test(tc_core, test_s21_sprintf_f_float);
+tcase_add_test(tc_core, test_s21_sprintf_f_precision_flag);
+
+tcase_add_test(tc_core, test_s21_sprintf_s_precision);
+tcase_add_test(tc_core, test_s21_sprintf_s_basic);
+
+tcase_add_test(tc_core, test_s21_sprintf_u_simple_number);
+tcase_add_test(tc_core, test_s21_sprintf_u_with_width);
+tcase_add_test(tc_core, test_s21_sprintf_u_with_precision);
+tcase_add_test(tc_core, test_s21_sprintf_u_left_alignment);
+tcase_add_test(tc_core, test_s21_sprintf_u_zero_padding);
+tcase_add_test(tc_core, test_s21_sprintf_u_zero_with_zero_precision);
+tcase_add_test(tc_core, test_s21_sprintf_u_complex_case);
 
   tcase_add_test(tc_core, test_precision_flag);
   tcase_add_test(tc_core, test_zero_padding);

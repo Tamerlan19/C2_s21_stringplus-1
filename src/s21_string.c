@@ -371,7 +371,7 @@ int s21_sprintf(char *str, const char *format, ...) {
   while (*ptr) {
     if (*ptr == '%') {
       // ptr++;
-      Specifiers flags = {'*', -10, -1, '*', '*', ' '};
+      Specifiers flags = {'*', -10, -1, '*', '*'};
       // int t = parse_specifiers(ptr, &flags);
       ptr += parse_specifiers(ptr, &flags);
       // DEBUG_PRINT("Spec string_length = %s\n", t);
@@ -834,7 +834,7 @@ int s21_sscanf(const char *str, const char *format, ...) {
           //  }
 
           // if (*fmt == '%') {
-          Specifiers st_spec = {' ', -10, -1, '*', '*', ' '};
+          Specifiers st_spec = {' ', -10, -1, '*', '*'};
           DEBUG_PRINT("\n");
           DEBUG_PRINT(" str=%s\n", p);
           DEBUG_PRINT(" format=%s\n", fmt);
@@ -1117,14 +1117,14 @@ int proc_spec_s(const char *str, va_list args, const Specifiers st_spec) {
       while (*p && !is_space(*p) && i < width) {
         s21_size_t mbr_res = mbrtowc(ch, p, MB_CUR_MAX, NULL);
         if (mbr_res == (size_t)-1 || mbr_res == (size_t)-2) {
-            DEBUG_PRINT("Error: Invalid multibyte sequence.\n");
-            break; // Прерываем цикл при ошибке
+          DEBUG_PRINT("Error: Invalid multibyte sequence.\n");
+          break; // Прерываем цикл при ошибке
         }
         DEBUG_PRINT("mbr_res=%ld\n", mbr_res);
         p += mbr_res; // Перемещаем указатель на следующий символ
         // ch++;         // Перемещаем указатель на следующий широкий символ
-        i++;          // Увеличиваем счётчик прочитанных символов
-    }
+        i++; // Увеличиваем счётчик прочитанных символов
+      }
     } else {
       for (; !(is_space(*p)) && i < width; i++, p++)
         ;
@@ -1134,24 +1134,24 @@ int proc_spec_s(const char *str, va_list args, const Specifiers st_spec) {
     if ((st_spec.length == 'l')) {
       DEBUG_PRINT("Start procesing wide String\n");
       wchar_t *ch = va_arg(args, wchar_t *);
-      wchar_t *start = ch; 
+      wchar_t *start = ch;
       while (*p && !is_space(*p) && i < width) {
         s21_size_t mbr_res = mbrtowc(ch, p, MB_CUR_MAX, NULL);
         if (mbr_res == (size_t)-1 || mbr_res == (size_t)-2) {
-            DEBUG_PRINT("Error: Invalid multibyte sequence.\n");
-            break; // Прерываем цикл при ошибке
+          DEBUG_PRINT("Error: Invalid multibyte sequence.\n");
+          break; // Прерываем цикл при ошибке
         }
-        p += mbr_res; 
-        ch++;         
-        i++;          
-    }
+        p += mbr_res;
+        ch++;
+        i++;
+      }
       *ch = L'\0';
       if (i > 0) {
         res++; // Увеличиваем счётчик успешных преобразований
         DEBUG_PRINT("Wide string=%ls\n", start); // Выводим строку с начала
-    } else {
+      } else {
         DEBUG_PRINT("Warning: No valid characters read.\n");
-    }
+      }
       res++;
     } else {
       DEBUG_PRINT("proc_spec_s(process string)\n");
@@ -1164,10 +1164,10 @@ int proc_spec_s(const char *str, va_list args, const Specifiers st_spec) {
           DEBUG_PRINT("i=%d, symbol=%c\n", i, *(ch)); // Отладочный вывод
           i++;
         }
-        *ch = '\0'; 
+        *ch = '\0';
 
         if (i > 0) {
-          res++; 
+          res++;
         } else {
           DEBUG_PRINT("Warning: No valid characters read.\n");
         }

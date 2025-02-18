@@ -34,7 +34,6 @@ typedef struct {
   int precision;
   char length;
   char specifier;
-  char separator;
 } Specifiers;
 
 char *s21_strchr(const char *str, int ch);

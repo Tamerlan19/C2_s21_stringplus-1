@@ -715,8 +715,9 @@ END_TEST
 START_TEST(test_s21_sscanf_ls_separators) {
   setlocale(LC_ALL, "en_US.utf8");
   const char *input = "Hello, Wide: World!";
-  wchar_t wstr1_s21[50]={0}, wstr2_s21[50]={0}, wstr3_s21[50]={0};
-  wchar_t wstr1_sscanf[50]={0}, wstr2_sscanf[50]={0}, wstr3_sscanf[50]={0};
+  wchar_t wstr1_s21[50] = {0}, wstr2_s21[50] = {0}, wstr3_s21[50] = {0};
+  wchar_t wstr1_sscanf[50] = {0}, wstr2_sscanf[50] = {0},
+          wstr3_sscanf[50] = {0};
   char *fmt = "%ls , %ls : %ls"; // Форматная строка
 
   int result_s21 = s21_sscanf(input, fmt, wstr1_s21, wstr2_s21, wstr3_s21);

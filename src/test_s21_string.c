@@ -161,7 +161,7 @@ START_TEST(test_s21_memset_zero_fill) {
   char buffer[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
   s21_memset(buffer, 0, 10);
   char expected[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  ck_assert_int_eq(s21_memcmp(buffer, expected, 10),0);
+  ck_assert_int_eq(s21_memcmp(buffer, expected, 10), 0);
 }
 END_TEST
 

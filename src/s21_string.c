@@ -125,7 +125,6 @@ int s21_memcmp(const void *str1, const void *str2, s21_size_t n) {
       }
     }
   }
-
   return 0; // Если все байты совпадают или n == 0, возвращаем 0
 }
 
@@ -1142,9 +1141,9 @@ int proc_spec_s(const char *str, va_list args, const Specifiers st_spec) {
             DEBUG_PRINT("Error: Invalid multibyte sequence.\n");
             break; // Прерываем цикл при ошибке
         }
-        p += mbr_res; // Перемещаем указатель на следующий символ
-        ch++;         // Перемещаем указатель на следующий широкий символ
-        i++;          // Увеличиваем счётчик прочитанных символов
+        p += mbr_res; 
+        ch++;         
+        i++;          
     }
       *ch = L'\0';
       if (i > 0) {

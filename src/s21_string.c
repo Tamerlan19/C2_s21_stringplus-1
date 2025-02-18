@@ -115,88 +115,89 @@ TODO: Part 3. Дополнительно. Реализация некоторы�
 Длина: L
 */
 int s21_memcmp(const void *str1, const void *str2, s21_size_t n) {
-    if (str1 && str2) { // Проверяем, что оба указателя не NULL
-        const unsigned char *s1 = (const unsigned char *)str1;
-        const unsigned char *s2 = (const unsigned char *)str2;
+  if (str1 && str2) { // Проверяем, что оба указателя не NULL
+    const unsigned char *s1 = (const unsigned char *)str1;
+    const unsigned char *s2 = (const unsigned char *)str2;
 
-        for (s21_size_t i = 0; i < n; i++) {
-            if (s1[i] != s2[i]) { // Сравниваем байты
-                return (int)(s1[i] - s2[i]); // Возвращаем разницу между байтами
-            }
-        }
+    for (s21_size_t i = 0; i < n; i++) {
+      if (s1[i] != s2[i]) { // Сравниваем байты
+        return (int)(s1[i] - s2[i]); // Возвращаем разницу между байтами
+      }
     }
-
-    return 0; // Если все байты совпадают или n == 0, возвращаем 0
+  }
+  return 0; // Если все байты совпадают или n == 0, возвращаем 0
 }
 
 void *s21_memset(void *str, int c, s21_size_t n) {
-    if (str) { // Проверяем, что указатель не NULL
-        unsigned char *ptr = (unsigned char *)str; // Преобразуем указатель к типу unsigned char*
-        unsigned char value = (unsigned char)c;    // Преобразуем значение c к unsigned char
+  if (str) { // Проверяем, что указатель не NULL
+    unsigned char *ptr =
+        (unsigned char *)str; // Преобразуем указатель к типу unsigned char*
+    unsigned char value =
+        (unsigned char)c; // Преобразуем значение c к unsigned char
 
-        for (s21_size_t i = 0; i < n; i++) {
-            ptr[i] = value; // Записываем значение в каждый байт
-        }
+    for (s21_size_t i = 0; i < n; i++) {
+      ptr[i] = value; // Записываем значение в каждый байт
     }
+  }
 
-    return str; // Возвращаем исходный указатель
+  return str; // Возвращаем исходный указатель
 }
 
 char *s21_strncat(char *dest, const char *src, s21_size_t n) {
-    if (dest && src) { // Проверяем, что обе строки не NULL
-        char *dest_end = dest;
+  if (dest && src) { // Проверяем, что обе строки не NULL
+    char *dest_end = dest;
 
-        // Находим конец строки dest
-        while (*dest_end) {
-            dest_end++;
-        }
-
-        // Копируем символы из src в dest, пока не достигнем n или '\0'
-        for (s21_size_t i = 0; i < n && *src; i++, src++, dest_end++) {
-            *dest_end = *src;
-        }
-
-        // Добавляем завершающий нулевой символ
-        *dest_end = '\0';
+    // Находим конец строки dest
+    while (*dest_end) {
+      dest_end++;
     }
 
-    return dest; // Возвращаем указатель на dest
+    // Копируем символы из src в dest, пока не достигнем n или '\0'
+    for (s21_size_t i = 0; i < n && *src; i++, src++, dest_end++) {
+      *dest_end = *src;
+    }
+
+    // Добавляем завершающий нулевой символ
+    *dest_end = '\0';
+  }
+
+  return dest; // Возвращаем указатель на dest
 }
 
 int contains_char(const char *str, char ch) {
-    while (*str) {
-        if (*str == ch) {
-            return 1; // Найден символ
-        }
-        str++;
+  while (*str) {
+    if (*str == ch) {
+      return 1; // Найден символ
     }
-    return 0; 
+    str++;
+  }
+  return 0;
 }
 
 s21_size_t s21_strcspn(const char *str1, const char *str2) {
-    s21_size_t count = 0;
+  s21_size_t count = 0;
 
-    if (str1 && str2) { // Проверяем, что обе строки не NULL
-        while (*str1 && !contains_char(str2, *str1)) {
-            count++;
-            str1++;
-        }
+  if (str1 && str2) { // Проверяем, что обе строки не NULL
+    while (*str1 && !contains_char(str2, *str1)) {
+      count++;
+      str1++;
     }
+  }
 
-    return count;
+  return count;
 }
 
 char *s21_strncpy(char *dest, const char *src, s21_size_t n) {
-    s21_size_t i = 0;
-    while (i < n && src[i] != '\0') {
-        dest[i] = src[i];
-        i++;
-    }
-    while (i < n) {
-        dest[i] = '\0';
-        i++;
-    }
-    return dest; 
+  s21_size_t i = 0;
+  while (i < n && src[i] != '\0') {
+    dest[i] = src[i];
+    i++;
+  }
+  while (i < n) {
+    dest[i] = '\0';
+    i++;
+  }
+  return dest;
 }
 
 s21_size_t s21_strlen(const char *str) {
@@ -308,7 +309,7 @@ void *s21_memcpy(void *dest, const void *src, s21_size_t n) {
 
 int parse_specifiers_length(const char *format) {
   int len = 0;
-  while (format[len] && (format[len]!=' ' || format[len] != '%')) {
+  while (format[len] && (format[len] != ' ' || format[len] != '%')) {
     len++;
   }
   // if (is_alpha(format[len])) {
@@ -360,7 +361,6 @@ void int_to_str(int num, char *str, int base) {
   }
 }
 
-
 int s21_sprintf(char *str, const char *format, ...) {
     va_list args;
     va_start(args, format);
@@ -400,157 +400,152 @@ int s21_sprintf(char *str, const char *format, ...) {
             *buffer++ = *ptr++;
         }
     }
-    *buffer = '\0';
-    va_end(args);
-    return (int)s21_strlen(str);
+  }
+  *buffer = '\0';
+  va_end(args);
+  return (int)s21_strlen(str);
 }
-
-
-
-
 
 /**
-* @brief Handles the formatting of an integer according to the specified flags.
-*
-* @param buffer A pointer to the buffer where the formatted string will be stored.
-* @param flags The flags specifying the formatting options.
-* @param d The integer to be formatted.
-*/
+ * @brief Handles the formatting of an integer according to the specified flags.
+ *
+ * @param buffer A pointer to the buffer where the formatted string will be
+ * stored.
+ * @param flags The flags specifying the formatting options.
+ * @param d The integer to be formatted.
+ */
 void handle_int(char **buffer, Specifiers flags, int d) {
-    char tmp[300] = {0};
-    int is_negative = (d < 0);
-    int num = (is_negative) ? -d : d; // Работаем с положительным числом
-    int len = 0;
+  char tmp[300] = {0};
+  int is_negative = (d < 0);
+  int num = (is_negative) ? -d : d; // Работаем с положительным числом
+  int len = 0;
 
-    // Преобразуем число в строку вручную
-    if (num == 0) {
-        tmp[len++] = '0';
-    } else {
-        while (num > 0) {
-            tmp[len++] = '0' + (num % 10); // Получаем цифру и добавляем её в массив
-            num /= 10;
-        }
+  // Преобразуем число в строку вручную
+  if (num == 0) {
+    tmp[len++] = '0';
+  } else {
+    while (num > 0) {
+      tmp[len++] = '0' + (num % 10); // Получаем цифру и добавляем её в массив
+      num /= 10;
     }
+  }
 
-    // Если число отрицательное, добавляем минус
-    if (is_negative) {
-        tmp[len++] = '-';
+  // Если число отрицательное, добавляем минус
+  if (is_negative) {
+    tmp[len++] = '-';
+  }
+
+  // Если задана точность, дополняем нулями слева
+  if (flags.precision >= 0 && len < flags.precision) {
+    int padding = flags.precision - len;
+    for (int i = len - 1; i >= 0; i--) {
+      tmp[i + padding] = tmp[i]; // Сдвигаем символы вправо
     }
-
-    // Если задана точность, дополняем нулями слева
-    if (flags.precision >= 0 && len < flags.precision) {
-        int padding = flags.precision - len;
-        for (int i = len - 1; i >= 0; i--) {
-            tmp[i + padding] = tmp[i]; // Сдвигаем символы вправо
-        }
-        for (int i = 0; i < padding; i++) {
-            tmp[i] = '0'; // Добавляем нули
-        }
-        len += padding;
+    for (int i = 0; i < padding; i++) {
+      tmp[i] = '0'; // Добавляем нули
     }
+    len += padding;
+  }
 
-    // Разворачиваем строку, так как мы записывали цифры в обратном порядке
-    for (int i = 0, j = len - 1; i < j; i++, j--) {
-        char temp = tmp[i];
-        tmp[i] = tmp[j];
-        tmp[j] = temp;
+  // Разворачиваем строку, так как мы записывали цифры в обратном порядке
+  for (int i = 0, j = len - 1; i < j; i++, j--) {
+    char temp = tmp[i];
+    tmp[i] = tmp[j];
+    tmp[j] = temp;
+  }
+
+  // Определяем общую длину с учетом ширины
+  int total_width = flags.width > 0 ? flags.width : 0;
+  int padding = total_width > len ? total_width - len : 0;
+  DEBUG_PRINT("padding= %d, total_width=%d\n", padding, total_width);
+
+  // Копируем результат в буфер с учетом ширины
+  if (flags.flag == '-') { // Левое выравнивание
+    // Сначала копируем число
+    for (int i = 0; i < len; i++) {
+      *(*buffer + i) = tmp[i];
     }
+    *buffer += len;
 
-    // Определяем общую длину с учетом ширины
-    int total_width = flags.width > 0 ? flags.width : 0;
-    int padding = total_width > len ? total_width - len : 0;
-    DEBUG_PRINT("padding= %d, total_width=%d\n", padding, total_width);
-
-    // Копируем результат в буфер с учетом ширины
-    if (flags.flag=='-' ) { // Левое выравнивание
-        // Сначала копируем число
-        for (int i = 0; i < len; i++) {
-            *(*buffer + i) = tmp[i];
-        }
-        *buffer += len;
-
-        // Затем добавляем пробелы справа
-        for (int i = 0; i < padding; i++) {
-            *(*buffer) = ' ';
-            *buffer += 1;
-        }
-    } else { // Правое выравнивание
-        char fill_char = (flags.flag=='0' && !is_negative) ? '0' : ' '; // Определяем символ заполнения
-        // Сначала добавляем символы заполнения
-        for (int i = 0; i < padding; i++) {
-            *(*buffer) = fill_char;
-            *buffer += 1;
-        }
-        // Затем копируем число
-        for (int i = 0; i < len; i++) {
-            *(*buffer + i) = tmp[i];
-        }
-        *buffer += len;
+    // Затем добавляем пробелы справа
+    for (int i = 0; i < padding; i++) {
+      *(*buffer) = ' ';
+      *buffer += 1;
     }
+  } else { // Правое выравнивание
+    char fill_char = (flags.flag == '0' && !is_negative)
+                         ? '0'
+                         : ' '; // Определяем символ заполнения
+    // Сначала добавляем символы заполнения
+    for (int i = 0; i < padding; i++) {
+      *(*buffer) = fill_char;
+      *buffer += 1;
+    }
+    // Затем копируем число
+    for (int i = 0; i < len; i++) {
+      *(*buffer + i) = tmp[i];
+    }
+    *buffer += len;
+  }
 
-    // Добавляем завершающий нулевой символ, если необходимо
-    *(*buffer) = '\0';
+  // Добавляем завершающий нулевой символ, если необходимо
+  *(*buffer) = '\0';
 }
 
-
 void handle_float(char **buffer, Specifiers flags, double f) {
-    char tmp[200] = {0};
-    int len = 0;
+  char tmp[200] = {0};
+  int len = 0;
 
-    // Преобразуем число в строку вручную
-    if (flags.precision >= 0) {
-        // Используем массив для хранения целой части и дробной части
-        long int_part = (long)f;
-        double frac_part = f - int_part;
+  // Преобразуем число в строку вручную
+  if (flags.precision >= 0) {
+    // Используем массив для хранения целой части и дробной части
+    long int_part = (long)f;
+    double frac_part = f - int_part;
 
-        // Преобразуем целую часть
-        if (int_part == 0) {
-            tmp[len++] = '0';
-        } else {
-            int int_len = 0;
-            if (int_part < 0) {
-                tmp[len++] = '-';
-                int_part = -int_part;
-            }
-            long n = int_part;
-            while (n > 0) {
-                tmp[int_len++] = '0' + (n % 10);
-                n /= 10;
-            }
-            for (int i = 0; i < int_len / 2; i++) {
-                char temp = tmp[i];
-                tmp[i] = tmp[int_len - i - 1];
-                tmp[int_len - i - 1] = temp;
-            }
-            len += int_len;
-        }
-
-        // Добавляем точку
-        tmp[len++] = '.';
-
-        // Преобразуем дробную часть
-        for (int i = 0; i < flags.precision; i++) {
-            frac_part *= 10;
-            int digit = (int)frac_part;
-            tmp[len++] = '0' + digit;
-            frac_part -= digit;
-        }
+    // Преобразуем целую часть
+    if (int_part == 0) {
+      tmp[len++] = '0';
     } else {
-        // Если точность не указана, используем значение по умолчанию
-        sprintf(tmp, "%f", f); // Можно заменить на ручную реализацию
-        len = strlen(tmp);
+      int int_len = 0;
+      if (int_part < 0) {
+        tmp[len++] = '-';
+        int_part = -int_part;
+      }
+      long n = int_part;
+      while (n > 0) {
+        tmp[int_len++] = '0' + (n % 10);
+        n /= 10;
+      }
+      for (int i = 0; i < int_len / 2; i++) {
+        char temp = tmp[i];
+        tmp[i] = tmp[int_len - i - 1];
+        tmp[int_len - i - 1] = temp;
+      }
+      len += int_len;
     }
 
-    // Добавляем '+' только если флаг установлен
-    if (flags.flag == '+') {
-        memmove(tmp + 1, tmp, len);
-        tmp[0] = '+';
-        len++;
-    }
+    // Добавляем точку
+    tmp[len++] = '.';
 
-    // Обработка ширины и выравнивания
-    int total_width = flags.width > 0 ? flags.width : 0;
-    int padding = total_width > len ? total_width - len : 0;
+    // Преобразуем дробную часть
+    for (int i = 0; i < flags.precision; i++) {
+      frac_part *= 10;
+      int digit = (int)frac_part;
+      tmp[len++] = '0' + digit;
+      frac_part -= digit;
+    }
+  } else {
+    // Если точность не указана, используем значение по умолчанию
+    sprintf(tmp, "%f", f); // Можно заменить на ручную реализацию
+    len = strlen(tmp);
+  }
+
+  // Добавляем '+' только если флаг установлен
+  if (flags.flag == '+') {
+    memmove(tmp + 1, tmp, len);
+    tmp[0] = '+';
+    len++;
+  }
 
     if (flags.flag == '-') { // Левое выравнивание
         memcpy(*buffer, tmp, len);
@@ -565,7 +560,20 @@ void handle_float(char **buffer, Specifiers flags, double f) {
         *buffer += len;
     }
 
-    **buffer = '\0';
+  if (flags.flag == '-') { // Левое выравнивание
+    memcpy(*buffer, tmp, len);
+    *buffer += len;
+    memset(*buffer, ' ', padding);
+    *buffer += padding;
+  } else { // Правое выравнивание
+    char fill_char = (flags.flag == '0') ? '0' : ' ';
+    memset(*buffer, fill_char, padding);
+    *buffer += padding;
+    memcpy(*buffer, tmp, len);
+    *buffer += len;
+  }
+
+  **buffer = '\0';
 }
 
 void handle_string(char **buffer, Specifiers flags, const char *s) {
@@ -625,69 +633,71 @@ void handle_unsigned(char **buffer, Specifiers flags, unsigned int u) {
             len += pad;
         }
     }
+  }
 
-    // Шаг 2: Определяем общую длину с учетом ширины
-    int total_width = flags.width > 0 ? flags.width : 0;
-    int padding = total_width > len ? total_width - len : 0;
+  // Шаг 2: Определяем общую длину с учетом ширины
+  int total_width = flags.width > 0 ? flags.width : 0;
+  int padding = total_width > len ? total_width - len : 0;
 
-    // Шаг 3: Выравнивание
-    char fill_char = (flags.flag == '0') ? '0' : ' ';
-    if (flags.flag == '-') { // Левое выравнивание
-        memcpy(*buffer, ptr, len);          // Копируем число
-        *buffer += len;
-        memset(*buffer, fill_char, padding);      // Добавляем пробелы справа
-        *buffer += padding;
-    } else { // Правое выравнивание (по умолчанию)
-        memset(*buffer, fill_char, padding);      // Добавляем пробелы слева
-        *buffer += padding;
-        memcpy(*buffer, ptr, len);          // Копируем число
-        *buffer += len;
-    }
+  // Шаг 3: Выравнивание
+  if (flags.flag & '-') { // Левое выравнивание
+    memcpy(*buffer, ptr, len);
+    *buffer += len;
+    memset(*buffer, ' ', padding);
+    *buffer += padding;
+  } else { // Правое выравнивание
+    char fill_char = (flags.flag & '0') && !(flags.flag & '-') ? '0' : ' ';
+    memset(*buffer, fill_char, padding);
+    *buffer += padding;
+    memcpy(*buffer, ptr, len);
+    *buffer += len;
+  }
 
-    // Шаг 4: Завершающий нулевой символ
-    **buffer = '\0';
+  // Шаг 4: Завершающий нулевой символ
+  **buffer = '\0';
 }
 void handle_char(char **buffer, Specifiers flags, int c) {
-    char tmp[2] = {(char)c, '\0'};
-    int len = 1;
+  char tmp[2] = {(char)c, '\0'};
+  int len = 1;
 
-    // Определяем общую длину с учетом ширины
-    int total_width = flags.width > 0 ? flags.width : 0;
-    int padding = total_width > len ? total_width - len : 0;
+  // Определяем общую длину с учетом ширины
+  int total_width = flags.width > 0 ? flags.width : 0;
+  int padding = total_width > len ? total_width - len : 0;
 
-    if (flags.flag == '-') { // Левое выравнивание
-        memcpy(*buffer, tmp, len);
-        *buffer += len;
-        memset(*buffer, ' ', padding);
-        *buffer += padding;
-    } else { // Правое выравнивание
-        char fill_char = (flags.flag == '0') ? '0' : ' ';
-        memset(*buffer, fill_char, padding);
-        *buffer += padding;
-        memcpy(*buffer, tmp, len);
-        *buffer += len;
-    }
+  if (flags.flag == '-') { // Левое выравнивание
+    memcpy(*buffer, tmp, len);
+    *buffer += len;
+    memset(*buffer, ' ', padding);
+    *buffer += padding;
+  } else { // Правое выравнивание
+    char fill_char = (flags.flag == '0') ? '0' : ' ';
+    memset(*buffer, fill_char, padding);
+    *buffer += padding;
+    memcpy(*buffer, tmp, len);
+    *buffer += len;
+  }
 
-    **buffer = '\0';
+  **buffer = '\0';
 }
 void handle_percent(char **buffer, Specifiers flags) {
-  if (flags.specifier=='%'){
+  if (flags.specifier == '%') {
 
     *(*buffer)++ = '%';
     **buffer = '\0';
   }
 }
 
-
 /**
-* @brief Parses the format string and extracts the specifiers.
-*
-* @param fmt The format string to parse.
-* @param st_spec A pointer to a Specifiers struct to store the parsed specifiers.
-* @return The number of characters parsed.
-*/
+ * @brief Parses the format string and extracts the specifiers.
+ *
+ * @param fmt The format string to parse.
+ * @param st_spec A pointer to a Specifiers struct to store the parsed
+ * specifiers.
+ * @return The number of characters parsed.
+ */
 int parse_specifiers(const char *fmt, Specifiers *st_spec) {
   // Specifiers st_spec = {'*', -10, 0, '*', '*'};
+
   const char *format = fmt;
   format++;
   DEBUG_PRINT("format=%s\n", format);
@@ -699,12 +709,12 @@ int parse_specifiers(const char *fmt, Specifiers *st_spec) {
     format++;
   }
   if (*(format) == '*' || is_digit(*(format))) {
-    st_spec->width = 0;
     if (*(format) == '*') {
-
-      st_spec->width = -1;
+      st_spec->flag = *(format);
       format++;
-    } else {
+    }
+    if (is_digit(*(format))) {
+      st_spec->width = 0;
       while (is_digit(*(format))) {
         st_spec->width = st_spec->width * 10 + *(format) - '0';
         format++;
@@ -736,7 +746,6 @@ int parse_specifiers(const char *fmt, Specifiers *st_spec) {
   }
 
   // Specifiers
-    DEBUG_PRINT("format=%s\n", format);
   if (*format == 'c' || *format == 'd' || *format == 'i' || *format == 'f' ||
       *format == 's' || *format == 'u' || *format == '%' || *format == 'g' ||
       *format == 'G' || *format == 'e' || *format == 'E' || *format == 'x' ||
@@ -744,12 +753,22 @@ int parse_specifiers(const char *fmt, Specifiers *st_spec) {
     st_spec->specifier = *format;
     format++;
     DEBUG_PRINT("Specifier=%c\n", st_spec->specifier);
+    // if(*(format) != '%'){
+    //   st_spec->separator = *(format);
+    //   DEBUG_PRINT(" Separator=%c\n", st_spec->separator);
+    //   format++;
+    // }
   } else {
     st_spec->specifier = '0';
   }
   // format++;
-  DEBUG_PRINT("RESULT: Specifier=%c, Length=%c, Precision=%i,  Width=%d, Flags=%c\n", st_spec->specifier,st_spec->length,st_spec->precision,st_spec->width,st_spec->flag);
-  return format-fmt;
+  DEBUG_PRINT("RESULT: parse_specifiers()=%ld Specifier=%c, Length=%c, "
+              "Precision=%i,  Width=%d, Flags=%c\n",
+              format - fmt, st_spec->specifier, st_spec->length,
+              st_spec->precision, st_spec->width, st_spec->flag);
+  DEBUG_PRINT(" fmt_length=%ld, format_length=%ld\n", strlen(fmt),
+              strlen(format));
+  return format - fmt;
 }
 
 int is_digit(char c) { return (c >= '0' && c <= '9'); }
@@ -758,41 +777,16 @@ int is_alpha(char c) {
   return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
 }
 
-int is_space(char c) {
-  return (c == ' ' || c == '\t' || c == '\n' || c == '\r');
+int is_space(char c) { return (c == ' ' || c == '\t' || c == '\n'); }
+
+void noop_space(const char **str) {
+  if (*str != S21_NULL) {
+    while ((is_space(**str))) {
+      DEBUG_PRINT("Noop space.\n");
+      (*str)++;
+    }
+  }
 }
-
-/*TODO: Flags
- - [ ] #    При использовании со спецификаторами o, x или X перед числом
- вставляется 0, 0x или 0X соответственно (для значений, отличных от нуля). При
- использовании с e, E и f «заставляет» записанный вывод содержать десятичную
- точку, даже если за ней не последует никаких цифр. По умолчанию, если не
- следует никаких цифр, десятичная точка не записывается. При использовании с g
- или G результат такой же, как и с e или E, но конечные нули не удаляются.
- - [ ] 0    Заполняет число слева нулями (0) вместо пробелов, где указан
- спецификатор ширины (см. подспецификатор ширины).
-*/
-
-/*TODO: Width
- - [ ] (число)  Минимальное количество печатаемых символов. Если выводимое
- значение короче этого числа, результат дополняется пробелами. Значение не
- усекается, даже если результат больше.
- - [ ] *    В sprintf знак * значит, что ширина указывается не в строке формата,
- а в качестве дополнительного аргумента целочисленного значения, предшествующего
- аргументу, который необходимо отформатировать. В sscanf знак *, помещенный
- после % и перед спецификатором формата, считывает данные указанного типа, но
- подавляет их присваивание.
- */
-
-/*TODO: Длина
- - [ ] h    Аргумент интерпретируется как короткое int или короткое int без
- знака (применяется только к целочисленным спецификаторам: i, d, o, u, x и X).
- - [ ] l    Аргумент интерпретируется как длинное int или длинное int без знака
- для целочисленных спецификаторов (i, d, o, u, x и X) и как широкий символ или
- строка широких символов для спецификаторов c и s.
- - [ ] L    Аргумент интерпретируется как длинный double (применяется только к
- спецификаторам с плавающей точкой — e, E, f, g и G).
-*/
 
 /**
 TODO: Part 4. Дополнительно. Реализация функции sscanf
@@ -833,133 +827,155 @@ int s21_sscanf(const char *str, const char *format, ...) {
   const char *fmt = format; // Указатель на строку формата
   //%[*/ширина][длина]спецификатор.
   int res = 0;
-
-  while (*fmt) {
-    if (*fmt == '%') {
-      DEBUG_PRINT("\n");
-      parse_specifiers(fmt, &st_spec);
-      
-      // st_spec = parse_specifiers(fmt);
-      if (st_spec.width < -1) {
-        st_spec.width = s21_strlen(p);
-      }
-      // DEBUG_PRINT("\nFormat string:%s\n", fmt);
-      DEBUG_PRINT(" result=%d\n", res);
-      DEBUG_PRINT(" str=%s\n", p);
-      DEBUG_PRINT(" format=%s\n", fmt);
-      DEBUG_PRINT(" !!! Flag=%c, Width=%i, Length=%c, Precision=%i, "
-                  "Specifiers=%c\n",
-                  st_spec.flag, st_spec.width, st_spec.length,
-                  st_spec.precision, st_spec.specifier);
-      if (st_spec.specifier == 'c') {
-        int step = 0;
-        step = proc_spec_c(p, args, st_spec);
-        DEBUG_PRINT(" after process Char step=%d\n", res);
-        if (step > 0) {
-          p = p + step;
-          if (st_spec.width != asterisk) {
-            res++;
-          }
-        } else if (step <= 0) {
-          res--;
-        }
-        DEBUG_PRINT(" after process Char Result=%d\n", res);
-
-      } else if (st_spec.specifier == 'd') {
-        while ((is_space(*p)) && *p != '-') {
-          DEBUG_PRINT("Noop symbol:|%c|\n", *p);
-          p++;
-        }
-        int step = 0;
-        step = proc_spec_d(p, args, st_spec);
-        if (step > 0) {
-          p = p + step;
-          if (st_spec.width != asterisk) {
-            res++;
-          }
-        } else if (step < 0) {
-          res--;
-        }
-        DEBUG_PRINT(" FINISH position=%s\n", p);
-
-      } else if (st_spec.specifier == 'f') {
-        while ((is_space(*p)) && *p != '-') {
-          DEBUG_PRINT("Noop symbol:|%c|\n", *p);
-          p++;
-        }
-        int step = 0;
-        step = proc_spec_f(p, args, st_spec);
-        if (step > 0) {
-          p = p + step;
-          if (st_spec.width != asterisk) {
-            res++;
-          }
-        } else if (step < 0) {
-          res--;
-        }
-      } else if (st_spec.specifier == 's') {
-        while ((is_space(*p)) && *p != '-') {
-          DEBUG_PRINT("Noop symbol:|%c|\n", *p);
-          p++;
-        }
-        int step = 0;
-        step = proc_spec_s(p, args, st_spec);
-        if (step > 0) {
-          p = p + step;
-          if (st_spec.width != asterisk) {
-            res++;
-          }
-        } else if (step < 0) {
-          res--;
-        }
-        DEBUG_PRINT(" after process string Result=%d\n", res);
-      } else if (st_spec.specifier == '%') {
-        DEBUG_PRINT(" Char=%c\n", *p);
-        p++;
-        fmt++;
-      }
-      } else if (st_spec.specifier == 'i') {
-      int znak = 1;
-      int i = 0;
-      int result = 0;
-      if (*p == '-') {
-        znak = -1;
-        p++;
-      }
-      if (*p == '0') {
-        p++;
-        if (*p == 'x' || *p == 'X') {
+  int stop = 0;
+  if (p != S21_NULL && fmt != S21_NULL) {
+    DEBUG_PRINT("String and Format is not NULL\n");
+    while (*p && *fmt && !stop) {
+      DEBUG_PRINT("Start cycle (while (*p && *fmt && !stop))!\n");
+      // Skip separator in format string for non char types
+      while (*fmt == *p || *fmt == '%') {
+        if (*fmt == *p) {
+          fmt++;
           p++;
         } else {
-          DEBUG_PRINT(" octal number\n");
-          while ((*p >= '0' && *p <= '8')) {
-            result = result * 8 + *p - '0';
+          //  }
+
+          // if (*fmt == '%') {
+          Specifiers st_spec = {' ', -10, -1, '*', '*'};
+          DEBUG_PRINT("\n");
+          DEBUG_PRINT(" str=%s\n", p);
+          DEBUG_PRINT(" format=%s\n", fmt);
+          fmt += parse_specifiers(fmt, &st_spec);
+          DEBUG_PRINT("format after parse =%s\n", fmt);
+          if (st_spec.specifier == 'c') {
+            int step = 0;
+            step = proc_spec_c(p, args, st_spec);
+            if (step > 0) {
+              p = p + step;
+              if (st_spec.flag != '*') {
+                res++;
+              }
+            } else if (step <= 0) {
+              res--;
+            }
+            DEBUG_PRINT(" after process Char Result=%d\n", res);
+
+          } else if (st_spec.specifier == 'd') {
+            while ((is_space(*p)) && *p != '-') {
+              DEBUG_PRINT("Noop symbol:|%c|\n", *p);
+              p++;
+            }
+            int step = 0;
+            step = proc_spec_d(p, args, st_spec);
+            if (step > 0) {
+              p = p + step;
+              if (st_spec.flag != '*') {
+                res++;
+              }
+            } else if (step < 0 && res == 0) {
+              res = -1;
+            }
+            DEBUG_PRINT(" after process %%d Result=%d\n", res);
+            DEBUG_PRINT(" FINISH *String position=%s\n", p);
+
+          } else if (st_spec.specifier == 'f') {
+            while ((is_space(*p)) && *p != '-') {
+              DEBUG_PRINT("Noop symbol:|%c|\n", *p);
+              p++;
+            }
+            int step = 0;
+            step = proc_spec_f(p, args, st_spec);
+            if (step > 0) {
+              p = p + step;
+              if (st_spec.flag != '*') {
+                res++;
+              }
+            } else if (step < 0 && res == 0) {
+              res = -1;
+            }
+            DEBUG_PRINT(" after process %%f Result=%d\n", res);
+            DEBUG_PRINT(" FINISH *String position=%s\n", p);
+
+          } else if (st_spec.specifier == 's') {
+            int step = 0;
+            step = proc_spec_s(p, args, st_spec);
+            DEBUG_PRINT("Incriment *p +step=%d\n", step);
+            if (step > 0) {
+              p = p + step;
+              if (st_spec.flag != '*') {
+                res++;
+              }
+            } else if (step < 0 && res == 0) {
+              res = -1;
+            }
+            DEBUG_PRINT(" after process string Result=%d\n", res);
+            DEBUG_PRINT(" p=|%s|\n", p);
+            DEBUG_PRINT(" fmt=|%s|\n", fmt);
+          } else if (st_spec.specifier == '%') {
+            DEBUG_PRINT(" Char=%c\n", *p);
             p++;
-            i++;
+            fmt++;
+
+          } else if (st_spec.specifier == 'i') {
+            int znak = 1;
+            int i = 0;
+            int result = 0;
+            if (*p == '-') {
+              znak = -1;
+              p++;
+            }
+            if (*p == '0') {
+              p++;
+              if (*p == 'x' || *p == 'X') {
+                p++;
+              } else {
+                DEBUG_PRINT(" octal number\n");
+                while ((*p >= '0' && *p <= '8')) {
+                  result = result * 8 + *p - '0';
+                  p++;
+                  i++;
+                }
+              }
+            }
+            while (is_digit(*p)) {
+              result = result * 10 + *p - '0';
+              p++;
+              i++;
+            }
+            if (i > 0) {
+              int *ch = va_arg(args, int *);
+              result = result * znak;
+              *ch = result;
+              p++;
+              res++;
+              DEBUG_PRINT(" Digit=%d\n", result);
+            }
           }
+          noop_space(&fmt);
+          noop_space(&p);
         }
       }
-      while (is_digit(*p)) {
-        result = result * 10 + *p - '0';
-        p++;
-        i++;
-      }
-      if (i > 0) {
-        int *ch = va_arg(args, int *);
-        result = result * znak;
-        *ch = result;
-        p++;
-        res++;
-        DEBUG_PRINT(" Digit=%d\n", result);
-      }
+      stop = 1;
     }
-
-    fmt++;
+  } else {
+    DEBUG_PRINT("Format or Input is NULL\n");
+    res = -1;
+  }
+  if (stop == 0) {
+    res = -1;
   }
   DEBUG_PRINT(" FINISH result=%d\n", res);
   return res;
 }
 
+/**
+ * @brief Reads a wide character from a multibyte string.
+ *
+ * @param p A pointer to the multibyte string.
+ * @param wch A pointer to a wide character where the read character will be
+ * stored.
+ * @return The number of bytes read, or -1 if an error occurred.
+ */
 int read_wchar(const char **p, wchar_t *wch) {
   int res = 0;
   int bytes_read = mbtowc(wch, *p, MB_CUR_MAX);
@@ -1010,25 +1026,27 @@ int proc_spec_c(const char *str, va_list args, const Specifiers st_spec) {
 
   size_t max_len = s21_strlen(str);
   const char *p = str;
-  DEBUG_PRINT(" String for decode=|%s|\n", str);
-  if (st_spec.width == asterisk) {
+  DEBUG_PRINT(": String for decode=|%s|\n", str);
+  int width = st_spec.width > 0 ? st_spec.width : 1;
+  if (st_spec.flag == '*') {
     if (st_spec.length == 'l') {
       wchar_t dummy;
-      for (int i = 0; i < st_spec.width && *p; i++) {
+      for (int i = 0; i < width && *p; i++) {
         if (read_wchar(&p, &dummy) != 0)
           break;
       }
     } else {
-      p += st_spec.width > 0 ? st_spec.width : 1;
+      p += width > 0 ? width : 1;
     }
   } else {
-    int width = st_spec.width > 0 ? st_spec.width : 1;
     if ((st_spec.length == 'l')) {
       width = (width > (int)max_len) ? (int)max_len : width;
       wchar_t *wch = va_arg(args, wchar_t *);
       for (int i = 0; i < width; i++) {
         DEBUG_PRINT(" wide Char=%x\n", L'Ω');
-        if (read_wchar(&p, &wch[i]) != 0) {
+        int bytes_read = read_wchar(&p, &wch[i]);
+        p += bytes_read;
+        if (bytes_read == -1) {
           wch[i] = L'\0';
           DEBUG_PRINT(" read char symbol=%d\n", i);
           break;
@@ -1049,11 +1067,12 @@ int proc_spec_c(const char *str, va_list args, const Specifiers st_spec) {
 
 int proc_spec_f(const char *str, va_list args, const Specifiers st_spec) {
   char arg_str[s21_strlen(str) + 1];
-  if (st_spec.width >= 0) {
-    s21_memcpy(arg_str, str, st_spec.width);
-    arg_str[st_spec.width] = '\0';
+  int width = st_spec.width > 0 ? st_spec.width : (int)s21_strlen(str);
+  if (width >= 0) {
+    s21_memcpy(arg_str, str, width);
+    arg_str[width] = '\0';
   } else {
-    s21_memcpy(arg_str, str, st_spec.width);
+    s21_memcpy(arg_str, str, width);
   }
   const char *p = arg_str; // Указатель на входную строку
   DEBUG_PRINT(" String=%s\n", p);
@@ -1079,7 +1098,7 @@ int proc_spec_f(const char *str, va_list args, const Specifiers st_spec) {
     DEBUG_PRINT(" exp=%ld\n", res);
     result = result * s21_pow(10, (res));
   }
-  if (p - arg_str > 0 && st_spec.width != asterisk) {
+  if (p - arg_str > 0 && st_spec.flag != '*') {
     float *ch = va_arg(args, float *);
     *ch = result;
     p++;
@@ -1090,65 +1109,94 @@ int proc_spec_f(const char *str, va_list args, const Specifiers st_spec) {
   return p - arg_str;
 }
 int proc_spec_s(const char *str, va_list args, const Specifiers st_spec) {
-  // const char *p = str; // Указатель на входную строку
-  char arg_str[s21_strlen(str)];
-  if (st_spec.width >= 0) {
-    s21_memcpy(arg_str, str, st_spec.width);
-    arg_str[st_spec.width] = '\0';
-    // } else {
-    //   s21_memcpy(arg_str, str, st_spec.width);
-  }
-
-  const char *p = arg_str;
+  DEBUG_PRINT("Call proc_spec_s()\n");
+  int width = st_spec.width >= 0 ? st_spec.width : (int)s21_strlen(str);
+  DEBUG_PRINT("width=%d\n", width);
+  const char *p = str;
   int res = 0;
   int i = 0;
-  DEBUG_PRINT("Size=%ld\n", s21_strlen(p));
-  while (is_space(*p))
-    p++;
-  int width = st_spec.width;
-  if (width < -1) {
-    width = s21_strlen(p);
-  }
-  if (width == asterisk) {
-    for (; !(is_space(*p)) && i <= width; i++, p++)
-      ;
+  DEBUG_PRINT("proc_spec_s(): String length=%ld\n", s21_strlen(p));
+  noop_space(&p);
+
+  if (st_spec.flag == '*') {
+    if ((st_spec.length == 'l')) {
+      DEBUG_PRINT("Start procesing and noop wide String\n");
+      wchar_t ch[10];
+      while (*p && !is_space(*p) && i < width) {
+        s21_size_t mbr_res = mbrtowc(ch, p, MB_CUR_MAX, NULL);
+        if (mbr_res == (size_t)-1 || mbr_res == (size_t)-2) {
+          DEBUG_PRINT("Error: Invalid multibyte sequence.\n");
+          break; // Прерываем цикл при ошибке
+        }
+        DEBUG_PRINT("mbr_res=%ld\n", mbr_res);
+        p += mbr_res; // Перемещаем указатель на следующий символ
+        // ch++;         // Перемещаем указатель на следующий широкий символ
+        i++; // Увеличиваем счётчик прочитанных символов
+      }
+    } else {
+      for (; !(is_space(*p)) && i < width; i++, p++)
+        ;
+    }
     res = 0;
   } else {
     if ((st_spec.length == 'l')) {
+      DEBUG_PRINT("Start procesing wide String\n");
       wchar_t *ch = va_arg(args, wchar_t *);
-      while (*p && !is_space(*p) && i <= (width)) {
-        s21_size_t res = mbrtowc(ch, p, MB_CUR_MAX, S21_NULL);
-        p += res;
+      wchar_t *start = ch;
+      while (*p && !is_space(*p) && i < width) {
+        s21_size_t mbr_res = mbrtowc(ch, p, MB_CUR_MAX, NULL);
+        if (mbr_res == (size_t)-1 || mbr_res == (size_t)-2) {
+          DEBUG_PRINT("Error: Invalid multibyte sequence.\n");
+          break; // Прерываем цикл при ошибке
+        }
+        p += mbr_res;
         ch++;
         i++;
       }
       *ch = L'\0';
-      res++;
-      wprintf(L"wide String=%ls\n", ch);
-    } else {
-      char *ch = va_arg(args, char *);
-      while (*p && !is_space(*p) && i <= (width)) {
-        *ch = *p;
-        p++;
-        ch++;
-        i++;
+      if (i > 0) {
+        res++; // Увеличиваем счётчик успешных преобразований
+        DEBUG_PRINT("Wide string=%ls\n", start); // Выводим строку с начала
+      } else {
+        DEBUG_PRINT("Warning: No valid characters read.\n");
       }
-      *ch = '\0';
       res++;
-      DEBUG_PRINT(" String=%s\n", p);
+    } else {
+      DEBUG_PRINT("proc_spec_s(process string)\n");
+      char *ch = va_arg(args, char *);
+      if (ch != NULL) {
+        DEBUG_PRINT("String write to args=|%s|, strlen=%ld, width=%d\n", p,
+                    strlen(p), width);
+        while (*p && !is_space(*p) && i < width) {
+          *ch++ = *p++;
+          DEBUG_PRINT("i=%d, symbol=%c\n", i, *(ch)); // Отладочный вывод
+          i++;
+        }
+        *ch = '\0';
+
+        if (i > 0) {
+          res++;
+        } else {
+          DEBUG_PRINT("Warning: No valid characters read.\n");
+        }
+      } else
+        DEBUG_PRINT("ERRRRRROOR");
+      DEBUG_PRINT("proc_spec_s()=%d\n", res);
+      DEBUG_PRINT("String=%s\n", ch - i);
     }
-    if (i == 0) {
-      res = -1;
-    } else
-      res = p - arg_str;
   }
-  DEBUG_PRINT(" value Step=%ld\n", p - arg_str);
+  if (i == 0) {
+    res = -1;
+  } else
+    res = p - str;
+  DEBUG_PRINT(" value Step=%ld\n", p - str);
   return res;
 }
 int proc_spec_d(const char *str, va_list args, const Specifiers st_spec) {
   int res = 0;
   s21_size_t i = 0;
-  int width = st_spec.width;
+  // int width = st_spec.width;
+  int width = st_spec.width >= 0 ? st_spec.width : (int)s21_strlen(str);
   long int result = 0;
   char arg_str[s21_strlen(str) + 1];
   if (st_spec.width > 0) {
@@ -1173,7 +1221,7 @@ int proc_spec_d(const char *str, va_list args, const Specifiers st_spec) {
   DEBUG_PRINT(" Width=%d result=%ld step=%d.\n", width, result, step);
   i++;
   if (step > 0) {
-    if (st_spec.width != asterisk) {
+    if (st_spec.flag != '*') {
       if (st_spec.length == 'h') {
         short int *ch = va_arg(args, short int *);
         *ch = (short int)result;
@@ -1187,7 +1235,7 @@ int proc_spec_d(const char *str, va_list args, const Specifiers st_spec) {
     }
     // p++;
     res = p - arg_str;
-  } else if (*p == '\0' && st_spec.width != asterisk) {
+  } else if (*p == '\0' && st_spec.flag != '*') {
     // p++;
     res = -1;
   }

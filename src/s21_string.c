@@ -3,7 +3,7 @@
 #include <locale.h>
 #include <stdarg.h>
 // #include <stdio.h>
-#include <string.h>
+// #include <string.h>
 
 float s21_pow(int x, int y);
 int get_number(const char *p, long int *res);
@@ -18,7 +18,6 @@ int is_space(char c);
 // Specifiers parse_specifiers(const char *format);
 int parse_specifiers(const char *format, Specifiers *st_spec);
 
-void monster_flags(const char *format, Specifiers *flags);
 void handle_char(char **buffer, Specifiers flags, int c);
 void handle_int(char **buffer, Specifiers flags, int d);
 void handle_float(char **buffer, Specifiers flags, double f);
@@ -43,30 +42,34 @@ test, s21_string.a, gcov_report).
 этого unit-тесты должны запускаться с флагами gcov.
  - Перед каждой функцией используй префикс s21_.
 No.	Function	Description
- - [ ] void *s21_memchr(const void *str, int c, size_t n)	Searches for the
+ - [x] void *s21_memchr(const void *str, int c, size_t n)	Searches for the
 first occurrence of the character c (an unsigned char) in the first n bytes of
 the string pointed to, by the argument str.
- - [ ] int s21_memcmp(const void *str1, const void *str2, size_t n)	Compares
+- [x] int s21_memcmp(const void *str1, const void *str2, size_t n)	Compares
 the first n bytes of str1 and str2.
- - [ ] void *s21_memcpy(void *dest, const void *src, size_t n)	Copies n
+
+
+
+
+ - [x] void *s21_memcpy(void *dest, const void *src, size_t n)	Copies n
 characters from src to dest.
- - [ ] void *s21_memset(void *str, int c, size_t n)	Copies the character c
+ - [x] void *s21_memset(void *str, int c, size_t n)	Copies the character c
 (an unsigned char) to the first n characters of the string pointed to, by the
 argument str.
- - [ ] char *s21_strncat(char *dest, const char *src, size_t n)	Appends the
+ - [x] char *s21_strncat(char *dest, const char *src, size_t n)	Appends the
 string pointed to, by src to the end of the string pointed to, by dest up to n
 characters long.
- - [ ] char *s21_strchr(const char *str, int c)	Searches for the first
+ - [x] char *s21_strchr(const char *str, int c)	Searches for the first
 occurrence of the character c (an unsigned char) in the string pointed to, by
 the argument str.
- - [ ] int s21_strncmp(const char *str1, const char *str2, size_t n)	Compares
+ - [x] int s21_strncmp(const char *str1, const char *str2, size_t n)	Compares
 at most the first n bytes of str1 and str2.
- - [ ] char *s21_strncpy(char *dest, const char *src, size_t n)	Copies up to n
+ - [x] char *s21_strncpy(char *dest, const char *src, size_t n)	Copies up to n
 characters from the string pointed to, by src to dest.
- - [ ] size_t s21_strcspn(const char *str1, const char *str2)	Calculates the
+ - [x] size_t s21_strcspn(const char *str1, const char *str2)	Calculates the
 length of the initial segment of str1 which consists entirely of characters not
 in str2.
- - [ ] void *s21_memchr(const void *str, int c, s21_size_t n)	Searches for the
+ - [x] void *s21_memchr(const void *str, int c, s21_size_t n)	Searches for the
 first occurrence of the character c (an unsigned char) in the first n bytes of
 the string pointed to, by the argument str.
  - [ ] int s21_memcmp(const void *str1, const void *str2, s21_size_t n)	Compares
@@ -151,9 +154,22 @@ TODO: Part 4. Дополнительно. Реализация функции ss
 Должно поддерживаться полное форматирование (с учетом флагов, ширины, точности,
 модификаторов и типов преобразования).
 */
+char *s21_strcpy(char *dest, const char *src);
+char *s21_strcat(char *destination, const char *append);
+int contains_char(const char *str, char ch);
 
 
-int s21_memcmp(const void *str1, const void *str2, s21_size_t n) {
+void *s21_memchr(const void *str, int c, s21_size_t n) {
+  unsigned char *ptr = (unsigned char *)str;
+  for (s21_size_t i = 0; i < n; i++) {
+    if (ptr[i] == (unsigned char)c) {
+      return (void *)(ptr + i);
+    }
+  }
+  return NULL;
+}
+
+int s21_memcmp(const void *str1, const void *str2, size_t n) {
   if (str1 && str2) { // Проверяем, что оба указателя не NULL
     const unsigned char *s1 = (const unsigned char *)str1;
     const unsigned char *s2 = (const unsigned char *)str2;
@@ -167,6 +183,21 @@ int s21_memcmp(const void *str1, const void *str2, s21_size_t n) {
   return 0; // Если все байты совпадают или n == 0, возвращаем 0
 }
 
+
+void *s21_memcpy(void *dest, const void *src, s21_size_t n) {
+  // Приводим указатели к типу char* для побайтового копирования
+  char *d = (char *)dest;
+  const char *s = (const char *)src;
+
+  // Копируем n байт из src в dest
+  for (size_t i = 0; i < n; i++) {
+    d[i] = s[i];
+  }
+  // Возвращаем указатель на dest
+  return dest;
+}
+
+
 void *s21_memset(void *str, int c, s21_size_t n) {
   if (str) { // Проверяем, что указатель не NULL
     unsigned char *ptr =
@@ -178,53 +209,52 @@ void *s21_memset(void *str, int c, s21_size_t n) {
       ptr[i] = value; // Записываем значение в каждый байт
     }
   }
-
   return str; // Возвращаем исходный указатель
 }
+
 
 char *s21_strncat(char *dest, const char *src, s21_size_t n) {
   if (dest && src) { // Проверяем, что обе строки не NULL
     char *dest_end = dest;
-
     // Находим конец строки dest
     while (*dest_end) {
       dest_end++;
     }
-
     // Копируем символы из src в dest, пока не достигнем n или '\0'
     for (s21_size_t i = 0; i < n && *src; i++, src++, dest_end++) {
       *dest_end = *src;
     }
-
     // Добавляем завершающий нулевой символ
     *dest_end = '\0';
   }
-
   return dest; // Возвращаем указатель на dest
 }
 
-int contains_char(const char *str, char ch) {
-  while (*str) {
-    if (*str == ch) {
-      return 1; // Найден символ
+
+char *s21_strchr(const char *str, int ch) {
+  char *rtn = S21_NULL;
+  if (str != S21_NULL) {
+    for (; *str != '\0' && *str != ch; str++) {
     }
-    str++;
+    if (*str == ch)
+      rtn = (char *)str;
   }
-  return 0;
+  return rtn;
 }
 
-s21_size_t s21_strcspn(const char *str1, const char *str2) {
-  s21_size_t count = 0;
 
-  if (str1 && str2) { // Проверяем, что обе строки не NULL
-    while (*str1 && !contains_char(str2, *str1)) {
-      count++;
-      str1++;
+int s21_strncmp(const char *str1, const char *str2, s21_size_t n) {
+  int rtn = 0;
+  int is_diff = 0;
+  for (s21_size_t i = 0; i < n && !is_diff; i++) {
+    if (str1[i] != str2[i] || str1[i] == '\0' || str2[i] == '\0') {
+      is_diff++;
+      rtn = (unsigned char)str1[i] - (unsigned char)str2[i];
     }
   }
-
-  return count;
+  return rtn;
 }
+
 
 char *s21_strncpy(char *dest, const char *src, s21_size_t n) {
   s21_size_t i = 0;
@@ -239,6 +269,22 @@ char *s21_strncpy(char *dest, const char *src, s21_size_t n) {
   return dest;
 }
 
+
+s21_size_t s21_strcspn(const char *str1, const char *str2) {
+  s21_size_t count = 0;
+
+  if (str1 && str2) { // Проверяем, что обе строки не NULL
+    while (*str1 && !contains_char(str2, *str1)) {
+      count++;
+      str1++;
+    }
+  }
+  return count;
+}
+
+
+
+
 s21_size_t s21_strlen(const char *str) {
   s21_size_t len = 0;
   for (; *(str + len); len++)
@@ -246,25 +292,55 @@ s21_size_t s21_strlen(const char *str) {
   return len;
 }
 
-/**
- * @brief Finds the first occurrence of a character in a string.
- *
- * @param str The string to search.
- * @param ch The character to find.
- * @return A pointer to the first occurrence of the character in the string, or
- * NULL if the character is not found.
- */
-int s21_strncmp(const char *str1, const char *str2, s21_size_t n) {
-  int rtn = 0;
-  int is_diff = 0;
-  for (s21_size_t i = 0; i < n && !is_diff; i++) {
-    if (str1[i] != str2[i] || str1[i] == '\0' || str2[i] == '\0') {
-      is_diff++;
-      rtn = (unsigned char)str1[i] - (unsigned char)str2[i];
+char *s21_strpbrk(const char *str1, const char *str2) {
+  for (size_t i = 0; str1[i] != '\0'; i++) {  
+      for (size_t j = 0; str2[j] != '\0'; j++) {  
+          if (str1[i] == str2[j]) {  
+              return (char *)&str1[i];  
+          }
+      }
+  }
+  return NULL;  
+}
+
+// [ ] Необходимо проверить корректность работы функции
+char *s21_strrchr(const char *str, int c){
+  char *rtn = NULL;
+  if (str != NULL) {
+    str+=s21_strlen(str);
+    for (; *str && *str != c; str-- ) {
+    // if (str[i] == c)//доделать надо
+    //   rtn = str;
+    //   break;
     }
   }
   return rtn;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+int contains_char(const char *str, char ch) {
+  while (*str) {
+    if (*str == ch) {
+      return 1; // Найден символ
+    }
+    str++;
+  }
+  return 0;
+}
+
 
 int s21_strcmp(const char *str1, const char *str2) {
   int rtn = 0;
@@ -281,13 +357,6 @@ int s21_strcmp(const char *str1, const char *str2) {
   return rtn;
 }
 
-/**
- * @brief Copies the string pointed to by src to the buffer pointed to by dest.
- *
- * @param dest The destination buffer.
- * @param src The source string.
- * @return A pointer to the destination buffer.
- */
 char *s21_strcpy(char *dest, const char *src) {
   if (src != S21_NULL) {
     for (int i = 0; (dest[i] = src[i]) != '\0'; i++) {
@@ -306,60 +375,7 @@ char *s21_strcat(char *destination, const char *append) {
   return destination;
 }
 
-/**
- * @brief Finds the first occurrence of a character in a string.
- *
- * @param str The string to search.
- * @param ch The character to find.
- * @return A pointer to the first occurrence of the character in the string, or
- * NULL if the character is not found.
- */
-char *s21_strchr(const char *str, int ch) {
-  char *rtn = S21_NULL;
-  if (str != S21_NULL) {
-    for (; *str != '\0' && *str != ch; str++) {
-    }
-    if (*str == ch)
-      rtn = (char *)str;
-  }
-  return rtn;
-}
 
-void *s21_memchr(const void *str, int c, int n) {
-  unsigned char *ptr = (unsigned char *)str;
-  for (int i = 0; i < n; i++) {
-    if (ptr[i] == (unsigned char)c) {
-      return (void *)(ptr + i);
-    }
-  }
-  return NULL;
-}
-
-
-
-char *s21_strpbrk(const char *str1, const char *str2) {
-  for (size_t i = 0; str1[i] != '\0'; i++) {  
-      for (size_t j = 0; str2[j] != '\0'; j++) {  
-          if (str1[i] == str2[j]) {  
-              return (char *)&str1[i];  
-          }
-      }
-  }
-  return NULL;  
-}
-// [ ] Необходимо проверить корректность работы функции
-char *s21_strrchr(const char *str, int c){
-  char *rtn = NULL;
-  if (str != NULL) {
-    str+=s21_strlen(str);
-    for (; *str && *str != c; str-- ) {
-    // if (str[i] == c)//доделать надо
-    //   rtn = str;
-    //   break;
-    }
-  }
-  return rtn;
-}
 
 void *s21_to_upper(const char *str) {
 
@@ -367,7 +383,7 @@ void *s21_to_upper(const char *str) {
     return NULL;
   }
 
-  size_t length = strlen(str);
+  size_t length = s21_strlen(str);
   char *result = (char *)malloc(length + 1);
   if (result == NULL) {
     return NULL;
@@ -390,7 +406,7 @@ void *s21_to_lower(const char *str) {
     return NULL;
   }
 
-  size_t length = strlen(str);
+  size_t length = s21_strlen(str);
   char *result = (char *)malloc(length + 1);
   if (result == NULL) {
     return NULL;
@@ -459,13 +475,13 @@ void *s21_trim(const char *src, const char *trim_chars){
 
   
   size_t start = 0;//определяю начало
-  while (start < src_length && strchr(trim_chars, src[start]) != NULL) {
+  while (start < src_length && s21_strchr(trim_chars, src[start]) != NULL) {
     start++;
   }
 
   
   size_t end = src_length;//определяю конец, пропускаю символы из trim
-  while (end > start && strchr(trim_chars, src[end - 1]) != NULL) {
+  while (end > start && s21_strchr(trim_chars, src[end - 1]) != NULL) {
     end--;
   }
 
@@ -484,24 +500,30 @@ void *s21_trim(const char *src, const char *trim_chars){
 
   
 };
-/**
- * @brief Copies n bytes from the memory area src to the memory area dest.
- *
- * @param dest The destination memory area.
- * @param src The source memory area.
- * @param n The number of bytes to copy.
- * @return A pointer to the destination memory area.
- */
-void *s21_memcpy(void *dest, const void *src, s21_size_t n) {
-  // Приводим указатели к типу char* для побайтового копирования
-  char *d = (char *)dest;
-  const char *s = (const char *)src;
 
-  // Копируем n байт из src в dest
-  for (size_t i = 0; i < n; i++) {
-    d[i] = s[i];
+
+void *memmove(void *dest, const void *src, size_t n) {
+  // Приводим указатели к типу unsigned char для побайтового копирования
+  unsigned char *d = (unsigned char *)dest;
+  const unsigned char *s = (const unsigned char *)src;
+
+  // Если dest и src указывают на одну и ту же область памяти, ничего не делаем
+  if (d == s) {
+      return dest;
   }
-  // Возвращаем указатель на dest
+
+  // Если dest находится после src и перекрывается с ним, копируем с конца
+  if (d > s && d < s + n) {
+      for (size_t i = n; i > 0; i--) {
+          d[i - 1] = s[i - 1];
+      }
+  }
+  // В остальных случаях копируем с начала
+  else {
+      for (size_t i = 0; i < n; i++) {
+          d[i] = s[i];
+      }
+  }
   return dest;
 }
 
@@ -735,7 +757,7 @@ void handle_float(char **buffer, Specifiers flags, double f) {
     } else {
         // Если точность не указана, используем значение по умолчанию
         sprintf(tmp, "%f", f); // Можно заменить на ручную реализацию
-        len = strlen(tmp);
+        len = s21_strlen(tmp);
     }
 
     // Добавляем '+' только если флаг установлен
@@ -819,7 +841,7 @@ void handle_unsigned(char **buffer, Specifiers flags, unsigned int u) {
         if (flags.precision >= 0 && len < flags.precision) {
             int pad = flags.precision - len;
             memmove(ptr + pad, ptr, len); // Сдвигаем число вправо
-            memset(ptr, '0', pad);       // Дополняем нулями слева
+            s21_memset(ptr, '0', pad);       // Дополняем нулями слева
             len += pad;
         }
     }
@@ -831,15 +853,15 @@ void handle_unsigned(char **buffer, Specifiers flags, unsigned int u) {
 
   // Шаг 3: Выравнивание
   if (flags.flag & '-') { // Левое выравнивание
-    memcpy(*buffer, ptr, len);
+    s21_memcpy(*buffer, ptr, len);
     *buffer += len;
-    memset(*buffer, ' ', padding);
+    s21_memset(*buffer, ' ', padding);
     *buffer += padding;
   } else { // Правое выравнивание
     char fill_char = (flags.flag & '0') && !(flags.flag & '-') ? '0' : ' ';
-    memset(*buffer, fill_char, padding);
+    s21_memset(*buffer, fill_char, padding);
     *buffer += padding;
-    memcpy(*buffer, ptr, len);
+    s21_memcpy(*buffer, ptr, len);
     *buffer += len;
   }
 
@@ -855,15 +877,15 @@ void handle_char(char **buffer, Specifiers flags, int c) {
   int padding = total_width > len ? total_width - len : 0;
 
   if (flags.flag == '-') { // Левое выравнивание
-    memcpy(*buffer, tmp, len);
+    s21_memcpy(*buffer, tmp, len);
     *buffer += len;
-    memset(*buffer, ' ', padding);
+    s21_memset(*buffer, ' ', padding);
     *buffer += padding;
   } else { // Правое выравнивание
     char fill_char = (flags.flag == '0') ? '0' : ' ';
-    memset(*buffer, fill_char, padding);
+    s21_memset(*buffer, fill_char, padding);
     *buffer += padding;
-    memcpy(*buffer, tmp, len);
+    s21_memcpy(*buffer, tmp, len);
     *buffer += len;
   }
 
@@ -956,8 +978,8 @@ int parse_specifiers(const char *fmt, Specifiers *st_spec) {
               "Precision=%i,  Width=%d, Flags=%c\n",
               format - fmt, st_spec->specifier, st_spec->length,
               st_spec->precision, st_spec->width, st_spec->flag);
-  DEBUG_PRINT(" fmt_length=%ld, format_length=%ld\n", strlen(fmt),
-              strlen(format));
+  DEBUG_PRINT(" fmt_length=%ld, format_length=%ld\n", s21_strlen(fmt),
+              s21_strlen(format));
   return format - fmt;
 }
 
@@ -1356,7 +1378,7 @@ int proc_spec_s(const char *str, va_list args, const Specifiers st_spec) {
       char *ch = va_arg(args, char *);
       if (ch != NULL) {
         DEBUG_PRINT("String write to args=|%s|, strlen=%ld, width=%d\n", p,
-                    strlen(p), width);
+                    s21_strlen(p), width);
         while (*p && !is_space(*p) && i < width) {
           *ch++ = *p++;
           DEBUG_PRINT("i=%d, symbol=%c\n", i, *(ch)); // Отладочный вывод

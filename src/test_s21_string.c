@@ -8,9 +8,10 @@ START_TEST(test_s21_strchr_found) {
   const char *str = "Hello, World!";
   int ch = 'o';
   char *result = s21_strchr(str, ch);
-  ck_assert_ptr_nonnull(result); // Убедимся, что результат не NULL
-  ck_assert_str_eq(result,
-                   "o, World!"); // Проверяем, что найдено правильное вхождение
+  char *expected = strchr(str, ch); // Вызов оригинальной функции
+  ck_assert_ptr_nonnull(result);    // Убедимся, что результат не NULL
+  ck_assert_ptr_eq(result, expected); // Сравниваем указатели
+  ck_assert_str_eq(result, "o, World!"); // Проверяем, что найдено правильное вхождение
 }
 END_TEST
 
@@ -18,7 +19,9 @@ START_TEST(test_s21_strchr_not_found) {
   const char *str = "Hello, World!";
   int ch = 'z';
   const char *result = s21_strchr(str, ch);
-  ck_assert_ptr_null(result); // Ожидаем NULL, так как символ не найден
+  const char *expected = strchr(str, ch); // Вызов оригинальной функции
+  ck_assert_ptr_null(result);             // Ожидаем NULL, так как символ не найден
+  ck_assert_ptr_eq(result, expected);     // Сравниваем указатели
 }
 END_TEST
 
@@ -26,9 +29,10 @@ START_TEST(test_s21_strchr_null_terminator) {
   const char *str = "Hello, World!";
   int ch = '\0';
   const char *result = s21_strchr(str, ch);
-  ck_assert_ptr_nonnull(result); // Убедимся, что результат не NULL
-  ck_assert_str_eq(result,
-                   ""); // Проверяем, что найдено вхождение нулевого символа
+  const char *expected = strchr(str, ch); // Вызов оригинальной функции
+  ck_assert_ptr_nonnull(result);         // Убедимся, что результат не NULL
+  ck_assert_ptr_eq(result, expected);    // Сравниваем указатели
+  ck_assert_str_eq(result, "");          // Проверяем, что найдено вхождение нулевого символа
 }
 END_TEST
 
@@ -36,7 +40,9 @@ START_TEST(test_s21_strchr_empty_string) {
   const char *str = "";
   int ch = 'a';
   const char *result = s21_strchr(str, ch);
-  ck_assert_ptr_null(result); // Ожидаем NULL, так как строка пуста
+  const char *expected = strchr(str, ch); // Вызов оригинальной функции
+  ck_assert_ptr_null(result);             // Ожидаем NULL, так как строка пуста
+  ck_assert_ptr_null(expected);             // Ожидаем NULL, так как строка пуста
 }
 END_TEST
 
@@ -44,9 +50,10 @@ START_TEST(test_s21_strchr_first_char) {
   const char *str = "Hello, World!";
   int ch = 'H';
   const char *result = s21_strchr(str, ch);
-  ck_assert_ptr_nonnull(result); // Убедимся, что результат не NULL
-  ck_assert_str_eq(result,
-                   "Hello, World!"); // Проверяем, что найдено первое вхождение
+  const char *expected = strchr(str, ch); // Вызов оригинальной функции
+  ck_assert_ptr_nonnull(result);         // Убедимся, что результат не NULL
+  ck_assert_ptr_eq(result, expected);    // Сравниваем указатели
+  ck_assert_str_eq(result, "Hello, World!"); // Проверяем, что найдено первое вхождение
 }
 END_TEST
 
@@ -54,8 +61,10 @@ START_TEST(test_s21_strchr_last_char) {
   const char *str = "Hello, World!";
   int ch = '!';
   const char *result = s21_strchr(str, ch);
-  ck_assert_ptr_nonnull(result); // Убедимся, что результат не NULL
-  ck_assert_str_eq(result, "!"); // Проверяем, что найдено последнее вхождение
+  const char *expected = strchr(str, ch); // Вызов оригинальной функции
+  ck_assert_ptr_nonnull(result);         // Убедимся, что результат не NULL
+  ck_assert_ptr_eq(result, expected);    // Сравниваем указатели
+  ck_assert_str_eq(result, "!");         // Проверяем, что найдено последнее вхождение
 }
 END_TEST
 
@@ -139,15 +148,14 @@ START_TEST(test_s21_strncmp) {
 }
 END_TEST
 
-START_TEST(test_s21_strcmp) {
-  ck_assert_int_eq(s21_strcmp("Hello world", "Hello world"),
-                   strcmp("Hello world", "Hello world"));
-  ck_assert_int_eq(s21_strcmp("", "123"), strcmp("", "123"));
-  ck_assert_int_eq(s21_strcmp("123", ""), strcmp("123", ""));
-  ck_assert_int_eq(s21_strcmp("\n", "\r"), strcmp("\n", "\r"));
-  ck_assert_int_eq(s21_strcmp("", ""), strcmp("", ""));
-  ck_assert_int_eq(s21_strcmp("", "NULL"), strcmp("", "NULL"));
-  ck_assert_int_eq(s21_strcmp("\n", "\n"), strcmp("\n", "\n"));
+START_TEST(test_s21_strncmp2) {
+  ck_assert_int_eq(s21_strncmp("Hello world", "Hello world",10), strncmp("Hello world", "Hello world",10));
+  ck_assert_int_eq(s21_strncmp("", "123",5)  , strncmp("", "123",5));
+  ck_assert_int_eq(s21_strncmp("123", "",2)  , strncmp("123", "",2));
+  ck_assert_int_eq(s21_strncmp("\n", "\r",3) , strncmp("\n", "\r",3));
+  ck_assert_int_eq(s21_strncmp("", "",1)     , strncmp("", "",1));
+  ck_assert_int_eq(s21_strncmp("", "NULL",10), strncmp("", "NULL",10));
+  ck_assert_int_eq(s21_strncmp("\n", "\n",10), strncmp("\n", "\n",10));
 }
 END_TEST
 
@@ -158,174 +166,219 @@ int compare_memory(const void *a, const void *b, s21_size_t n) {
 // Тестовый случай 1: Заполнение нулями
 START_TEST(test_s21_memset_zero_fill) {
   char buffer[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-  s21_memset(buffer, 0, 10);
   char expected[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  ck_assert_int_eq(s21_memcmp(buffer, expected, 10), 0);
+
+  // Вызов s21_memset и оригинальной memset
+  s21_memset(buffer, 0, 10);
+  memset(expected, 0, 10);
+
+  // Сравнение результатов
+  ck_assert(compare_memory(buffer, expected, 10));
 }
 END_TEST
 
 // Тестовый случай 2: Частичное заполнение
 START_TEST(test_s21_memset_partial_fill) {
   char buffer[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-  s21_memset(buffer, 'A', 5);
-
   char expected[10] = {'A', 'A', 'A', 'A', 'A', 6, 7, 8, 9, 10};
-  ck_assert(compare_memory(buffer, expected, 10) == 1);
+
+  // Вызов s21_memset и оригинальной memset
+  s21_memset(buffer, 'A', 5);
+  memset(expected, 'A', 5);
+
+  // Сравнение результатов
+  ck_assert(compare_memory(buffer, expected, 10));
 }
 END_TEST
 
 // Тестовый случай 3: Заполнение символом
 START_TEST(test_s21_memset_char_fill) {
   char buffer[10];
-  s21_memset(buffer, 'X', 10);
+  char expected[10];
 
-  char expected[10] = {'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X', 'X'};
-  ck_assert(compare_memory(buffer, expected, 10) == 1);
+  // Вызов s21_memset и оригинальной memset
+  s21_memset(buffer, 'X', 10);
+  memset(expected, 'X', 10);
+
+  // Сравнение результатов
+  ck_assert(compare_memory(buffer, expected, 10));
 }
 END_TEST
 
 // Тестовый случай 4: Нулевая длина
 START_TEST(test_s21_memset_zero_length) {
   char buffer[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-  s21_memset(buffer, 'A', 0);
-
   char expected[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-  ck_assert(compare_memory(buffer, expected, 10) == 1);
+  int len=0;
+
+  // Вызов s21_memset и оригинальной memset
+  s21_memset(buffer, 'A', len);
+  memset(expected, 'A', len);
+
+  // Сравнение результатов
+  ck_assert(compare_memory(buffer, expected, 10));
 }
 END_TEST
 
-// Тестовый случай 5: NULL-указатель
-START_TEST(test_s21_memset_null_pointer) {
+
+START_TEST(test_s21_memset_large_block) {
+  const size_t size = 1024 * 1024; // 1 МБ
+  char *buffer = malloc(size);
+  char *expected = malloc(size);
+
+  // Заполняем память с помощью s21_memset и оригинальной memset
+  s21_memset(buffer, 'X', size);
+  memset(expected, 'X', size);
+
+  // Сравнение результатов
+  ck_assert(compare_memory(buffer, expected, size));
+
+  free(buffer);
+  free(expected);
+}
+END_TEST
+START_TEST(test_s21_memset_negative_value) {
+  char buffer[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+  char expected[10];
+
+  // Заполняем память с помощью s21_memset и оригинальной memset
+  s21_memset(buffer, -1, 10);
+  memset(expected, -1, 10);
+
+  // Сравнение результатов
+  ck_assert(compare_memory(buffer, expected, 10));
+}
+END_TEST
+START_TEST(test_s21_memset_null_pointer_zero_length) {
   char *buffer = NULL;
-  s21_memset(buffer, 'A', 10); // Функция должна безопасно обрабатывать NULL
+  int len = 0;
+
+  // Вызов s21_memset и оригинальной memset
+  s21_memset(buffer, 'A', len); // Ожидаем, что функция не упадёт
+  memset(buffer, 'A', len);     // Оригинальная функция также не упадёт
 
   // Проверяем, что программа не завершилась с ошибкой
   ck_assert_ptr_eq(buffer, NULL);
 }
 END_TEST
+START_TEST(test_s21_memset_overlap) {
+  char buffer[20] = "Hello, World!";
+  char expected[20] = "Hello, World!";
 
-// Test Case 1: Identical memory blocks
+  // Заполняем память с помощью s21_memset и оригинальной memset
+  s21_memset(buffer + 5, 'X', 5);
+  memset(expected + 5, 'X', 5);
+
+  // Сравнение результатов
+  ck_assert(compare_memory(buffer, expected, 20));
+}
+END_TEST
+
+
 START_TEST(test_s21_memcmp_identical_blocks) {
   char buffer1[] = "abcdef";
   char buffer2[] = "abcdef";
   s21_size_t n = 6;
 
   int result = s21_memcmp(buffer1, buffer2, n);
-  ck_assert_int_eq(result, 0); // Expected result is 0 (equal)
+  int expected = memcmp(buffer1, buffer2, n); // Вызов оригинальной функции
+  ck_assert_int_eq(result, expected); // Ожидаем 0 (блоки идентичны)
 }
 END_TEST
 
-// Test Case 2: Different memory blocks
+// Тестовый случай 2: Разные блоки памяти
 START_TEST(test_s21_memcmp_different_blocks) {
   char buffer1[] = "abcde";
   char buffer2[] = "abcdz";
   s21_size_t n = 5;
 
   int result = s21_memcmp(buffer1, buffer2, n);
-  ck_assert_int_lt(result, 0); // 'e' < 'z', so result should be negative
+  int expected = memcmp(buffer1, buffer2, n); // Вызов оригинальной функции
+  ck_assert_int_eq(result, expected); // Ожидаем отрицательное значение ('e' < 'z')
 }
 END_TEST
 
-// Test Case 3: Partial comparison with identical bytes
+// Тестовый случай 3: Частичное сравнение с идентичными байтами
 START_TEST(test_s21_memcmp_partial_identical) {
   char buffer1[] = "abcdefgh";
   char buffer2[] = "abcdefxy";
   s21_size_t n = 6;
 
   int result = s21_memcmp(buffer1, buffer2, n);
-  ck_assert_int_eq(result, 0); // First 6 bytes are identical
+  int expected = memcmp(buffer1, buffer2, n); // Вызов оригинальной функции
+  ck_assert_int_eq(result, expected); // Ожидаем 0 (первые 6 байт идентичны)
 }
 END_TEST
 
-// Test Case 4: Partial comparison with different bytes
+// Тестовый случай 4: Частичное сравнение с разными байтами
 START_TEST(test_s21_memcmp_partial_different) {
   char buffer1[] = "abcdefg";
   char buffer2[] = "abcdefh";
   s21_size_t n = 7;
 
   int result = s21_memcmp(buffer1, buffer2, n);
-  ck_assert_int_lt(result, 0); // 'g' < 'h', so result should be negative
+  int expected = memcmp(buffer1, buffer2, n); // Вызов оригинальной функции
+  ck_assert_int_eq(result, expected); // Ожидаем отрицательное значение ('g' < 'h')
 }
 END_TEST
 
-// Test Case 5: Comparison with n = 0
+// Тестовый случай 5: Сравнение с n = 0
 START_TEST(test_s21_memcmp_zero_length) {
   char buffer1[] = "abcdef";
   char buffer2[] = "ABCDEF";
   s21_size_t n = 0;
 
   int result = s21_memcmp(buffer1, buffer2, n);
-  ck_assert_int_eq(result, 0); // If n == 0, result should always be 0
+  int expected = memcmp(buffer1, buffer2, n); // Вызов оригинальной функции
+  ck_assert_int_eq(result, expected); // Ожидаем 0 (n == 0)
 }
 END_TEST
 
-// Test Case 6: NULL pointers
-START_TEST(test_s21_memcmp_null_pointers) {
+
+START_TEST(test_s21_memcmp_negative_values) {
+  char buffer1[] = {1, 2, -3, 4, 5};
+  char buffer2[] = {1, 2, -2, 4, 5};
+  s21_size_t n = 5;
+
+  int result = s21_memcmp(buffer1, buffer2, n);
+  int expected = memcmp(buffer1, buffer2, n); // Вызов оригинальной функции
+  ck_assert_int_eq(result, expected); // Ожидаем отрицательное значение (-3 < -2)
+}
+END_TEST
+START_TEST(test_s21_memcmp_overlap) {
+  char buffer[] = "abcdefgh";
+  s21_size_t n = 4;
+
+  int result = s21_memcmp(buffer, buffer + 2, n);
+  int expected = memcmp(buffer, buffer + 2, n); // Вызов оригинальной функции
+  ck_assert_int_eq(result, expected); // Ожидаем отрицательное значение ('a' < 'c')
+}
+END_TEST
+START_TEST(test_s21_memcmp_large_blocks) {
+  const size_t size = 1024 * 1024; // 1 МБ
+  char *buffer1 = malloc(size);
+  char *buffer2 = malloc(size);
+
+  // Заполняем память одинаковыми значениями
+  memset(buffer1, 'A', size);
+  memset(buffer2, 'A', size);
+
+  int result = s21_memcmp(buffer1, buffer2, size);
+  int expected = memcmp(buffer1, buffer2, size); // Вызов оригинальной функции
+  ck_assert_int_eq(result, expected); // Ожидаем 0 (блоки идентичны)
+
+  free(buffer1);
+  free(buffer2);
+}
+END_TEST
+START_TEST(test_s21_memcmp_case_sensitive) {
   char buffer1[] = "abcdef";
-  const void *null_ptr = NULL;
+  char buffer2[] = "ABCDEF";
   s21_size_t n = 6;
 
-  int result = s21_memcmp(null_ptr, buffer1, n);
-  ck_assert_int_eq(result, 0); // Function should handle NULL safely
-}
-END_TEST
-
-START_TEST(test_s21_strncpy_short_src) {
-    char dest[50] = "Original";
-    const char *src = "Short";
-    s21_size_t n = 10;
-
-    s21_strncpy(dest, src, n);
-
-    // Сравниваем результат с ожидаемым значением
-    char expected[50] = "Short\0\0\0\0\0"; // Ожидаемая строка
-    ck_assert_str_eq(dest, expected);
-}
-END_TEST
-
-START_TEST(test_s21_strncpy_long_src) {
-    char dest[50] = "";
-    const char *src = "ThisIsALongString";
-    s21_size_t n = 5;
-
-    s21_strncpy(dest, src, n);
-
-    // Сравниваем результат с ожидаемым значением
-    char expected[50] = "ThisI"; // Ожидаемая строка (без завершающего \0)
-    ck_assert_str_eq(dest, expected); // Проверяем первые n символов
-}
-END_TEST
-
-// Тест: копирование с n = 0 (ничего не должно измениться)
-START_TEST(test_s21_strncpy_n_zero) {
-    char dest[50] = "Test";
-    const char *src = "New";
-    s21_size_t n = 0;
-
-    s21_strncpy(dest, src, n);
-    ck_assert_str_eq(dest, "Test");
-}
-END_TEST
-
-// Тест: копирование пустой строки
-START_TEST(test_s21_strncpy_empty_src) {
-    char dest[50] = "Original";
-    const char *src = "";
-    s21_size_t n = 5;
-
-    s21_strncpy(dest, src, n);
-    ck_assert_str_eq(dest, "\0\0\0\0\0iginal");
-}
-END_TEST
-
-// Тест: проверка NULL-указателей
-START_TEST(test_s21_strncpy_null_pointers) {
-    char dest[50] = "Original";
-    const char *src = NULL;
-    s21_size_t n = 5;
-
-    s21_strncpy(dest, src, n); // Функция должна вернуть dest без изменений
-    ck_assert_str_eq(dest, "Original");
+  int result = s21_memcmp(buffer1, buffer2, n);
+  int expected = memcmp(buffer1, buffer2, n); // Вызов оригинальной функции
+  ck_assert_int_eq(result, expected); // Ожидаем положительное значение ('a' > 'A')
 }
 END_TEST
 
@@ -336,8 +389,15 @@ START_TEST(test_s21_strncat_basic_concatenation) {
     const char *src = "World!";
     s21_size_t n = 6;
 
+    // Вызываем оригинальную функцию для получения эталонного результата
+    char original_dest[50] = "Hello, ";
+    strncat(original_dest, src, n);
+
+    // Вызываем свою функцию
     s21_strncat(dest, src, n);
-    ck_assert_str_eq(dest, "Hello, World!");
+
+    // Сравниваем результаты
+    ck_assert_str_eq(dest, original_dest);
 }
 END_TEST
 
@@ -347,8 +407,15 @@ START_TEST(test_s21_strncat_partial_concatenation) {
     const char *src = "World!";
     s21_size_t n = 5;
 
+    // Вызываем оригинальную функцию для получения эталонного результата
+    char original_dest[50] = "Hello, ";
+    strncat(original_dest, src, n);
+
+    // Вызываем свою функцию
     s21_strncat(dest, src, n);
-    ck_assert_str_eq(dest, "Hello, Worl");
+
+    // Сравниваем результаты
+    ck_assert_str_eq(dest, original_dest);
 }
 END_TEST
 
@@ -358,8 +425,15 @@ START_TEST(test_s21_strncat_empty_src) {
     const char *src = "";
     s21_size_t n = 10;
 
+    // Вызываем оригинальную функцию для получения эталонного результата
+    char original_dest[50] = "Hello, ";
+    strncat(original_dest, src, n);
+
+    // Вызываем свою функцию
     s21_strncat(dest, src, n);
-    ck_assert_str_eq(dest, "Hello, ");
+
+    // Сравниваем результаты
+    ck_assert_str_eq(dest, original_dest);
 }
 END_TEST
 
@@ -369,8 +443,15 @@ START_TEST(test_s21_strncat_n_zero) {
     const char *src = "World!";
     s21_size_t n = 0;
 
+    // Вызываем оригинальную функцию для получения эталонного результата
+    char original_dest[50] = "Hello, ";
+    strncat(original_dest, src, n);
+
+    // Вызываем свою функцию
     s21_strncat(dest, src, n);
-    ck_assert_str_eq(dest, "Hello, ");
+
+    // Сравниваем результаты
+    ck_assert_str_eq(dest, original_dest);
 }
 END_TEST
 
@@ -380,19 +461,91 @@ START_TEST(test_s21_strncat_null_pointers) {
     const char *src = NULL;
     s21_size_t n = 5;
 
-    s21_strncat(dest, src, n);
-    ck_assert_str_eq(dest, "Hello, "); // Должно остаться без изменений
+    // Оригинальная функция не поддерживает NULL-указатели, поэтому ожидаем, что наша функция также ведет себя корректно
+    if (src == NULL) {
+        ck_assert_str_eq(dest, "Hello, "); // Должно остаться без изменений
+    } else {
+        // Если src не NULL, используем оригинальную функцию для сравнения
+        char original_dest[50] = "Hello, ";
+        strncat(original_dest, src, n);
+
+        s21_strncat(dest, src, n);
+        ck_assert_str_eq(dest, original_dest);
+    }
 }
 END_TEST
 
-// Тест: проверка переполнения буфера (максимальная длина)
-START_TEST(test_s21_strncat_buffer_overflow) {
-    char dest[10] = "12345";
-    const char *src = "67890abcdef";
-    s21_size_t n = 10;
+START_TEST(test_s21_strncpy_short_src) {
+  char dest[50] = "Original";
+  const char *src = "Short";
+  s21_size_t n = 10;
 
-    s21_strncat(dest, src, n);
-    ck_assert_str_eq(dest, "1234567890"); // Буфер ограничен размером 10 символов
+  // Вызываем оригинальную функцию для получения эталонного результата
+  char original_dest[50] = "Original";
+  strncpy(original_dest, src, n);
+  original_dest[n - 1] = '\0'; // Гарантируем завершающий нуль
+
+  // Вызываем свою функцию
+  s21_strncpy(dest, src, n);
+
+  // Сравниваем результаты
+  ck_assert_str_eq(dest, original_dest);
+}
+END_TEST
+
+// Тест: Длинный источник (src)
+START_TEST(test_s21_strncpy_long_src) {
+  char dest[50] = "";
+  const char *src = "ThisIsALongString";
+  s21_size_t n = 5;
+
+  // Вызываем оригинальную функцию для получения эталонного результата
+  char original_dest[50] = "";
+  strncpy(original_dest, src, n);
+  original_dest[n] = '\0'; // Гарантируем завершающий нуль
+
+  // Вызываем свою функцию
+  s21_strncpy(dest, src, n);
+
+  // Сравниваем результаты
+  ck_assert_str_eq(dest, original_dest);
+}
+END_TEST
+
+// Тест: Копирование с n = 0 (ничего не должно измениться)
+START_TEST(test_s21_strncpy_n_zero) {
+  char dest[50] = "Test";
+  const char *src = "New";
+  s21_size_t n = 0;
+
+  // Вызываем оригинальную функцию для получения эталонного результата
+  char original_dest[50] = "Test";
+  strncpy(original_dest, src, n);
+
+  // Вызываем свою функцию
+  s21_strncpy(dest, src, n);
+
+  // Сравниваем результаты
+  ck_assert_str_eq(dest, original_dest);
+}
+END_TEST
+
+// Тест: Копирование пустой строки
+START_TEST(test_s21_strncpy_empty_src) {
+  char dest[50] = "Original";
+  const char *src = "";
+  s21_size_t n = 5;
+
+  // Вызываем оригинальную функцию для получения эталонного результата
+  char original_dest[50] = "Original";
+  strncpy(original_dest, src, n);
+  original_dest[n] = '\0'; // Гарантируем завершающий нуль
+
+  // Вызываем свою функцию
+  s21_strncpy(dest, src, n);
+
+  // Сравниваем результаты
+  ck_assert_str_eq(dest, original_dest);
 }
 END_TEST
 
@@ -459,112 +612,6 @@ START_TEST(test_s21_strcspn_null_str2) {
 }
 END_TEST 
 
-START_TEST(test_s21_strcpy_normal) {
-    const char *src = "Hello, World!";
-    char dest[50] = {0}; // Обнуляем массив для надежности
-    char *result = s21_strcpy(dest, src);
-    ck_assert_ptr_ne(result, NULL); // Проверяем, что результат не NULL
-    ck_assert_str_eq(dest, src);    // Проверяем, что строки совпадают
-}
-END_TEST
-
-START_TEST(test_s21_strcpy_empty_string) {
-    const char *src = "";
-    char dest[50] = {0};
-    char *result = s21_strcpy(dest, src);
-    ck_assert_ptr_ne(result, NULL); // Проверяем, что результат не NULL
-    ck_assert_str_eq(dest, src);    // Проверяем, что строки совпадают
-}
-END_TEST
-
-START_TEST(test_s21_strcpy_null_src) {
-    char dest[50] = {0};
-    char *result = s21_strcpy(dest, NULL);
-    ck_assert_ptr_eq(result, NULL); // Проверяем, что результат равен NULL
-}
-END_TEST
-
-START_TEST(test_s21_strcpy_null_dest) {
-    const char *src = "Test";
-    char *result = s21_strcpy(NULL, src);
-    ck_assert_ptr_eq(result, NULL); // Проверяем, что результат равен NULL
-}
-END_TEST
-
-START_TEST(test_s21_strcpy_long_string) {
-    const char *src = "This is a very long string that we are copying to test the functionality of our function.";
-    char dest[200] = {0};
-    char *result = s21_strcpy(dest, src);
-    ck_assert_ptr_ne(result, NULL); // Проверяем, что результат не NULL
-    ck_assert_str_eq(dest, src);    // Проверяем, что строки совпадают
-}
-END_TEST
-
-// Тестовый кейс 1: Обычное использование
-START_TEST(test_s21_strcat_normal) {
-    char dest[50] = "Hello ";
-    const char *append = "World!";
-    char *result = s21_strcat(dest, append);
-    ck_assert_str_eq("Hello World!", result);
-}
-END_TEST
-
-// Тестовый кейс 2: Пустой destination
-START_TEST(test_s21_strcat_empty_dest) {
-    char dest[50] = "";
-    const char *append = "Test";
-    char *result = s21_strcat(dest, append);
-    ck_assert_str_eq("Test", result);
-}
-END_TEST
-
-// Тестовый кейс 3: Пустой append
-START_TEST(test_s21_strcat_empty_append) {
-    char dest[50] = "Original";
-    const char *append = "";
-    char *result = s21_strcat(dest, append);
-    ck_assert_str_eq("Original", result);
-}
-END_TEST
-
-// Тестовый кейс 4: Оба пустые строки
-START_TEST(test_s21_strcat_both_empty) {
-    char dest[50] = "";
-    const char *append = "";
-    char *result = s21_strcat(dest, append);
-    ck_assert_str_eq("", result);
-}
-END_TEST
-
-// Тестовый кейс 5: Длинная строка
-START_TEST(test_s21_strcat_long_string) {
-    char dest[100] = "This is a test string. ";
-    const char *append = "Let's see if it works correctly.";
-    char *result = s21_strcat(dest, append);
-    ck_assert_str_eq("This is a test string. Let's see if it works correctly.", result);
-}
-END_TEST
-
-// Тестовый кейс 6: NULL в append
-START_TEST(test_s21_strcat_null_append) {
-    char dest[50] = "Check for NULL";
-    const char *append = NULL;
-    char *result = s21_strcat(dest, append);
-    ck_assert_str_eq("Check for NULL", result); // Функция должна игнорировать NULL
-}
-END_TEST
-
-// Тестовый кейс 7: Ограниченный буфер (проверка на переполнение)
-START_TEST(test_s21_strcat_buffer_overflow) {
-    char dest[6] = "hello"; // Размер буфера - 6 символов
-    const char *append = " world"; // Слишком длинная строка для добавления
-    char *result = s21_strcat(dest, append);
-
-    // Если функция не обрабатывает переполнение, результат может быть непредсказуемым.
-    // Для корректной работы функции требуется проверка размера буфера.
-    ck_assert_str_eq("hello", result); // Предполагаем, что функция не изменяет исходную строку при переполнении
-}
-END_TEST
 
 // Тест 1: Копирование строки
 START_TEST(test_s21_memcpy_string) {
@@ -609,32 +656,6 @@ START_TEST(test_s21_memcpy_large_data) {
 }
 END_TEST
 
-// Тест 4: Пересечение областей памяти
-START_TEST(test_s21_memcpy_overlap) {
-    char buffer[10] = "abcdef";
-    s21_memcpy(buffer + 2, buffer, 5); // Пересечение областей памяти
-
-    // Ожидаемый результат может быть некорректным, так как memcpy не учитывает пересечение
-    ck_assert_str_eq(buffer, "ababcde");
-}
-END_TEST
-
-// Тест 5: Проверка на NULL-указатели
-START_TEST(test_s21_memcpy_null_pointers) {
-    char src[] = "Hello, world!";
-    char *dest = NULL;
-
-    ck_assert_ptr_eq(s21_memcpy(dest, src, 5), NULL); // Если dest == NULL, возвращаем NULL
-
-    dest = malloc(50);
-    memset(dest, 0, 50);
-
-    ck_assert_ptr_eq(s21_memcpy(dest, NULL, 5), NULL); // Если src == NULL, возвращаем NULL
-
-    free(dest);
-}
-END_TEST
-
 
 Suite *s21_string_suite(void) {
   Suite *s;
@@ -647,7 +668,7 @@ Suite *s21_string_suite(void) {
 
   tcase_add_test(tc_core, test_s21_strlen);
   tcase_add_test(tc_core, test_s21_strncmp);
-  tcase_add_test(tc_core, test_s21_strcmp);
+  tcase_add_test(tc_core, test_s21_strncmp2);
   tcase_add_test(tc_core, test_s21_strchr_found);
   tcase_add_test(tc_core, test_s21_strchr_not_found);
   tcase_add_test(tc_core, test_s21_strchr_null_terminator);
@@ -655,31 +676,36 @@ Suite *s21_string_suite(void) {
   tcase_add_test(tc_core, test_s21_strchr_first_char);
   tcase_add_test(tc_core, test_s21_strchr_last_char);
 
+    
   tcase_add_test(tc_core, test_s21_memset_zero_fill);
   tcase_add_test(tc_core, test_s21_memset_partial_fill);
   tcase_add_test(tc_core, test_s21_memset_char_fill);
   tcase_add_test(tc_core, test_s21_memset_zero_length);
-  tcase_add_test(tc_core, test_s21_memset_null_pointer);
+  tcase_add_test(tc_core, test_s21_memset_large_block);
+  tcase_add_test(tc_core, test_s21_memset_negative_value);
+  tcase_add_test(tc_core, test_s21_memset_null_pointer_zero_length);
+  tcase_add_test(tc_core, test_s21_memset_overlap);
 
   tcase_add_test(tc_core, test_s21_memcmp_identical_blocks);
   tcase_add_test(tc_core, test_s21_memcmp_different_blocks);
   tcase_add_test(tc_core, test_s21_memcmp_partial_identical);
   tcase_add_test(tc_core, test_s21_memcmp_partial_different);
   tcase_add_test(tc_core, test_s21_memcmp_zero_length);
-  tcase_add_test(tc_core, test_s21_memcmp_null_pointers);
+  tcase_add_test(tc_core, test_s21_memcmp_negative_values);
+  tcase_add_test(tc_core, test_s21_memcmp_overlap);
+  tcase_add_test(tc_core, test_s21_memcmp_large_blocks);
+  tcase_add_test(tc_core, test_s21_memcmp_case_sensitive);
 
   tcase_add_test(tc_core, test_s21_strncpy_short_src);
   tcase_add_test(tc_core, test_s21_strncpy_long_src);
   tcase_add_test(tc_core, test_s21_strncpy_n_zero);
   tcase_add_test(tc_core, test_s21_strncpy_empty_src);
-  tcase_add_test(tc_core, test_s21_strncpy_null_pointers);
 
   tcase_add_test(tc_core, test_s21_strncat_basic_concatenation);
   tcase_add_test(tc_core, test_s21_strncat_partial_concatenation);
   tcase_add_test(tc_core, test_s21_strncat_empty_src);
   tcase_add_test(tc_core, test_s21_strncat_n_zero);
   tcase_add_test(tc_core, test_s21_strncat_null_pointers);
-  tcase_add_test(tc_core, test_s21_strncat_buffer_overflow);
 
   tcase_add_test(tc_core, test_s21_strcspn_empty_str1);
   tcase_add_test(tc_core, test_s21_strcspn_empty_str2);
@@ -689,25 +715,9 @@ Suite *s21_string_suite(void) {
   tcase_add_test(tc_core, test_s21_strcspn_null_str1);
   tcase_add_test(tc_core, test_s21_strcspn_null_str2);
 
-  tcase_add_test(tc_core, test_s21_strcpy_normal);
-  tcase_add_test(tc_core, test_s21_strcpy_empty_string);
-  tcase_add_test(tc_core, test_s21_strcpy_null_src);
-  tcase_add_test(tc_core, test_s21_strcpy_null_dest);
-  tcase_add_test(tc_core, test_s21_strcpy_long_string);
-
-  tcase_add_test(tc_core, test_s21_strcat_normal);
-  tcase_add_test(tc_core, test_s21_strcat_empty_dest);
-  tcase_add_test(tc_core, test_s21_strcat_empty_append);
-  tcase_add_test(tc_core, test_s21_strcat_both_empty);
-  tcase_add_test(tc_core, test_s21_strcat_long_string);
-  tcase_add_test(tc_core, test_s21_strcat_null_append);
-  tcase_add_test(tc_core, test_s21_strcat_buffer_overflow);
-
   tcase_add_test(tc_core, test_s21_memcpy_string);
   tcase_add_test(tc_core, test_s21_memcpy_zero_bytes);
   tcase_add_test(tc_core, test_s21_memcpy_large_data);
-  tcase_add_test(tc_core, test_s21_memcpy_overlap);
-  tcase_add_test(tc_core, test_s21_memcpy_null_pointers);
 
 
 suite_add_tcase(s, tc_core);

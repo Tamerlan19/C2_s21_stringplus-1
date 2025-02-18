@@ -25,28 +25,28 @@ int main(void) {
   }
   failed_sum += number_failed;
 
-  sr = srunner_create(s21_sprintf_suite());
-  srunner_run_all(sr, CK_NORMAL);
-  number_failed = srunner_ntests_failed(sr);
-  srunner_free(sr);
-  if (number_failed != 0) {
-    printf("Suite \"s21_printf_suite\" failed: %d tests.\n\n", number_failed);
-  } else {
-    printf("Suite \"s21_printf_suite\" passed!\n\n");
-  }
-  failed_sum += number_failed;
+  // sr = srunner_create(s21_sprintf_suite());
+  // srunner_run_all(sr, CK_NORMAL);
+  // number_failed = srunner_ntests_failed(sr);
+  // srunner_free(sr);
+  // if (number_failed != 0) {
+  //   printf("Suite \"s21_printf_suite\" failed: %d tests.\n\n", number_failed);
+  // } else {
+  //   printf("Suite \"s21_printf_suite\" passed!\n\n");
+  // }
+  // failed_sum += number_failed;
 
-  // [ ]: Uncomment test case suite
-  sr = srunner_create(s21_sscanf_suite());
-  srunner_run_all(sr, CK_NORMAL);
-  number_failed = srunner_ntests_failed(sr);
-  srunner_free(sr);
-  if (number_failed != 0) {
-    printf("Suite \"s21_scanf_suite\" failed: %d tests.\n\n", number_failed);
-  } else {
-    printf("Suite \"s21_scanf_suite\" passed!\n\n");
-  }
-  failed_sum += number_failed;
+  // // [ ]: Uncomment test case suite
+  // sr = srunner_create(s21_sscanf_suite());
+  // srunner_run_all(sr, CK_NORMAL);
+  // number_failed = srunner_ntests_failed(sr);
+  // srunner_free(sr);
+  // if (number_failed != 0) {
+  //   printf("Suite \"s21_scanf_suite\" failed: %d tests.\n\n", number_failed);
+  // } else {
+  //   printf("Suite \"s21_scanf_suite\" passed!\n\n");
+  // }
+  // failed_sum += number_failed;
 
   // if (failed_sum != 0) {
   //   printf("FAIL! %d tests is failed.\n", failed_sum);

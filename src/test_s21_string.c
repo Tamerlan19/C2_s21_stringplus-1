@@ -65,16 +65,10 @@ START_TEST(test_s21_strlen) {
   ck_assert_int_eq(s21_strlen("0987654321"), 10);
   ck_assert_int_eq(s21_strlen("\n"), strlen("\n"));
   ck_assert_int_eq(s21_strlen("\0"), strlen("\0"));
-<<<<<<< HEAD
-=======
   ck_assert_int_eq(s21_strlen(""), strlen(""));
->>>>>>> 84216d2cd5df977021cdda1d6dcf85320fb083da
   ck_assert_int_eq(
-      s21_strlen(
-          "                                                              "),
+      s21_strlen("                                                              "),
       strlen("                                                              "));
-<<<<<<< HEAD
-=======
   const char *str;
 
   str = "";
@@ -142,7 +136,6 @@ START_TEST(test_s21_strncmp) {
   str1 = "hello";
   str2 = "HELLO";
   ck_assert_int_eq(s21_strncmp(str1, str2, 5), strncmp(str1, str2, 5));
->>>>>>> 84216d2cd5df977021cdda1d6dcf85320fb083da
 }
 END_TEST
 
@@ -158,8 +151,6 @@ START_TEST(test_s21_strcmp) {
 }
 END_TEST
 
-<<<<<<< HEAD
-=======
 int compare_memory(const void *a, const void *b, s21_size_t n) {
     return memcmp(a, b, n) == 0;
 }
@@ -647,38 +638,12 @@ START_TEST(test_s21_memcpy_null_pointers) {
 END_TEST
 
 
->>>>>>> 84216d2cd5df977021cdda1d6dcf85320fb083da
 Suite *s21_string_suite(void) {
   Suite *s;
   TCase *tc_core;
 
   s = suite_create("s21_string");
   tc_core = tcase_create("Core");
-<<<<<<< HEAD
-
-  tcase_add_test(tc_core, test_s21_strlen);
-  tcase_add_test(tc_core, test_s21_strcmp);
-
-  suite_add_tcase(s, tc_core);
-
-  return s;
-}
-
-int main(void) {
-  int number_failed;
-  Suite *s;
-  SRunner *sr;
-
-  s = s21_string_suite();
-  sr = srunner_create(s);
-
-  srunner_run_all(sr, CK_NORMAL);
-  number_failed = srunner_ntests_failed(sr);
-  srunner_free(sr);
-
-  return (number_failed == 0) ? 0 : 1;
-}
-=======
   // tc_sprintf = tcase_create("sprintf");
   // tc_sscanf = tcase_create("sscanf");
 
@@ -751,4 +716,3 @@ suite_add_tcase(s, tc_core);
 
   return s;
 }
->>>>>>> 84216d2cd5df977021cdda1d6dcf85320fb083da

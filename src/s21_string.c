@@ -152,14 +152,6 @@ TODO: Part 4. Дополнительно. Реализация функции ss
 модификаторов и типов преобразования).
 */
 
-int s21_strlen(const char *str) {
-  int len = 0;
-
-  for (; *(str + len); len++)
-    ;
-
-  return len;
-}
 
 int s21_memcmp(const void *str1, const void *str2, s21_size_t n) {
     if (str1 && str2) { // Проверяем, что оба указателя не NULL
@@ -288,8 +280,6 @@ int s21_strcmp(const char *str1, const char *str2) {
   return rtn;
 }
 
-char *s21_strcpy(char *dest, const char *src) {
-  if (src != NULL) {
 /**
  * @brief Copies the string pointed to by src to the buffer pointed to by dest.
  *
@@ -315,13 +305,6 @@ char *s21_strcat(char *destination, const char *append) {
   return destination;
 }
 
-char *s21_strchr(char *str, int ch) {
-  char *rtn = NULL;
-  if (str != NULL) {
-    for (; *str && *str != ch; str++) {
-    }
-    if (*str != '\0')
-      rtn = str;
 /**
  * @brief Finds the first occurrence of a character in a string.
  *
@@ -341,8 +324,6 @@ char *s21_strchr(const char *str, int ch) {
   return rtn;
 }
 
-void *memset(void *str, int c, int n) {}
-
 void *s21_memchr(const void *str, int c, int n) {
   unsigned char *ptr = (unsigned char *)str;
   for (int i = 0; i < n; i++) {
@@ -353,29 +334,7 @@ void *s21_memchr(const void *str, int c, int n) {
   return NULL;
 }
 
-int s21_memcmp(const void *str1, const void *str2, int n) {
-  unsigned char *ptr1 = (unsigned char *)str1;
-  unsigned char *ptr2 = (unsigned char *)str2;
 
-  for (int i = 0; i < n; i++) {
-    if (ptr1[i] < ptr2[i]) {
-      return -1;
-    }
-    if (ptr1[i] > ptr2[i]) {
-      return 1;
-    }
-  }
-  return 0;
-}
-
-void *s21_memcpy(void *dest, const void *src, int n) {
-  unsigned char *src_1 = (unsigned char *)src;
-  unsigned char *dest_1 = (unsigned char *)dest;
-  for (int i = 0; i < n; i++) {
-    dest_1[i] = src_1[i];
-  }
-  return dest;
-};
 
 char *s21_strpbrk(const char *str1, const char *str2) {
   for (size_t i = 0; str1[i] != '\0'; i++) {  
@@ -387,22 +346,19 @@ char *s21_strpbrk(const char *str1, const char *str2) {
   }
   return NULL;  
 }
-char *s21_strerror(int errnum){};
-
+// [ ] Необходимо проверить корректность работы функции
 char *s21_strrchr(const char *str, int c){
   char *rtn = NULL;
-
-
   if (str != NULL) {
-    for (int str_lenght = s21_strlen(str); *str && *str != c; str_lenght-- ) {
+    str+=s21_strlen(str);
+    for (; *str && *str != c; str-- ) {
+    // if (str[i] == c)//доделать надо
+    //   rtn = str;
+    //   break;
     }
-    if (*str != '\0')//доделать надо
-      rtn = str;
   }
   return rtn;
-};
-char *s21_strstr(const char *haystack, const char *needle){};
-char *s21_strtok(char *str, const char *delim){};
+}
 
 void *s21_to_upper(const char *str) {
 
@@ -452,32 +408,39 @@ void *s21_to_lower(const char *str) {
 };
 
 void *s21_insert(const char *src, const char *str, size_t start_index) {
+  /*Возвращает новую строку, в которой указанная строка (str) вставлена 
+  в указанную позицию (start_index) в данной строке (src). 
+  В случае какой-либо ошибки следует вернуть значение NULL.
+  */
+ char *result = S21_NULL;
   if (src == NULL || str == NULL) {//проверяю, что переданныеы массивы не равны нулю
     return NULL;
   }
 
   size_t src_length = s21_strlen(src);
   size_t str_length = s21_strlen(str);
-  if (start_index < 0 || start_index > src_length) {//проверяю, что длина вставки не больше длины самого массива и индекс не отрицательный
-    return NULL;
-  }
 
-  size_t result_lenght = src_length + str_length;
-  char *result = (char *)malloc(result_lenght + 1);//выделяем, память под новый массив
-  if (result == NULL) {
-    return NULL;
-  }
+  if (start_index > 0 && start_index < src_length) {//проверяю, что длина вставки не больше длины самого массива и индекс не отрицательный
+    size_t result_lenght = src_length + str_length;
+    char *result = (char *)malloc(result_lenght + 1);//выделяем, память под новый массив
+    if (result == NULL) {
+      return NULL;
+    }
 
   s21_memcpy(result, src, start_index);//копирую src в result на start_index байтов 
-
   s21_memcpy(result + start_index, str, str_length);//копирует массив str в result начиная с start_index и вплоть до str_lenght
-
   s21_memcpy(result + start_index + str_length, src + start_index, src_length - start_index);//копирует оставшуюся часть массива
 
   result[result_lenght] = '\0';
 
+
+  } else {
+
+    return NULL;
+  }
+  
   return (void *)result;
-};
+}
 
 void *s21_trim(const char *src, const char *trim_chars){
   if (src == NULL || trim_chars == NULL)//проверяю на корректность переданной строки

@@ -43,6 +43,29 @@ test, s21_string.a, gcov_report).
 этого unit-тесты должны запускаться с флагами gcov.
  - Перед каждой функцией используй префикс s21_.
 No.	Function	Description
+ - [ ] void *s21_memchr(const void *str, int c, size_t n)	Searches for the
+first occurrence of the character c (an unsigned char) in the first n bytes of
+the string pointed to, by the argument str.
+ - [ ] int s21_memcmp(const void *str1, const void *str2, size_t n)	Compares
+the first n bytes of str1 and str2.
+ - [ ] void *s21_memcpy(void *dest, const void *src, size_t n)	Copies n
+characters from src to dest.
+ - [ ] void *s21_memset(void *str, int c, size_t n)	Copies the character c
+(an unsigned char) to the first n characters of the string pointed to, by the
+argument str.
+ - [ ] char *s21_strncat(char *dest, const char *src, size_t n)	Appends the
+string pointed to, by src to the end of the string pointed to, by dest up to n
+characters long.
+ - [ ] char *s21_strchr(const char *str, int c)	Searches for the first
+occurrence of the character c (an unsigned char) in the string pointed to, by
+the argument str.
+ - [ ] int s21_strncmp(const char *str1, const char *str2, size_t n)	Compares
+at most the first n bytes of str1 and str2.
+ - [ ] char *s21_strncpy(char *dest, const char *src, size_t n)	Copies up to n
+characters from the string pointed to, by src to dest.
+ - [ ] size_t s21_strcspn(const char *str1, const char *str2)	Calculates the
+length of the initial segment of str1 which consists entirely of characters not
+in str2.
  - [ ] void *s21_memchr(const void *str, int c, s21_size_t n)	Searches for the
 first occurrence of the character c (an unsigned char) in the first n bytes of
 the string pointed to, by the argument str.
@@ -71,6 +94,7 @@ number errnum and returns a pointer to an error message string. You need to
 declare macros containing arrays of error messages for mac and linux operating
 systems. Error descriptions are available in the original library. Checking the
 current OS is carried out using directives.
+ - [x] 	size_t s21_strlen(const char *str)	Computes the length of the
  - [x] 	s21_size_t s21_strlen(const char *str)	Computes the length of the
 string str up to but not including the terminating null character.
  - [ ] 	char *s21_strpbrk(const char *str1, const char *str2)	Finds the first
@@ -88,6 +112,7 @@ series of tokens separated by delim.
 /**
 TODO: Part 2. Частичная реализация функции sprintf
 Тебе необходимо реализовать функцию sprintf из библиотеки stdio.h:
+- [ ] sprintf()
 - [ ] sprintf(): %[флаги][ширина][.точность][длина]спецификатор
 - [ ] обработка форматной строки и заполнение параметров вывода (Структура?)
 Функция должна быть размещена в библиотеке s21_string.h.
@@ -102,6 +127,7 @@ TODO: Part 2. Частичная реализация функции sprintf
 
 /**
 TODO: Part 3. Дополнительно. Реализация некоторых модификаторов формата функции
+sprintf Необязательное задание на дополнительные баллы: реализуй некоторые
 - [ ] sprintf Необязательное задание на дополнительные баллы: реализуй некоторые
 модификаторы формата функции sprintf из библиотеки stdio.h:
 
@@ -114,6 +140,19 @@ TODO: Part 3. Дополнительно. Реализация некоторы�
 Точность: .*
 Длина: L
 */
+
+/**
+TODO: Part 4. Дополнительно. Реализация функции sscanf
+Необязательное задание на дополнительные баллы: реализуй функцию sscanf из
+библиотеки stdio.h:
+
+Функция должна быть размещена в библиотеке s21_string.h;
+На реализацию функции накладываются все требования, изложенные в первой части.
+Должно поддерживаться полное форматирование (с учетом флагов, ширины, точности,
+модификаторов и типов преобразования).
+*/
+
+
 int s21_memcmp(const void *str1, const void *str2, s21_size_t n) {
   if (str1 && str2) { // Проверяем, что оба указателя не NULL
     const unsigned char *s1 = (const unsigned char *)str1;
@@ -286,6 +325,165 @@ char *s21_strchr(const char *str, int ch) {
   return rtn;
 }
 
+void *s21_memchr(const void *str, int c, int n) {
+  unsigned char *ptr = (unsigned char *)str;
+  for (int i = 0; i < n; i++) {
+    if (ptr[i] == (unsigned char)c) {
+      return (void *)(ptr + i);
+    }
+  }
+  return NULL;
+}
+
+
+
+char *s21_strpbrk(const char *str1, const char *str2) {
+  for (size_t i = 0; str1[i] != '\0'; i++) {  
+      for (size_t j = 0; str2[j] != '\0'; j++) {  
+          if (str1[i] == str2[j]) {  
+              return (char *)&str1[i];  
+          }
+      }
+  }
+  return NULL;  
+}
+// [ ] Необходимо проверить корректность работы функции
+char *s21_strrchr(const char *str, int c){
+  char *rtn = NULL;
+  if (str != NULL) {
+    str+=s21_strlen(str);
+    for (; *str && *str != c; str-- ) {
+    // if (str[i] == c)//доделать надо
+    //   rtn = str;
+    //   break;
+    }
+  }
+  return rtn;
+}
+
+void *s21_to_upper(const char *str) {
+
+  if (str == NULL) {
+    return NULL;
+  }
+
+  size_t length = strlen(str);
+  char *result = (char *)malloc(length + 1);
+  if (result == NULL) {
+    return NULL;
+  }
+
+  for (size_t i = 0; i < length; i++) {
+    if (str[i] >= 'a' && str[i] <= 'z') {
+      result[i] = str[i] - 32;
+    } else {
+      result[i] = str[i];
+    }
+  }
+
+  result[length] = '\0';
+  return (void *)result;
+};
+
+void *s21_to_lower(const char *str) {
+  if (str == NULL) {
+    return NULL;
+  }
+
+  size_t length = strlen(str);
+  char *result = (char *)malloc(length + 1);
+  if (result == NULL) {
+    return NULL;
+  }
+
+  for (size_t i = 0; i < length; i++) {
+    if (str[i] >= 'A' && str[i] <= 'Z') {
+      result[i] = str[i] + 32;
+    } else {
+      result[i] = str[i];
+    }
+  }
+
+  result[length] = '\0';
+  return (void *)result;
+};
+
+void *s21_insert(const char *src, const char *str, size_t start_index) {
+  /*Возвращает новую строку, в которой указанная строка (str) вставлена 
+  в указанную позицию (start_index) в данной строке (src). 
+  В случае какой-либо ошибки следует вернуть значение NULL.
+  */
+ char *result = S21_NULL;
+  if (src == NULL || str == NULL) {//проверяю, что переданныеы массивы не равны нулю
+    return NULL;
+  }
+
+  size_t src_length = s21_strlen(src);
+  size_t str_length = s21_strlen(str);
+
+  if (start_index > 0 && start_index < src_length) {//проверяю, что длина вставки не больше длины самого массива и индекс не отрицательный
+    size_t result_lenght = src_length + str_length;
+    char *result = (char *)malloc(result_lenght + 1);//выделяем, память под новый массив
+    if (result == NULL) {
+      return NULL;
+    }
+
+  s21_memcpy(result, src, start_index);//копирую src в result на start_index байтов 
+  s21_memcpy(result + start_index, str, str_length);//копирует массив str в result начиная с start_index и вплоть до str_lenght
+  s21_memcpy(result + start_index + str_length, src + start_index, src_length - start_index);//копирует оставшуюся часть массива
+
+  result[result_lenght] = '\0';
+
+
+  } else {
+
+    return NULL;
+  }
+  
+  return (void *)result;
+}
+
+void *s21_trim(const char *src, const char *trim_chars){
+  if (src == NULL || trim_chars == NULL)//проверяю на корректность переданной строки
+  {
+    return NULL;
+  }
+  size_t src_length = s21_strlen(src);
+  size_t trim_length = s21_strlen(trim_chars);//длины строк
+
+  
+  if (trim_length == 0) {
+    trim_chars = " \t\n\r";
+    trim_length = s21_strlen(trim_chars);
+  }
+
+  
+  size_t start = 0;//определяю начало
+  while (start < src_length && strchr(trim_chars, src[start]) != NULL) {
+    start++;
+  }
+
+  
+  size_t end = src_length;//определяю конец, пропускаю символы из trim
+  while (end > start && strchr(trim_chars, src[end - 1]) != NULL) {
+    end--;
+  }
+
+  
+  size_t result_length = end - start;//память под строку
+  char *result = (char *)malloc(result_length + 1);
+  if (result == NULL) {
+    return NULL;
+  }
+
+
+  s21_memcpy(result, src + start, result_length);
+  result[result_length] = '\0';
+
+  return (void *)result;
+
+  
+};
 /**
  * @brief Copies n bytes from the memory area src to the memory area dest.
  *

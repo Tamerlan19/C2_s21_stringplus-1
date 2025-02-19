@@ -618,7 +618,7 @@ START_TEST(test_s21_memcpy_string) {
     char src[] = "Hello, world!";
     char dest[50] = {0};
 
-    s21_memcpy(dest, src, strlen(src) + 1); // Копируем строку с нулевым байтом
+    s21_memcpy(dest, src, strlen(src)); // Копируем строку с нулевым байтом
 
     ck_assert_str_eq(dest, src); // Проверяем равенство строк
 }

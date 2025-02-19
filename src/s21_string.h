@@ -26,14 +26,6 @@ typedef unsigned long s21_size_t; // 64-bit Linux/macOS
 typedef unsigned int s21_size_t; // 32-bit
 #endif
 
-typedef struct {
-  char flag;
-  int width;
-  int precision;
-  char length;
-  char specifier;
-} Specifiers;
-
 void *s21_memchr(const void *str, int c, size_t n);
 int s21_memcmp(const void *str1, const void *str2, s21_size_t n);
 void *s21_memcpy(void *dest, const void *src, s21_size_t n);

@@ -8,6 +8,7 @@ int proc_spec_d(const char *str, va_list args, const Specifiers st_spec);
 int proc_spec_s(const char *str, va_list args, const Specifiers st_spec);
 int proc_spec_f(const char *str, va_list args, const Specifiers st_spec);
 int proc_spec_c(const char *str, va_list args, const Specifiers st_spec);
+int proc_spec_u(const char *str, va_list args, const Specifiers st_spec);
 int is_alpha(char c);
 int is_digit(char c);
 int is_space(char c);
@@ -135,6 +136,22 @@ int s21_sscanf(const char *str, const char *format, ...) {
               DEBUG_PRINT(" after process string Result=%d\n", res);
               DEBUG_PRINT(" p=|%s|\n", p);
               DEBUG_PRINT(" fmt=|%s|\n", fmt);
+            } else if (st_spec.specifier == 'u') {
+              DEBUG_PRINT("Start process %%u specificator...");
+              int step = 0;
+              step = proc_spec_u(p, args, st_spec);
+              DEBUG_PRINT("Incriment *p +step=%d\n", step);
+              if (step > 0) {
+                p = p + step;
+                if (st_spec.flag != '*') {
+                  res++;
+                }
+              } else if (step < 0 && res == 0) {
+                res = -1;
+              }
+              DEBUG_PRINT(" after process string Result=%d\n", res);
+              DEBUG_PRINT(" p=|%s|\n", p);
+              DEBUG_PRINT(" fmt=|%s|\n", fmt);
             } else if (st_spec.specifier == '%') {
               DEBUG_PRINT(" Char=%c\n", *p);
               p++;
@@ -212,6 +229,14 @@ int s21_sscanf(const char *str, const char *format, ...) {
     DEBUG_PRINT(" result read_wchar=%d\n", res);
     return res;
   }
+
+  /**
+* @brief Parses a number from a string.
+*
+* @param p The string to parse.
+* @param res A pointer to a long int where the parsed number will be stored.
+* @return The number of characters parsed.
+*/
   int get_number(const char *p, long int *res) {
     *res = 0;
     int i = 0;
@@ -416,6 +441,7 @@ int s21_sscanf(const char *str, const char *format, ...) {
     DEBUG_PRINT(" value Step=%ld\n", p - str);
     return res;
   }
+
   int proc_spec_d(const char *str, va_list args, const Specifiers st_spec) {
     int res = 0;
     s21_size_t i = 0;
@@ -435,9 +461,10 @@ int s21_sscanf(const char *str, const char *format, ...) {
     //   printf("Noop symbol:|%c|\n", *p);
     //   p++;
     // }
-    // DEBUG_PRINT(" String str=|%s|\n", str);
-    // DEBUG_PRINT(" String arg_str=|%s|\n", arg_str);
-    // DEBUG_PRINT(" String copy with Width=%s\n", p);
+    noop_space(&p);
+    DEBUG_PRINT(" String str=|%s|\n", str);
+    DEBUG_PRINT(" String arg_str=|%s|\n", arg_str);
+    DEBUG_PRINT(" String copy with Width=%s\n", p);
     DEBUG_PRINT(" Input string for convert to int=|%s|\n", p);
     int step = 0;
     step = get_number(p, &result);
@@ -467,3 +494,44 @@ int s21_sscanf(const char *str, const char *format, ...) {
     return res;
   }
   
+  int proc_spec_u(const char *str, va_list args, const Specifiers st_spec){
+    int res = 0;
+    s21_size_t i = 0;
+    int width = st_spec.width >= 0 ? st_spec.width : (int)s21_strlen(str);
+    long int result = 0;
+    char arg_str[s21_strlen(str) + 1];
+    if (st_spec.width > 0) {
+      s21_memcpy(arg_str, str, width);
+      arg_str[st_spec.width] = '\0';
+    } else {
+      s21_memcpy(arg_str, str, s21_strlen(str));
+    }
+    arg_str[s21_strlen(str)] = '\0';
+    const char *p = arg_str; // Указатель на входную строку
+    noop_space(&p);
+    DEBUG_PRINT(" Input string for convert to int=|%s|\n", p);
+    int step = 0;
+    step = get_number(p, &result);
+    p += step;
+    DEBUG_PRINT(" Width=%d result=%ld step=%d.\n", width, result, step);
+    i++;
+    if (step > 0) {
+      if (st_spec.flag != '*') {
+        if (st_spec.length == 'h') {
+          short unsigned int *ch = va_arg(args, short unsigned int *);
+          *ch = (short unsigned int)result;
+        } else if (st_spec.length == 'l') {
+          long unsigned int *ch = va_arg(args, long unsigned int *);
+          *ch = (long unsigned int) result;
+        } else {
+          unsigned int *ch = va_arg(args, unsigned int *);
+          *ch = (unsigned int )result;
+        }
+      }
+      res = p - arg_str;
+    } else if (*p == '\0' && st_spec.flag != '*') {
+      res = -1;
+    }
+  
+    return res;
+  }

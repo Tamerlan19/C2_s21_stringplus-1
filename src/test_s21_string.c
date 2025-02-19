@@ -294,7 +294,7 @@ START_TEST(test_s21_memcmp_different_blocks) {
 
   int result = s21_memcmp(buffer1, buffer2, n);
   int expected = memcmp(buffer1, buffer2, n); // Вызов оригинальной функции
-  ck_assert_int_eq(result, expected); // Ожидаем отрицательное значение ('e' < 'z')
+  ck_assert_int_eq(result, expected); 
 }
 END_TEST
 
@@ -305,8 +305,8 @@ START_TEST(test_s21_memcmp_partial_identical) {
   s21_size_t n = 6;
 
   int result = s21_memcmp(buffer1, buffer2, n);
-  int expected = memcmp(buffer1, buffer2, n); // Вызов оригинальной функции
-  ck_assert_int_eq(result, expected); // Ожидаем 0 (первые 6 байт идентичны)
+  int expected = memcmp(buffer1, buffer2, n); 
+  ck_assert_int_eq(result, expected);
 }
 END_TEST
 
@@ -317,8 +317,8 @@ START_TEST(test_s21_memcmp_partial_different) {
   s21_size_t n = 7;
 
   int result = s21_memcmp(buffer1, buffer2, n);
-  int expected = memcmp(buffer1, buffer2, n); // Вызов оригинальной функции
-  ck_assert_int_eq(result, expected); // Ожидаем отрицательное значение ('g' < 'h')
+  int expected = memcmp(buffer1, buffer2, n); 
+  ck_assert_int_eq(result, expected); 
 }
 END_TEST
 
@@ -474,6 +474,65 @@ START_TEST(test_s21_strncat_null_pointers) {
     }
 }
 END_TEST
+
+
+START_TEST(test_s21_strncat)
+{
+   char dest1[100] = "Hello, ";
+   char dest2[100] = "Hello, ";
+   char src[] = "World!";
+   size_t n = 5;
+
+   s21_strncat(dest1, src, n);
+   strncat(dest2, src, n);
+
+   ck_assert_str_eq(dest1, dest2);
+}
+END_TEST
+
+START_TEST(test_s21_strncat_empty_dest)
+{
+   char dest1[100] = "";
+   char dest2[100] = "";
+   char src[] = "World!";
+   size_t n = 5;
+
+   s21_strncat(dest1, src, n);
+   strncat(dest2, src, n);
+
+   ck_assert_str_eq(dest1, dest2);
+}
+END_TEST
+
+
+START_TEST(test_s21_strncat_zero_n)
+{
+   char dest1[100] = "Hello, ";
+   char dest2[100] = "Hello, ";
+   char src[] = "World!";
+   size_t n = 0;
+
+   s21_strncat(dest1, src, n);
+   strncat(dest2, src, n);
+
+   ck_assert_str_eq(dest1, dest2);
+}
+END_TEST
+
+START_TEST(test_s21_strncat_large_n)
+{
+   char dest1[100] = "Hello, ";
+   char dest2[100] = "Hello, ";
+   char src[] = "World!";
+   size_t n = 100;
+
+   s21_strncat(dest1, src, n);
+   strncat(dest2, src, n);
+
+   ck_assert_str_eq(dest1, dest2);
+}
+END_TEST
+
 
 START_TEST(test_s21_strncpy_short_src) {
   char dest[50] = "Original";
@@ -706,7 +765,11 @@ Suite *s21_string_suite(void) {
   tcase_add_test(tc_core, test_s21_strncat_empty_src);
   tcase_add_test(tc_core, test_s21_strncat_n_zero);
   tcase_add_test(tc_core, test_s21_strncat_null_pointers);
-
+  tcase_add_test(tc_core, test_s21_strncat);
+  tcase_add_test(tc_core, test_s21_strncat_empty_dest);
+  tcase_add_test(tc_core, test_s21_strncat_zero_n);
+  tcase_add_test(tc_core, test_s21_strncat_large_n);
+  
   tcase_add_test(tc_core, test_s21_strcspn_empty_str1);
   tcase_add_test(tc_core, test_s21_strcspn_empty_str2);
   tcase_add_test(tc_core, test_s21_strcspn_no_match);

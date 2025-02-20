@@ -656,6 +656,65 @@ START_TEST(test_s21_memcpy_large_data) {
 }
 END_TEST
 
+START_TEST(test_s21_strpbrk_found) {
+    const char *str1 = "hello world";
+    const char *str2 = "abcde";
+    const char *result = s21_strpbrk(str1, str2);
+    ck_assert_ptr_ne(result, NULL); // Проверяем, что результат не NULL
+    ck_assert_str_eq(result, "ello world"); // Проверяем, что строка начинается с найденного символа
+}
+END_TEST
+
+START_TEST(test_s21_strpbrk_not_found) {
+    const char *str1 = "hello world";
+    const char *str2 = "xyz";
+    const char *result = s21_strpbrk(str1, str2);
+    ck_assert_ptr_eq(result, NULL); // Проверяем, что результат равен NULL
+}
+END_TEST
+
+START_TEST(test_s21_strpbrk_empty_str1) {
+    const char *str1 = "";
+    const char *str2 = "abc";
+    const char *result = s21_strpbrk(str1, str2);
+    ck_assert_ptr_eq(result, NULL); // Проверяем, что результат равен NULL
+}
+END_TEST
+
+START_TEST(test_s21_strpbrk_empty_str2) {
+    const char *str1 = "hello world";
+    const char *str2 = "";
+    const char *result = s21_strpbrk(str1, str2);
+    ck_assert_ptr_eq(result, NULL); // Проверяем, что результат равен NULL
+}
+END_TEST
+
+START_TEST(test_s21_strrchr_found) {
+    const char *str = "hello world";
+    int c = 'o';
+    const char *result = s21_strrchr(str, c);
+    ck_assert_ptr_ne(result, NULL); // Проверяем, что результат не NULL
+    ck_assert_str_eq(result, "orld"); // Проверяем, что строка начинается с последнего вхождения символа
+}
+END_TEST
+
+START_TEST(test_s21_strrchr_not_found) {
+    const char *str = "hello world";
+    int c = 'z';
+    const char *result = s21_strrchr(str, c);
+    ck_assert_ptr_eq(result, NULL); // Проверяем, что результат равен NULL
+}
+END_TEST
+
+START_TEST(test_s21_strrchr_empty_string) {
+    const char *str = "";
+    int c = 'a';
+    const char *result = s21_strrchr(str, c);
+    ck_assert_ptr_eq(result, NULL); // Проверяем, что результат равен NULL
+}
+END_TEST
+
+
 
 Suite *s21_string_suite(void) {
   Suite *s;
@@ -719,6 +778,14 @@ Suite *s21_string_suite(void) {
   tcase_add_test(tc_core, test_s21_memcpy_zero_bytes);
   tcase_add_test(tc_core, test_s21_memcpy_large_data);
 
+  tcase_add_test(tc_core, test_s21_strpbrk_found);
+  tcase_add_test(tc_core, test_s21_strpbrk_not_found);
+  tcase_add_test(tc_core, test_s21_strpbrk_empty_str1);
+  tcase_add_test(tc_core, test_s21_strpbrk_empty_str2);
+
+  tcase_add_test(tc_core, test_s21_strrchr_found);
+  tcase_add_test(tc_core, test_s21_strrchr_not_found);
+  tcase_add_test(tc_core, test_s21_strrchr_empty_string);
 
 suite_add_tcase(s, tc_core);
 

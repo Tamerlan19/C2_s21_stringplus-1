@@ -9,7 +9,7 @@ Suite *s21_sprintf_suite(void);
 Suite *s21_sscanf_suite(void);
 
 int main(void) {
-  int number_failed = 0, failed_sum = 0, checks=0;
+  int number_failed = 0, failed_sum = 0, checks = 0;
 
   SRunner *sr;
 
@@ -53,11 +53,12 @@ int main(void) {
   failed_sum += number_failed;
 
   if (failed_sum != 0) {
-    printf("FAIL! Checks:%d, Failures:%d tests is failed.\n", checks, failed_sum);
+    printf("FAIL! Checks:%d, Failures:%d tests is failed.\n", checks,
+           failed_sum);
   } else {
     printf("PASS! Checks:%d, Failures:%d\n", checks, failed_sum);
   }
 
-    // return (failed_sum == 0) ? 0 : 1;
-    return 0;
+  // return (failed_sum == 0) ? 0 : 1;
+  return 0;
 }

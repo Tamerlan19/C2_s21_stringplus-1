@@ -1,15 +1,28 @@
 #ifndef S21_LIB_UTIL
 #define S21_LIB_UTIL
+#include "s21_string.h"
+
+//[ ] Добавил для функции *s21_memmove(void *dest, const void *src, s21_size_t
+//n);
+// ВОзможно стоит перенести её в s21_sprintf, но без обяъвления в s21_string.h
+// #ifdef _WIN64
+// typedef unsigned long s21_size_t; // 64-bit Windows
+// #elif __x86_64__ || __ppc64__ || __aarch64__
+// typedef unsigned long s21_size_t; // 64-bit Linux/macOS
+// #else
+// typedef unsigned int s21_size_t; // 32-bit
+// #endif
+
 typedef struct {
-    char flag;
-    int width;
-    int precision;
-    char length;
-    char specifier;
-  } Specifiers;
+  char flag;
+  int width;
+  int precision;
+  char length;
+  char specifier;
+} Specifiers;
 
 int parse_specifiers(const char *format, Specifiers *st_spec);
-void *memmove(void *dest, const void *src, size_t n);
+void *s21_memmove(void *dest, const void *src, s21_size_t n);
 int is_digit(char c);
 int is_alpha(char c);
 int is_space(char c);

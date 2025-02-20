@@ -1,8 +1,8 @@
 #include "s21_string.h"
 #include <check.h>
+#include <limits.h>
 #include <locale.h>
 #include <stdio.h>
-#include <limits.h>
 
 START_TEST(test_s21_sscanf_d_simple) {
   const char *input = "123";
@@ -890,420 +890,1479 @@ START_TEST(test_s21_sscanf_d_separator_skip) {
 }
 END_TEST
 
-START_TEST(test_s21_sscanf_u)
-{
-   char str[] = "12345";
-   unsigned int res1, res2;
+START_TEST(test_s21_sscanf_u) {
+  char str[] = "12345";
+  unsigned int res1, res2;
 
-   int ret1 = s21_sscanf(str, "%u", &res1);
-   int ret2 = sscanf(str, "%u", &res2);
+  int ret1 = s21_sscanf(str, "%u", &res1);
+  int ret2 = sscanf(str, "%u", &res2);
 
-   ck_assert_int_eq(res1, res2);
-   ck_assert_int_eq(ret1, ret2);
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
-START_TEST(test_s21_sscanf_u_zero)
-{
-   char str[] = "0";
-   unsigned int res1, res2;
+START_TEST(test_s21_sscanf_u_zero) {
+  char str[] = "0";
+  unsigned int res1, res2;
 
-   int ret1 = s21_sscanf(str, "%u", &res1);
-   int ret2 = sscanf(str, "%u", &res2);
+  int ret1 = s21_sscanf(str, "%u", &res1);
+  int ret2 = sscanf(str, "%u", &res2);
 
-   ck_assert_int_eq(res1, res2);
-   ck_assert_int_eq(ret1, ret2);
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
-START_TEST(test_s21_sscanf_u_max)
-{
-   char str[] = "4294967295";
-   unsigned int res1, res2;
+START_TEST(test_s21_sscanf_u_max) {
+  char str[] = "4294967295";
+  unsigned int res1, res2;
 
-   int ret1 = s21_sscanf(str, "%u", &res1);
-   int ret2 = sscanf(str, "%u", &res2);
+  int ret1 = s21_sscanf(str, "%u", &res1);
+  int ret2 = sscanf(str, "%u", &res2);
 
-   ck_assert_int_eq(res1, res2);
-   ck_assert_int_eq(ret1, ret2);
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
-START_TEST(test_s21_sscanf_u_overflow)
-{
-   char str[] = "4294967296";
-   unsigned int res1, res2;
+START_TEST(test_s21_sscanf_u_overflow) {
+  char str[] = "4294967296";
+  unsigned int res1, res2;
 
-   int ret1 = s21_sscanf(str, "%u", &res1);
-   int ret2 = sscanf(str, "%u", &res2);
+  int ret1 = s21_sscanf(str, "%u", &res1);
+  int ret2 = sscanf(str, "%u", &res2);
 
-   ck_assert_int_eq(res1, res2);
-   ck_assert_int_eq(ret1, ret2);
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
-START_TEST(test_s21_sscanf_u_negative)
-{
-   char str[] = "-12345";
-   unsigned int res1, res2;
+START_TEST(test_s21_sscanf_u_negative) {
+  char str[] = "-12345";
+  unsigned int res1, res2;
 
-   int ret1 = s21_sscanf(str, "%u", &res1);
-   int ret2 = sscanf(str, "%u", &res2);
+  int ret1 = s21_sscanf(str, "%u", &res1);
+  int ret2 = sscanf(str, "%u", &res2);
 
-   ck_assert_int_eq(res1, res2);
-   ck_assert_int_eq(ret1, ret2);
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
+START_TEST(test_s21_sscanf_u_width) {
+  char str[] = "12345";
+  unsigned int res1, res2;
 
-START_TEST(test_s21_sscanf_u_width)
-{
-   char str[] = "12345";
-   unsigned int res1, res2;
+  int ret1 = s21_sscanf(str, "%5u", &res1);
+  int ret2 = sscanf(str, "%5u", &res2);
 
-   int ret1 = s21_sscanf(str, "%5u", &res1);
-   int ret2 = sscanf(str, "%5u", &res2);
-
-   ck_assert_int_eq(res1, res2);
-   ck_assert_int_eq(ret1, ret2);
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
-START_TEST(test_s21_sscanf_u_width_zero)
-{
-   char str[] = "0";
-   unsigned int res1, res2;
+START_TEST(test_s21_sscanf_u_width_zero) {
+  char str[] = "0";
+  unsigned int res1, res2;
 
-   int ret1 = s21_sscanf(str, "%5u", &res1);
-   int ret2 = sscanf(str, "%5u", &res2);
+  int ret1 = s21_sscanf(str, "%5u", &res1);
+  int ret2 = sscanf(str, "%5u", &res2);
 
-   ck_assert_int_eq(res1, res2);
-   ck_assert_int_eq(ret1, ret2);
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
-START_TEST(test_s21_sscanf_u_width_max)
-{
-   char str[] = "4294967295";
-   unsigned int res1, res2;
+START_TEST(test_s21_sscanf_u_width_max) {
+  char str[] = "4294967295";
+  unsigned int res1, res2;
 
-   int ret1 = s21_sscanf(str, "%5u", &res1);
-   int ret2 = sscanf(str, "%5u", &res2);
+  int ret1 = s21_sscanf(str, "%5u", &res1);
+  int ret2 = sscanf(str, "%5u", &res2);
 
-   ck_assert_int_eq(res1, res2);
-   ck_assert_int_eq(ret1, ret2);
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
-START_TEST(test_s21_sscanf_u_width_overflow)
-{
-   char str[] = "4294967296";
-   unsigned int res1, res2;
+START_TEST(test_s21_sscanf_u_width_overflow) {
+  char str[] = "4294967296";
+  unsigned int res1, res2;
 
-   int ret1 = s21_sscanf(str, "%5u", &res1);
-   int ret2 = sscanf(str, "%5u", &res2);
+  int ret1 = s21_sscanf(str, "%5u", &res1);
+  int ret2 = sscanf(str, "%5u", &res2);
 
-   ck_assert_int_eq(res1, res2);
-   ck_assert_int_eq(ret1, ret2);
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
-START_TEST(test_s21_sscanf_u_width_negative)
-{
-   char str[] = "-12345";
-   unsigned int res1, res2;
+START_TEST(test_s21_sscanf_u_width_negative) {
+  char str[] = "-12345";
+  unsigned int res1, res2;
 
-   int ret1 = s21_sscanf(str, "%5u", &res1);
-   int ret2 = sscanf(str, "%5u", &res2);
+  int ret1 = s21_sscanf(str, "%5u", &res1);
+  int ret2 = sscanf(str, "%5u", &res2);
 
-   ck_assert_int_eq(res1, res2);
-   ck_assert_int_eq(ret1, ret2);
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
+START_TEST(test_s21_sscanf_u_width_star) {
+  char str[] = "12345";
+  unsigned int res1 = 1, res2 = 2;
+  char *fmt = "%*3u%u";
 
-START_TEST(test_s21_sscanf_u_width_star)
-{
-   char str[] = "12345";
-   unsigned int res1=1, res2=2;
-   char *fmt="%*3u%u";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
 
-   int ret1 = s21_sscanf(str, fmt, &res1);
-   int ret2 = sscanf(str, fmt, &res2);
-
-   ck_assert_int_eq(res1, res2);
-   ck_assert_int_eq(ret1, ret2);
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
-START_TEST(test_s21_sscanf_u_width_star_zero)
-{
-   char str[] = "0";
-   unsigned int res1={0}, res2={0};
-   char *fmt="%*5u%u";
+START_TEST(test_s21_sscanf_u_width_star_zero) {
+  char str[] = "0";
+  unsigned int res1 = {0}, res2 = {0};
+  char *fmt = "%*5u%u";
 
-   int ret1 = s21_sscanf(str, fmt, &res1);
-   int ret2 = sscanf(str, fmt, &res2);
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
 
-   ck_assert_int_eq(res1, res2);
-   ck_assert_int_eq(ret1, ret2);
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
-START_TEST(test_s21_sscanf_u_width_star_max)
-{
-   char str[] = "4294967295";
-   unsigned int res1={0}, res2={0};
-   char *fmt="%*5u";
+START_TEST(test_s21_sscanf_u_width_star_max) {
+  char str[] = "4294967295";
+  unsigned int res1 = {0}, res2 = {0};
+  char *fmt = "%*5u";
 
-   int ret1 = s21_sscanf(str, fmt, &res1);
-   int ret2 = sscanf(str, fmt, &res2);
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
 
-   ck_assert_int_eq(res1, res2);
-   ck_assert_int_eq(ret1, ret2);
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
-START_TEST(test_s21_sscanf_u_width_star_overflow)
-{
-   char str[] = "4294967296";
-   unsigned int res1={0}, res2={0};
-   char *fmt="%*5u";
+START_TEST(test_s21_sscanf_u_width_star_overflow) {
+  char str[] = "4294967296";
+  unsigned int res1 = {0}, res2 = {0};
+  char *fmt = "%*5u";
 
-   int ret1 = s21_sscanf(str, fmt, &res1);
-   int ret2 = sscanf(str, fmt, &res2);
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
 
-   ck_assert_int_eq(res1, res2);
-   ck_assert_int_eq(ret1, ret2);
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
-START_TEST(test_s21_sscanf_u_width_star_negative)
-{
-   char str[] = "-12345";
-   unsigned int res1=0, res2=0;
-   char *fmt="%*5u";
+START_TEST(test_s21_sscanf_u_width_star_negative) {
+  char str[] = "-12345";
+  unsigned int res1 = 0, res2 = 0;
+  char *fmt = "%*5u";
 
-   int ret1 = s21_sscanf(str, fmt, &res1);
-   int ret2 = sscanf(str, fmt, &res2);
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
 
-   ck_assert_int_eq(res1, res2);
-   ck_assert_int_eq(ret1, ret2);
-  }
-  END_TEST
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
 
-  START_TEST(test_s21_sscanf_hu_simple) {
-    const char *input = "12345";
-    unsigned short hu = 0;
+START_TEST(test_s21_sscanf_hu_simple) {
+  const char *input = "12345";
+  unsigned short hu = 0;
 
-    int result_s21 = s21_sscanf(input, "%hu", &hu);
-    int result_std = sscanf(input, "%hu", &hu);
+  int result_s21 = s21_sscanf(input, "%hu", &hu);
+  int result_std = sscanf(input, "%hu", &hu);
 
-    ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-    ck_assert_uint_eq(hu, 12345);            // Проверяем значение
+  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
+  ck_assert_uint_eq(hu, 12345); // Проверяем значение
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_hu_width) {
-    const char *input = "123456789";
-    unsigned short hu = 0;
+  const char *input = "123456789";
+  unsigned short hu = 0;
 
-    int result_s21 = s21_sscanf(input, "%4hu", &hu);
-    int result_std = sscanf(input, "%4hu", &hu);
+  int result_s21 = s21_sscanf(input, "%4hu", &hu);
+  int result_std = sscanf(input, "%4hu", &hu);
 
-    ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-    ck_assert_uint_eq(hu, 1234);             // Проверяем значение с ограничением по ширине
+  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
+  ck_assert_uint_eq(hu, 1234); // Проверяем значение с ограничением по ширине
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_hu_flag_star) {
-    const char *input = "12345";
-    unsigned short hu = 0;
-    char * fmt= "%*hu %hu";
-    int result_s21 = s21_sscanf(input, fmt, &hu);
-    int result_std = sscanf(input, fmt, &hu);
+  const char *input = "12345";
+  unsigned short hu = 0;
+  char *fmt = "%*hu %hu";
+  int result_s21 = s21_sscanf(input, fmt, &hu);
+  int result_std = sscanf(input, fmt, &hu);
 
-    ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-    ck_assert_uint_eq(hu, 0);                // Значение не должно быть прочитано из-за флага '*'
+  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
+  ck_assert_uint_eq(hu, 0); // Значение не должно быть прочитано из-за флага '*'
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_hu_overflow) {
-    const char *input = "65536"; // Значение больше, чем может вместить unsigned short
-    unsigned short hu = 0;
+  const char *input =
+      "65536"; // Значение больше, чем может вместить unsigned short
+  unsigned short hu = 0;
 
-    int result_s21 = s21_sscanf(input, "%hu", &hu);
-    int result_std = sscanf(input, "%hu", &hu);
+  int result_s21 = s21_sscanf(input, "%hu", &hu);
+  int result_std = sscanf(input, "%hu", &hu);
 
-    ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-    ck_assert_uint_eq(hu, 0);                // При переполнении результат зависит от реализации, но часто это 0
+  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
+  ck_assert_uint_eq(
+      hu,
+      0); // При переполнении результат зависит от реализации, но часто это 0
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_lu_simple) {
-    const char *input = "1234567890";
-    unsigned long lu = 0;
+  const char *input = "1234567890";
+  unsigned long lu = 0;
 
-    int result_s21 = s21_sscanf(input, "%lu", &lu);
-    int result_std = sscanf(input, "%lu", &lu);
+  int result_s21 = s21_sscanf(input, "%lu", &lu);
+  int result_std = sscanf(input, "%lu", &lu);
 
-    ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-    ck_assert_uint_eq(lu, 1234567890);       // Проверяем значение
+  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
+  ck_assert_uint_eq(lu, 1234567890); // Проверяем значение
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_lu_width) {
-    const char *input = "123456789012345";
-    unsigned long lu = 0;
+  const char *input = "123456789012345";
+  unsigned long lu = 0;
 
-    int result_s21 = s21_sscanf(input, "%10lu", &lu);
-    int result_std = sscanf(input, "%10lu", &lu);
+  int result_s21 = s21_sscanf(input, "%10lu", &lu);
+  int result_std = sscanf(input, "%10lu", &lu);
 
-    ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-    ck_assert_uint_eq(lu, 1234567890);       // Проверяем значение с ограничением по ширине
+  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
+  ck_assert_uint_eq(lu,
+                    1234567890); // Проверяем значение с ограничением по ширине
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_lu_flag_star) {
-    const char *input = "1234567890";
-    unsigned long lu = 0;
-    char *fmt= "%*lu %lu";
+  const char *input = "1234567890";
+  unsigned long lu = 0;
+  char *fmt = "%*lu %lu";
 
-    int result_s21 = s21_sscanf(input, fmt, &lu);
-    int result_std = sscanf(input, fmt, &lu);
+  int result_s21 = s21_sscanf(input, fmt, &lu);
+  int result_std = sscanf(input, fmt, &lu);
 
-    ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-    ck_assert_uint_eq(lu, 0);                // Значение не должно быть прочитано из-за флага '*'
+  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
+  ck_assert_uint_eq(lu, 0); // Значение не должно быть прочитано из-за флага '*'
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_lu_overflow) {
-    const char *input = "18446744073709551616"; // Значение больше, чем может вместить unsigned long
-    unsigned long lu = 0;
+  const char *input = "18446744073709551616"; // Значение больше, чем может
+                                              // вместить unsigned long
+  unsigned long lu = 0;
 
-    int result_s21 = s21_sscanf(input, "%lu", &lu);
-    int result_std = sscanf(input, "%lu", &lu);
+  int result_s21 = s21_sscanf(input, "%lu", &lu);
+  int result_std = sscanf(input, "%lu", &lu);
 
-    ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-    ck_assert_uint_eq(lu, ULONG_MAX);         // Результат зависит от платформы, но обычно это максимальное значение unsigned long
+  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
+  ck_assert_uint_eq(lu, ULONG_MAX); // Результат зависит от платформы, но обычно
+                                    // это максимальное значение unsigned long
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_hu_and_lu_combination) {
-    const char *input = "12345 67890";
-    unsigned short hu = 0;
-    unsigned long lu = 0;
+  const char *input = "12345 67890";
+  unsigned short hu = 0;
+  unsigned long lu = 0;
 
-    int result_s21 = s21_sscanf(input, "%hu %lu", &hu, &lu);
-    int result_std = sscanf(input, "%hu %lu", &hu, &lu);
+  int result_s21 = s21_sscanf(input, "%hu %lu", &hu, &lu);
+  int result_std = sscanf(input, "%hu %lu", &hu, &lu);
 
-    ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-    ck_assert_uint_eq(hu, 12345);            // Проверяем первое значение
-    ck_assert_uint_eq(lu, 67890);            // Проверяем второе значение
+  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
+  ck_assert_uint_eq(hu, 12345); // Проверяем первое значение
+  ck_assert_uint_eq(lu, 67890); // Проверяем второе значение
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_hu_and_lu_with_width) {
-    const char *input = "1234567890 9876543210";
-    unsigned short hu = 0,hu_std = 0;
-    unsigned long lu = 0,lu_std = 0;
+  const char *input = "1234567890 9876543210";
+  unsigned short hu = 0, hu_std = 0;
+  unsigned long lu = 0, lu_std = 0;
 
-    int result_s21 = s21_sscanf(input, "%4hu %5lu", &hu, &lu);
-    int result_std = sscanf(input, "%4hu %5lu", &hu_std, &lu_std);
+  int result_s21 = s21_sscanf(input, "%4hu %5lu", &hu, &lu);
+  int result_std = sscanf(input, "%4hu %5lu", &hu_std, &lu_std);
 
-    ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-    ck_assert_uint_eq(hu, hu_std);             // Первое значение с ограничением по ширине
-    ck_assert_uint_eq(lu, lu_std);            // Второе значение с ограничением по ширине
+  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
+  ck_assert_uint_eq(hu, hu_std); // Первое значение с ограничением по ширине
+  ck_assert_uint_eq(lu, lu_std); // Второе значение с ограничением по ширине
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_hu_and_lu_with_star_flag) {
-    const char *input = "12345 67890";
-    unsigned long lu = 0;
-    char *fmt="%*hu %lu";
+  const char *input = "12345 67890";
+  unsigned long lu = 0;
+  char *fmt = "%*hu %lu";
 
-    int result_s21 = s21_sscanf(input, fmt, &lu);
-    int result_std = sscanf(input, fmt, &lu);
+  int result_s21 = s21_sscanf(input, fmt, &lu);
+  int result_std = sscanf(input, fmt, &lu);
 
-    ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-    ck_assert_uint_eq(lu, 67890);            // Первое значение должно быть пропущено
+  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
+  ck_assert_uint_eq(lu, 67890); // Первое значение должно быть пропущено
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_hu_and_lu_with_spaces) {
-    const char *input = "  12345   67890";
-    unsigned short hu = 0;
-    unsigned long lu = 0;
+  const char *input = "  12345   67890";
+  unsigned short hu = 0;
+  unsigned long lu = 0;
 
-    int result_s21 = s21_sscanf(input, "%hu%lu", &hu, &lu);
-    int result_std = sscanf(input, "%hu%lu", &hu, &lu);
+  int result_s21 = s21_sscanf(input, "%hu%lu", &hu, &lu);
+  int result_std = sscanf(input, "%hu%lu", &hu, &lu);
 
-    ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-    ck_assert_uint_eq(hu, 12345);            // Пробелы должны быть проигнорированы
-    ck_assert_uint_eq(lu, 67890);            // Пробелы должны быть проигнорированы
+  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
+  ck_assert_uint_eq(hu, 12345); // Пробелы должны быть проигнорированы
+  ck_assert_uint_eq(lu, 67890); // Пробелы должны быть проигнорированы
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_hu_with_zero_flag) {
-    const char *input = "012345";
-    unsigned short hu = 0;
+  const char *input = "012345";
+  unsigned short hu = 0;
 
-    int result_s21 = s21_sscanf(input, "%hu", &hu);
-    int result_std = sscanf(input, "%hu", &hu);
+  int result_s21 = s21_sscanf(input, "%hu", &hu);
+  int result_std = sscanf(input, "%hu", &hu);
 
-    ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-    ck_assert_uint_eq(hu, 12345);            // Префикс '0' должен быть проигнорирован
+  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
+  ck_assert_uint_eq(hu, 12345); // Префикс '0' должен быть проигнорирован
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_lu_with_zero_flag) {
-    const char *input = "01234567890";
-    unsigned long lu = 0;
+  const char *input = "01234567890";
+  unsigned long lu = 0;
 
-    int result_s21 = s21_sscanf(input, "%lu", &lu);
-    int result_std = sscanf(input, "%lu", &lu);
+  int result_s21 = s21_sscanf(input, "%lu", &lu);
+  int result_std = sscanf(input, "%lu", &lu);
 
-    ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-    ck_assert_uint_eq(lu, 1234567890);       // Префикс '0' должен быть проигнорирован
+  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
+  ck_assert_uint_eq(lu, 1234567890); // Префикс '0' должен быть проигнорирован
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_hu_with_large_width) {
-    const char *input = "1234567890";
-    unsigned short hu = 0,hu_s21 = 0;
+  const char *input = "1234567890";
+  unsigned short hu = 0, hu_s21 = 0;
 
-    int result_s21 = s21_sscanf(input, "%10hu", &hu_s21);
-    int result_std = sscanf(input, "%10hu", &hu);
+  int result_s21 = s21_sscanf(input, "%10hu", &hu_s21);
+  int result_std = sscanf(input, "%10hu", &hu);
 
-    ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-    ck_assert_uint_eq(hu, hu_s21);            // Ширина больше, чем может вместить unsigned short
+  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
+  ck_assert_uint_eq(hu,
+                    hu_s21); // Ширина больше, чем может вместить unsigned short
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_lu_with_large_width) {
-    const char *input = "12345678901234567890";
-    unsigned long lu = 0,lu_s21 = 0;
+  const char *input = "12345678901234567890";
+  unsigned long lu = 0, lu_s21 = 0;
 
-    int result_s21 = s21_sscanf(input, "%20lu", &lu_s21);
-    int result_std = sscanf(input, "%20lu", &lu);
+  int result_s21 = s21_sscanf(input, "%20lu", &lu_s21);
+  int result_std = sscanf(input, "%20lu", &lu);
 
-    ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-    ck_assert_uint_eq(lu, lu_s21); // Ширина больше, чем длина числа
+  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
+  ck_assert_uint_eq(lu, lu_s21); // Ширина больше, чем длина числа
 }
 END_TEST
 
+START_TEST(test_s21_sscanf_n_simple) {
+  const char *input = "HelloWorld";
+  int n = 0;
+
+  int result_s21 = s21_sscanf(input, "%n", &n);
+  int result_std = sscanf(input, "%n", &n);
+
+  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
+  ck_assert_int_eq(n,
+                   0); // %n не считывает символы, а записывает текущую позицию
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_n_with_string) {
+  const char *input = "HelloWorld";
+  int n = 0;
+
+  int result_s21 = s21_sscanf(input, "%4s%n", (char[5]){0}, &n);
+  int result_std = sscanf(input, "%4s%n", (char[5]){0}, &n);
+
+  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
+  ck_assert_int_eq(n, 4); // Позиция должна быть равна 4 после чтения 4 символов
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_n_with_width) {
+  const char *input = "1234567890";
+  int n = 0;
+
+  int result_s21 = s21_sscanf(input, "%*4d%n", &n);
+  int result_std = sscanf(input, "%*4d%n", &n);
+
+  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
+  ck_assert_int_eq(n, 4); // Позиция должна быть равна 4 после чтения 4 цифр
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_n_with_star_flag) {
+  const char *input = "12345";
+  int n = 0;
+
+  int result_s21 = s21_sscanf(input, "%*d%n", &n);
+  int result_std = sscanf(input, "%*d%n", &n);
+
+  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
+  ck_assert_int_eq(
+      n, 5); // Позиция должна быть равна 5, так как число 12345 пропущено
+}
+END_TEST
+
+START_TEST(test_s21_scanf_n_with_length_modifiers) {
+  const char *input = "HelloWorld";
+  short int hn = 0;
+  int n = 0;
+  long int ln = 0;
+
+  int result_s21 =
+      s21_sscanf(input, "%4s%hn%*4s%n%ln", (char[5]){0}, &hn, &n, &ln);
+  int result_std = sscanf(input, "%4s%hn%*4s%n%ln", (char[5]){0}, &hn, &n, &ln);
+
+  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
+  ck_assert_int_eq(hn, 4); // Позиция после первого %n
+  ck_assert_int_eq(n, 8);  // Позиция после второго %n
+  ck_assert_int_eq(ln, 8); // Позиция после третьего %n
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_n_with_zero_width) {
+  const char *input = "12345";
+  int n = 0, n_s21 = 0, a = 0, a_s21 = 0;
+  char *fmt = "%0d%n";
+
+  int result_s21 = s21_sscanf(input, fmt, &a_s21, &n_s21);
+  int result_std = sscanf(input, fmt, &a, &n);
+  ck_assert_int_eq(a_s21, a);
+  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
+  ck_assert_int_eq(
+      n,
+      n_s21); // Ширина 0 означает, что ничего не читается, позиция остается 0
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_n_with_multiple_n) {
+  const char *input = "HelloWorld";
+  int n1 = 0, n2 = 0, n3 = 0;
+  int n1_s21 = 0, n2_s21 = 0, n3_s21 = 0;
+  char s[50] = {0}, s_s21[50] = {0}, s2[50] = {0}, s2_s21[50] = {0};
+  char *fmt = "%4s%n%*4s%n%4s%n";
+
+  int result_s21 =
+      s21_sscanf(input, fmt, s_s21, &n1_s21, &n2_s21, s2_s21, &n3_s21);
+  int result_std = sscanf(input, fmt, s, &n1, &n2, s2, &n3);
+
+  ck_assert_str_eq(s, s_s21);
+  ck_assert_str_eq(s2, s2_s21);
+  ck_assert_int_eq(n1, n1_s21);
+  ck_assert_int_eq(n2, n2_s21);
+  ck_assert_int_eq(n3, n3_s21);
+  ck_assert_int_eq(result_s21, result_std);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_n_with_spaces) {
+  const char *input = "   HelloWorld";
+  int n = 12345, n_s21 = 12345;
+
+  int result_s21 = s21_sscanf(input, "   %n", &n_s21);
+  int result_std = sscanf(input, "   %n", &n);
+
+  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
+  ck_assert_int_eq(n, n_s21); // Пробелы учитываются при определении позиции
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_n_with_separator) {
+  const char *input = "1234,5678";
+  int n = 11, n_s21 = 11;
+
+  int result_s21 = s21_sscanf(input, "%*4d,%n", &n_s21);
+  int result_std = sscanf(input, "%*4d,%n", &n);
+
+  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
+  ck_assert_int_eq(n, n_s21); // Позиция должна быть равна 5 (4 цифры + запятая)
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_n_with_large_input) {
+  const char *input = "12345678901234567890";
+  int n = 0, n_s21 = 0;
+
+  int result_s21 = s21_sscanf(input, "%*10d%n", &n_s21);
+  int result_std = sscanf(input, "%*10d%n", &n);
+
+  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
+  ck_assert_int_eq(n,
+                   n_s21); // Позиция должна быть равна 10 после чтения 10 цифр
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_n_with_no_conversion) {
+  const char *input = "12345";
+  int n = 0;
+
+  int result_s21 = s21_sscanf(input, "%*d%n", &n);
+  int result_std = sscanf(input, "%*d%n", &n);
+
+  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
+  ck_assert_int_eq(
+      n, 5); // Число 12345 пропущено, но позиция все равно обновляется
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_n_with_length_modifiers) {
+  const char *input = "HelloWorld";
+  char s[50] = {0}, s_s21[50] = {0};
+  char s2[50] = {0}, s2_s21[50] = {0};
+  short int hn = 1111, hn_s21 = 1111;
+  int n = 111, n_s21 = 111;
+  long int ln = 222, ln_s21 = 222;
+  char *fmt = "%4s%hn%*4s%n%4s%n";
+
+  int result_s21 =
+      s21_sscanf(input, fmt, s_s21, &hn_s21, &n_s21, &ln_s21, s2_s21);
+  int result_std = sscanf(input, fmt, s, &hn, &n, &ln, s2);
+
+  ck_assert_str_eq(s, s_s21);
+  ck_assert_int_eq(n, n_s21);
+  ck_assert_int_eq(ln, ln_s21);
+  ck_assert_int_eq(hn, hn_s21);
+  ck_assert_str_eq(s2, s2_s21);
+  ck_assert_int_eq(result_s21, result_std);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_percent) {
+  char str[] = "12345%54321";
+  char *fmt = "%d%%%d";
+  int res1 = 0, res2 = 0;
+  int res1_s21 = 0, res2_s21 = 0;
+
+  int ret_s21 = s21_sscanf(str, fmt, &res1_s21, &res2_s21);
+  int ret = sscanf(str, fmt, &res1, &res2);
+
+  ck_assert_int_eq(res1, res1_s21);
+  ck_assert_int_eq(res2, res2_s21);
+  ck_assert_int_eq(ret, ret_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_percent_space) {
+  char str[] = "12345 % 54321";
+  char *fmt = "%d %% %d";
+  int res1 = 0, res2 = 0;
+  int res1_s21 = 0, res2_s21 = 0;
+
+  int ret_s21 = s21_sscanf(str, fmt, &res1_s21, &res2_s21);
+  int ret = sscanf(str, fmt, &res1, &res2);
+
+  ck_assert_int_eq(res1, res1_s21);
+  ck_assert_int_eq(res2, res2_s21);
+  ck_assert_int_eq(ret, ret_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_percent_space_s) {
+  char str[] = "12345%54321";
+  char *fmt = "%s %% %s";
+  char str1[20] = {0}, str2[20] = {0}, str1r[20] = {0}, str2r[20] = {0};
+
+  int ret_s21 = s21_sscanf(str, fmt, str1, str2);
+  int ret = sscanf(str, fmt, str1r, str2r);
+
+  ck_assert_str_eq(str1, str1r);
+  ck_assert_str_eq(str2, str2r);
+  ck_assert_int_eq(ret, ret_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_percent_space_2) {
+  char str[] = "Use %triple space in format string";
+  //  char *fmt="%s%%% %s";
+  char *fmt = "%s%% %s";
+  char str1[20] = {0}, str2[20] = "TEST", str1r[20] = {0}, str2r[20] = "TEST";
+
+  int ret_s21 = s21_sscanf(str, fmt, str1, str2);
+  int ret = sscanf(str, fmt, str1r, str2r);
+
+  ck_assert_str_eq(str1, str1r);
+  ck_assert_str_eq(str2, str2r);
+  ck_assert_int_eq(ret, ret_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_percent_space_triple) {
+  char str[] = "Use%triple space in format string";
+  char *fmt = "%s%%% %s";
+  char str1[20] = {0}, str2[20] = "TEST", str1r[20] = {0}, str2r[20] = "TEST";
+
+  int ret_s21 = s21_sscanf(str, fmt, str1, str2);
+  int ret = sscanf(str, fmt, str1r, str2r);
+
+  ck_assert_str_eq(str1, str1r);
+  ck_assert_str_eq(str2, str2r);
+  ck_assert_int_eq(ret, ret_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_i) {
+  char str[] = "12345";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%i";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_i_zero) {
+  char str[] = "0";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%i";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_i_max) {
+  char str[] = "2147483647";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%i";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_i_overflow) {
+  char str[] = "2147483648";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%i";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_i_negative) {
+  char str[] = "-12345";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%i";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_i_width) {
+  char str[] = "12345";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%5i";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_i_width_zero) {
+  char str[] = "0";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%5i";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_i_width_max) {
+  char str[] = "2147483647";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%5i";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_i_width_overflow) {
+  char str[] = "2147483648";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%5i";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_i_width_negative) {
+  char str[] = "-12345";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%5i";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_i_width_star) {
+  char str[] = "12345";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%*5i";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_i_width_star_zero) {
+  char str[] = "0";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%*5i";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_i_width_star_max) {
+  char str[] = "2147483647";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%*5i";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_i_width_star_overflow) {
+  char str[] = "2147483648";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%*5i";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_i_width_star_negative) {
+  char str[] = "-12345";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%*5i";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_o_simple) {
+  const char *input = "01237";
+  int x = 10, xr = 10;
+  const char *fmt = "%o";
+
+  s21_sscanf(input, fmt, &x);
+  sscanf(input, fmt, &xr);
+
+  ck_assert_int_eq(x, xr);
+  ck_assert_int_eq(s21_sscanf(input, fmt, &x), sscanf(input, fmt, &xr));
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_x_simple) {
+  const char *input = "0xf3";
+  int x = 10, xr = 10;
+  const char *fmt = "%i";
+  s21_sscanf(input, fmt, &x);
+  sscanf(input, fmt, &xr);
+  ck_assert_int_eq(x, xr);
+  ck_assert_int_eq(s21_sscanf(input, fmt, &x), sscanf(input, fmt, &xr));
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_o) {
+  char str[] = "12345";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%o";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_o_zero) {
+  char str[] = "0";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%o";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_o_max) {
+  char str[] = "37777777777";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%o";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_o_overflow) {
+  char str[] = "37777777778";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%o";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_o_negative) {
+  char str[] = "-12345";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%o";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_o_width) {
+  char str[] = "12345";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%5o";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_o_width_zero) {
+  char str[] = "0";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%5o";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_o_width_max) {
+  char str[] = "37777777777";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%5o";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_o_width_overflow) {
+  char str[] = "37777777778";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%5o";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_o_width_negative) {
+  char str[] = "-12345";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%5o";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_o_width_star) {
+  char str[] = "12345";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%*5o";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_o_width_star_zero) {
+  char str[] = "0";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%*5o";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_o_width_star_max) {
+  char str[] = "37777777777";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%*5o";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_o_width_star_overflow) {
+  char str[] = "37777777778";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%*5o";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_o_width_star_negative) {
+  char str[] = "-12345";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%*5o";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_x) {
+  char str[] = "12345";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%x";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_x_zero) {
+  char str[] = "0";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%x";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_x_max) {
+  char str[] = "ffffffff";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%x";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_x_overflow) {
+  char str[] = "100000000";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%x";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_x_negative) {
+  char str[] = "-12345";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%x";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_x_width) {
+  char str[] = "12345";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%5x";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_x_width_zero) {
+  char str[] = "0";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%5x";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_x_width_max) {
+  char str[] = "ffffffff";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%5x";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_x_width_overflow) {
+  char str[] = "100000000";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%5x";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_x_width_negative) {
+  char str[] = "-12345";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%5x";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_x_width_star) {
+  char str[] = "12345";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%*5x";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_x_width_star_zero) {
+  char str[] = "0";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%*5x";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_x_width_star_max) {
+  char str[] = "ffffffff";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%*5x";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_x_width_star_overflow) {
+  char str[] = "100000000";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%*5x";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_x_width_star_negative) {
+  char str[] = "-12345";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%*5x";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_X) {
+  char str[] = "12345";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%X";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_X_zero) {
+  char str[] = "0";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%X";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_X_max) {
+  char str[] = "ffffffff";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%X";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_X_overflow) {
+  char str[] = "100000000";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%X";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_X_negative) {
+  char str[] = "-12345";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%X";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_X_width) {
+  char str[] = "12345";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%5X";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_X_width_zero) {
+  char str[] = "0";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%5X";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_X_width_max) {
+  char str[] = "ffffffff";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%5X";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_X_width_overflow) {
+  char str[] = "100000000";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%5X";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_X_width_negative) {
+  char str[] = "-12345";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%5X";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_X_width_star) {
+  char str[] = "12345";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%*5X";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_X_width_star_zero) {
+  char str[] = "0";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%*5X";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_X_width_star_max) {
+  char str[] = "ffffffff";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%*5X";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_X_width_star_overflow) {
+  char str[] = "100000000";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%*5X";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_X_width_star_negative) {
+  char str[] = "-12345";
+  int res1 = 0, res2 = 0;
+
+  char *fmt = "%*5X";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_X_simple) {
+  const char *input = "0xf3";
+  int x = 10, xr = 10;
+  const char *fmt = "%i";
+  s21_sscanf(input, fmt, &x);
+  sscanf(input, fmt, &xr);
+  ck_assert_int_eq(x, xr);
+  ck_assert_int_eq(s21_sscanf(input, fmt, &x), sscanf(input, fmt, &xr));
+}
+END_TEST
+
+
+
 Suite *s21_sscanf_suite(void) {
   Suite *suite;
-  TCase *tc_core_d, *tc_core_c, *tc_core_s, *tc_core_u, *tc_debug;
+  TCase *tc_core_d, *tc_core_c, *tc_core_s, *tc_core_u, *tc_core_n, *tc_debug,
+      *tc_core_pcnt, *tc_core_i, *tc_core_o, *tc_core_x;
 
   suite = suite_create("s21_sscanf");
   // tc_core = tcase_create("Core");
-  tc_core_d = tcase_create("Spec %d");
-  tc_core_c = tcase_create("Spec %c");
-  tc_core_s = tcase_create("Spec %s");
-  tc_core_u = tcase_create("Spec %u");
+  tc_core_d = tcase_create("Specifier= %d");
+  tc_core_c = tcase_create("Specifier= %c");
+  tc_core_s = tcase_create("Specifier= %s");
+  tc_core_u = tcase_create("Specifier= %u");
+  tc_core_n = tcase_create("Specifier= %n");
+  tc_core_i = tcase_create("Specifier= %i");
+  tc_core_o = tcase_create("Specifier= %o");
+  tc_core_x = tcase_create("Specifier= %x");
+  tc_core_pcnt = tcase_create("Specifier= %%");
   tc_debug = tcase_create("Debug");
-
 
   tcase_add_test(tc_core_d, test_s21_sscanf_d_simple);
   tcase_add_test(tc_core_d, test_s21_sscanf_d_neg);
@@ -1374,49 +2433,136 @@ Suite *s21_sscanf_suite(void) {
   tcase_add_test(tc_core_s, test_s21_sscanf_ls_skip_assignment);
   tcase_add_test(tc_core_s, test_s21_sscanf_ls_separators);
 
-  
-    tcase_add_test(tc_core_u, test_s21_sscanf_u_width_star_negative);
-    tcase_add_test(tc_core_u, test_s21_sscanf_u_width_star_overflow);
-    tcase_add_test(tc_core_u, test_s21_sscanf_u_width_star_max);
-    tcase_add_test(tc_core_u, test_s21_sscanf_u_width_star_zero);
-    tcase_add_test(tc_core_u, test_s21_sscanf_u_width_star);
-    tcase_add_test(tc_core_u, test_s21_sscanf_u_width_negative);
-    tcase_add_test(tc_core_u, test_s21_sscanf_u_width_overflow);
-    tcase_add_test(tc_core_u, test_s21_sscanf_u_width_max);
-    tcase_add_test(tc_core_u, test_s21_sscanf_u_width_zero);
-    tcase_add_test(tc_core_u, test_s21_sscanf_u_width);
-    tcase_add_test(tc_core_u, test_s21_sscanf_u_negative);
-    tcase_add_test(tc_core_u, test_s21_sscanf_u_overflow);
-    tcase_add_test(tc_core_u, test_s21_sscanf_u_max);
-    tcase_add_test(tc_core_u, test_s21_sscanf_u_zero);
-    tcase_add_test(tc_core_u, test_s21_sscanf_u);
-    tcase_add_test(tc_core_u, test_s21_sscanf_hu_simple);
-    tcase_add_test(tc_core_u, test_s21_sscanf_hu_width);
-    tcase_add_test(tc_core_u, test_s21_sscanf_hu_flag_star);
-    tcase_add_test(tc_core_u, test_s21_sscanf_hu_overflow);
-    tcase_add_test(tc_core_u, test_s21_sscanf_lu_simple);
-    tcase_add_test(tc_core_u, test_s21_sscanf_lu_width);
-    tcase_add_test(tc_core_u, test_s21_sscanf_lu_flag_star);
-    tcase_add_test(tc_core_u, test_s21_sscanf_lu_overflow);
-    tcase_add_test(tc_core_u, test_s21_sscanf_hu_and_lu_combination);
-    tcase_add_test(tc_core_u, test_s21_sscanf_hu_and_lu_with_width);
-    tcase_add_test(tc_core_u, test_s21_sscanf_hu_and_lu_with_star_flag);
-    tcase_add_test(tc_core_u, test_s21_sscanf_hu_and_lu_with_spaces);
-    tcase_add_test(tc_core_u, test_s21_sscanf_hu_with_zero_flag);
-    tcase_add_test(tc_core_u, test_s21_sscanf_lu_with_zero_flag);
-    tcase_add_test(tc_core_u, test_s21_sscanf_hu_with_large_width);
-    tcase_add_test(tc_core_u, test_s21_sscanf_lu_with_large_width);
+  tcase_add_test(tc_core_u, test_s21_sscanf_u_width_star_negative);
+  tcase_add_test(tc_core_u, test_s21_sscanf_u_width_star_overflow);
+  tcase_add_test(tc_core_u, test_s21_sscanf_u_width_star_max);
+  tcase_add_test(tc_core_u, test_s21_sscanf_u_width_star_zero);
+  tcase_add_test(tc_core_u, test_s21_sscanf_u_width_star);
+  tcase_add_test(tc_core_u, test_s21_sscanf_u_width_negative);
+  tcase_add_test(tc_core_u, test_s21_sscanf_u_width_overflow);
+  tcase_add_test(tc_core_u, test_s21_sscanf_u_width_max);
+  tcase_add_test(tc_core_u, test_s21_sscanf_u_width_zero);
+  tcase_add_test(tc_core_u, test_s21_sscanf_u_width);
+  tcase_add_test(tc_core_u, test_s21_sscanf_u_negative);
+  tcase_add_test(tc_core_u, test_s21_sscanf_u_overflow);
+  tcase_add_test(tc_core_u, test_s21_sscanf_u_max);
+  tcase_add_test(tc_core_u, test_s21_sscanf_u_zero);
+  tcase_add_test(tc_core_u, test_s21_sscanf_u);
+  tcase_add_test(tc_core_u, test_s21_sscanf_hu_simple);
+  tcase_add_test(tc_core_u, test_s21_sscanf_hu_width);
+  tcase_add_test(tc_core_u, test_s21_sscanf_hu_flag_star);
+  tcase_add_test(tc_core_u, test_s21_sscanf_hu_overflow);
+  tcase_add_test(tc_core_u, test_s21_sscanf_lu_simple);
+  tcase_add_test(tc_core_u, test_s21_sscanf_lu_width);
+  tcase_add_test(tc_core_u, test_s21_sscanf_lu_flag_star);
+  tcase_add_test(tc_core_u, test_s21_sscanf_lu_overflow);
+  tcase_add_test(tc_core_u, test_s21_sscanf_hu_and_lu_combination);
+  tcase_add_test(tc_core_u, test_s21_sscanf_hu_and_lu_with_width);
+  tcase_add_test(tc_core_u, test_s21_sscanf_hu_and_lu_with_star_flag);
+  tcase_add_test(tc_core_u, test_s21_sscanf_hu_and_lu_with_spaces);
+  tcase_add_test(tc_core_u, test_s21_sscanf_hu_with_zero_flag);
+  tcase_add_test(tc_core_u, test_s21_sscanf_lu_with_zero_flag);
+  tcase_add_test(tc_core_u, test_s21_sscanf_hu_with_large_width);
+  tcase_add_test(tc_core_u, test_s21_sscanf_lu_with_large_width);
 
+  tcase_add_test(tc_core_n, test_s21_sscanf_n_simple);
+  tcase_add_test(tc_core_n, test_s21_sscanf_n_with_string);
+  tcase_add_test(tc_core_n, test_s21_sscanf_n_with_width);
+  tcase_add_test(tc_core_n, test_s21_sscanf_n_with_star_flag);
+  tcase_add_test(tc_core_n, test_s21_scanf_n_with_length_modifiers);
+  tcase_add_test(tc_core_n, test_s21_sscanf_n_with_zero_width);
+  tcase_add_test(tc_core_n, test_s21_sscanf_n_with_multiple_n);
+  tcase_add_test(tc_core_n, test_s21_sscanf_n_with_spaces);
+  tcase_add_test(tc_core_n, test_s21_sscanf_n_with_separator);
+  tcase_add_test(tc_core_n, test_s21_sscanf_n_with_large_input);
+  tcase_add_test(tc_core_n, test_s21_sscanf_n_with_no_conversion);
+  tcase_add_test(tc_core_n, test_s21_sscanf_n_with_length_modifiers);
 
-  tcase_add_test(tc_debug, test_s21_sscanf_hu_and_lu_with_spaces);
+  tcase_add_test(tc_core_pcnt, test_s21_sscanf_percent);
+  tcase_add_test(tc_core_pcnt, test_s21_sscanf_percent_space);
+  tcase_add_test(tc_core_pcnt, test_s21_sscanf_percent_space_2);
+  tcase_add_test(tc_core_pcnt, test_s21_sscanf_percent_space_s);
+  tcase_add_test(tc_core_pcnt, test_s21_sscanf_percent_space_triple);
+
+  tcase_add_test(tc_core_i, test_s21_sscanf_i_width_star_negative);
+  tcase_add_test(tc_core_i, test_s21_sscanf_i_width_star_overflow);
+  tcase_add_test(tc_core_i, test_s21_sscanf_i_width_star_max);
+  tcase_add_test(tc_core_i, test_s21_sscanf_i_width_star_zero);
+  tcase_add_test(tc_core_i, test_s21_sscanf_i_width_star);
+  tcase_add_test(tc_core_i, test_s21_sscanf_i_width_negative);
+  tcase_add_test(tc_core_i, test_s21_sscanf_i_width_overflow);
+  tcase_add_test(tc_core_i, test_s21_sscanf_i_width_max);
+  tcase_add_test(tc_core_i, test_s21_sscanf_i_width_zero);
+  tcase_add_test(tc_core_i, test_s21_sscanf_i_width);
+  tcase_add_test(tc_core_i, test_s21_sscanf_i_negative);
+  tcase_add_test(tc_core_i, test_s21_sscanf_i_overflow);
+  tcase_add_test(tc_core_i, test_s21_sscanf_i_max);
+  tcase_add_test(tc_core_i, test_s21_sscanf_i_zero);
+  tcase_add_test(tc_core_i, test_s21_sscanf_i);
+
+  tcase_add_test(tc_core_o, test_s21_sscanf_o_simple);
+  tcase_add_test(tc_core_o, test_s21_sscanf_o_width_star_negative);
+  tcase_add_test(tc_core_o, test_s21_sscanf_o_width_star_overflow);
+  tcase_add_test(tc_core_o, test_s21_sscanf_o_width_star_max);
+  tcase_add_test(tc_core_o, test_s21_sscanf_o_width_star_zero);
+  tcase_add_test(tc_core_o, test_s21_sscanf_o_width_star);
+  tcase_add_test(tc_core_o, test_s21_sscanf_o_width_negative);
+  tcase_add_test(tc_core_o, test_s21_sscanf_o_width_overflow);
+  tcase_add_test(tc_core_o, test_s21_sscanf_o_width_max);
+  tcase_add_test(tc_core_o, test_s21_sscanf_o_width_zero);
+  tcase_add_test(tc_core_o, test_s21_sscanf_o_width);
+  tcase_add_test(tc_core_o, test_s21_sscanf_o_negative);
+  tcase_add_test(tc_core_o, test_s21_sscanf_o_overflow);
+  tcase_add_test(tc_core_o, test_s21_sscanf_o_max);
+  tcase_add_test(tc_core_o, test_s21_sscanf_o_zero);
+  tcase_add_test(tc_core_o, test_s21_sscanf_o);
+
+  tcase_add_test(tc_core_x, test_s21_sscanf_x_simple);
+  tcase_add_test(tc_core_x, test_s21_sscanf_x_width_star_negative);
+  tcase_add_test(tc_core_x, test_s21_sscanf_x_width_star_overflow);
+  tcase_add_test(tc_core_x, test_s21_sscanf_x_width_star_max);
+  tcase_add_test(tc_core_x, test_s21_sscanf_x_width_star_zero);
+  tcase_add_test(tc_core_x, test_s21_sscanf_x_width_star);
+  tcase_add_test(tc_core_x, test_s21_sscanf_x_width_negative);
+  tcase_add_test(tc_core_x, test_s21_sscanf_x_width_overflow);
+  tcase_add_test(tc_core_x, test_s21_sscanf_x_width_max);
+  tcase_add_test(tc_core_x, test_s21_sscanf_x_width_zero);
+  tcase_add_test(tc_core_x, test_s21_sscanf_x_width);
+  tcase_add_test(tc_core_x, test_s21_sscanf_x_negative);
+  tcase_add_test(tc_core_x, test_s21_sscanf_x_overflow);
+  tcase_add_test(tc_core_x, test_s21_sscanf_x_max);
+  tcase_add_test(tc_core_x, test_s21_sscanf_x_zero);
+  tcase_add_test(tc_core_x, test_s21_sscanf_x);
+  tcase_add_test(tc_core_x, test_s21_sscanf_X_simple);
+  tcase_add_test(tc_core_x, test_s21_sscanf_X_width_star_negative);
+  tcase_add_test(tc_core_x, test_s21_sscanf_X_width_star_overflow);
+  tcase_add_test(tc_core_x, test_s21_sscanf_X_width_star_max);
+  tcase_add_test(tc_core_x, test_s21_sscanf_X_width_star_zero);
+  tcase_add_test(tc_core_x, test_s21_sscanf_X_width_star);
+  tcase_add_test(tc_core_x, test_s21_sscanf_X_width_negative);
+  tcase_add_test(tc_core_x, test_s21_sscanf_X_width_overflow);
+  tcase_add_test(tc_core_x, test_s21_sscanf_X_width_max);
+  tcase_add_test(tc_core_x, test_s21_sscanf_X_width_zero);
+  tcase_add_test(tc_core_x, test_s21_sscanf_X_width);
+  tcase_add_test(tc_core_x, test_s21_sscanf_X_negative);
+  tcase_add_test(tc_core_x, test_s21_sscanf_X_overflow);
+  tcase_add_test(tc_core_x, test_s21_sscanf_X_max);
+  tcase_add_test(tc_core_x, test_s21_sscanf_X_zero);
+  tcase_add_test(tc_core_x, test_s21_sscanf_X);
 
   //[ ] Uncomment additional test case
-  // suite_add_tcase(s, tc_core);
-  // suite_add_tcase(suite, tc_core_c);
-  // suite_add_tcase(suite, tc_core_d);
-  // suite_add_tcase(suite, tc_core_s);
+  suite_add_tcase(suite, tc_core_c);
+  suite_add_tcase(suite, tc_core_d);
+  suite_add_tcase(suite, tc_core_s);
   suite_add_tcase(suite, tc_core_u);
+  suite_add_tcase(suite, tc_core_n);
+  suite_add_tcase(suite, tc_core_i);
+  suite_add_tcase(suite, tc_core_o);
+  suite_add_tcase(suite, tc_core_x);
+  suite_add_tcase(suite, tc_core_pcnt);
 
+  //[ ] Delete debug suite
+  tcase_add_test(tc_debug, test_s21_sscanf_x_simple);
   suite_add_tcase(suite, tc_debug);
 
   return suite;

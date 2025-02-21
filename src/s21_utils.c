@@ -1,13 +1,6 @@
 #include "s21_utils.h"
 #include "s21_string.h"
 
-int is_hex(char c);
-int is_octa(char c);
-int is_digit(char c);
-int is_alpha(char c);
-int is_space(char c);
-float s21_pow(int x, int y);
-
 int contains_char(const char *str, char ch) {
   while (*str) {
     if (*str == ch) {
@@ -29,7 +22,6 @@ int s21_strcmp(const char *str1, const char *str2) {
     rtn = -1;
   else
     rtn = 0;
-
   return rtn;
 }
 
@@ -55,12 +47,10 @@ void *s21_memmove(void *dest, const void *src, s21_size_t n) {
   // Приводим указатели к типу unsigned char для побайтового копирования
   unsigned char *d = (unsigned char *)dest;
   const unsigned char *s = (const unsigned char *)src;
-
   // Если dest и src указывают на одну и ту же область памяти, ничего не делаем
   if (d == s) {
     return dest;
   }
-
   // Если dest находится после src и перекрывается с ним, копируем с конца
   if (d > s && d < s + n) {
     for (size_t i = n; i > 0; i--) {
@@ -85,12 +75,9 @@ void *s21_memmove(void *dest, const void *src, s21_size_t n) {
  * @return The number of characters parsed.
  */
 int parse_specifiers(const char *fmt, Specifiers *st_spec) {
-  // Specifiers st_spec = {'*', -10, 0, '*', '*'};
-
   const char *format = fmt;
   format++;
   DEBUG_PRINT("format=%s\n", format);
-  // Flags
   if ((*(format) == '+' || *(format) == '-' || *(format) == ' ' ||
        *(format) == '#' || *(format) == '0')) {
     st_spec->flag = *(format);
@@ -109,7 +96,6 @@ int parse_specifiers(const char *fmt, Specifiers *st_spec) {
         format++;
       }
     }
-    // format++;
     DEBUG_PRINT("Width=%i\n", st_spec->width);
   }
   // Precision
@@ -142,15 +128,9 @@ int parse_specifiers(const char *fmt, Specifiers *st_spec) {
     st_spec->specifier = *format;
     format++;
     DEBUG_PRINT("Specifier=%c\n", st_spec->specifier);
-    // if(*(format) != '%'){
-    //   st_spec->separator = *(format);
-    //   DEBUG_PRINT(" Separator=%c\n", st_spec->separator);
-    //   format++;
-    // }
   } else {
     st_spec->specifier = '0';
   }
-  // format++;
   DEBUG_PRINT("RESULT: parse_specifiers()=%ld Specifier=%c, Length=%c, "
               "Precision=%i,  Width=%d, Flags=%c\n",
               format - fmt, st_spec->specifier, st_spec->length,
@@ -181,8 +161,8 @@ void noop_space(const char **str) {
   }
 }
 
-float s21_pow(int x, int y) {
-  float result = 1.0;
+long double s21_pow(int x, int y) {
+  long double result = 1.0;
   if (y < 0) {
     while (y < 0) {
       result = 1 / s21_pow(x, y * -1);

@@ -205,8 +205,8 @@ START_TEST(test_s21_sscanf_ld_skip_assignment) {
   const char *input = "12345";
   long value = 0;
   int result = s21_sscanf(input, "%*ld");
-  ck_assert_int_eq(result, 0); // Значение прочитано, но не присвоено
-  ck_assert_int_eq(value, 0); // Значение не должно измениться
+  ck_assert_int_eq(result, 0);
+  ck_assert_int_eq(value, 0);
 }
 END_TEST
 
@@ -219,7 +219,6 @@ START_TEST(test_s21_sscanf_hd) {
 }
 END_TEST
 
-// Тест 7: Чтение числа с модификатором `l` (long)
 START_TEST(test_s21_sscanf_ld) {
   const char *input = "21474836480"; // Значение больше INT_MAX
   long value = 0;
@@ -229,33 +228,30 @@ START_TEST(test_s21_sscanf_ld) {
 }
 END_TEST
 
-// Тест 19: Чтение числа с модификатором длины и указанием ширины
 START_TEST(test_s21_sscanf_ld_width) {
   const char *input = "123456";
   long value = 0;
   int result = s21_sscanf(input, "%3ld", &value);
   ck_assert_int_eq(result, 1);
-  ck_assert_int_eq(value, 123); // Только первые 3 символа
+  ck_assert_int_eq(value, 123);
 }
 END_TEST
 
-// Тест 20: Чтение числа с модификатором длины и неверным форматом
 START_TEST(test_s21_sscanf_ld_invalid) {
   const char *input = "abc";
   long value = 0;
   int result = s21_sscanf(input, "%ld", &value);
-  ck_assert_int_eq(result, 0); // Ничего не прочитано
-  ck_assert_int_eq(value, 0); // Значение не должно измениться
+  ck_assert_int_eq(result, 0);
+  ck_assert_int_eq(value, 0);
 }
 END_TEST
 
-// Тест 21: Чтение числа с модификатором длины и пустой строкой
 START_TEST(test_s21_sscanf_ld_empty) {
   const char *input = "";
   long value = 0;
   int result = s21_sscanf(input, "%ld", &value);
-  ck_assert_int_eq(result, -1); // Ошибка или конец строки
-  ck_assert_int_eq(value, 0); // Значение не должно измениться
+  ck_assert_int_eq(result, -1);
+  ck_assert_int_eq(value, 0);
 }
 END_TEST
 
@@ -288,19 +284,17 @@ START_TEST(test_s21_sscanf_complex) {
 END_TEST
 
 START_TEST(test_s21_sscanf_c) {
-  // 1. Базовое чтение
+
   char c;
   int count = s21_sscanf("A", "%c", &c);
   ck_assert_int_eq(count, 1);
   ck_assert_int_eq(c, 'A');
 
-  // 2. Чтение с шириной
   char str[5];
   count = s21_sscanf("World", "%4c", str);
   ck_assert_int_eq(count, 1);
   ck_assert_str_eq(str, "Worl");
 
-  // 3. Подавление присваивания
   count = s21_sscanf("X", "%*c");
   ck_assert_int_eq(count, 0);
 
@@ -312,19 +306,17 @@ END_TEST
 
 START_TEST(test_s21_sscanf_lc) {
   setlocale(LC_ALL, "en_US.utf8");
-  // 1. Базовое чтение
+
   wchar_t wc;
   int count = s21_sscanf("Ω", "%lc", &wc);
   ck_assert_int_eq(count, 1);
   ck_assert_int_eq(wc, L'Ω');
 
-  // 2. Чтение с шириной
   wchar_t wstr[5];
   count = s21_sscanf("Δέλτα", "%4lc", wstr);
   ck_assert_int_eq(count, 1);
   ck_assert(wmemcmp(wstr, L"Δέλ", 3) == 0);
 
-  // 3. Специальные символы
   count = s21_sscanf("\t\n", "%2lc", wstr);
   ck_assert_int_eq(count, 1);
   ck_assert_int_eq(wstr[0], L'\t');
@@ -353,7 +345,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_c_edge) {
   setlocale(LC_ALL, "en_US.utf8");
-  // 1. Чтение символа с шириной 0
+
   char c = 'd', cr = 'd';
   char *fmt = "%0c";
   int count = s21_sscanf("A", fmt, &c);
@@ -361,26 +353,22 @@ START_TEST(test_s21_sscanf_c_edge) {
   ck_assert_int_eq(count, countr);
   ck_assert_int_eq(c, cr);
 
-  // 2. Чтение символа с шириной больше длины строки
   char str[10] = {0};
   count = s21_sscanf("Hi", "%5c", str);
   ck_assert_int_eq(count, 1);
   ck_assert_str_eq(str, "Hi");
 
-  // 3. Чтение символа с шириной и подавлением присваивания
   char t = ' ';
   count = s21_sscanf("Hello", "%*3c%c", &t);
   ck_assert_int_eq(t, 'l');
   ck_assert_int_eq(count, 1);
 
-  // 4. Чтение символа с шириной и невалидными данными
   wchar_t wc;
   count = s21_sscanf("\xFF", "%1lc", &wc); // Невалидный UTF-8
   ck_assert_int_eq(count, EOF);
 }
 END_TEST
 
-// Тест 1: Простой случай чтения строки
 START_TEST(test_s21_sscanf_s_simple) {
   const char *input = "Hello World";
   char str[20] = {0}, strr[20] = {0};
@@ -395,49 +383,44 @@ START_TEST(test_s21_sscanf_s_space) {
   char str[20] = {0}, strr[20] = {0};
   const char *fmt = "%s";
   ck_assert_int_eq(s21_sscanf(input, fmt, str), sscanf(input, fmt, strr));
-  ck_assert_str_eq(str, strr); // Должно быть "Hello"
+  ck_assert_str_eq(str, strr);
 }
 END_TEST
 
-// Тест 3: Чтение строки с указанием ширины
 START_TEST(test_s21_sscanf_s_width) {
   const char *input = "Hello World";
   char str[20] = {0}, strr[20] = {0};
-  const char *fmt = "%5s"; // Чтение только 5 символов
+  const char *fmt = "%5s";
   ck_assert_int_eq(s21_sscanf(input, fmt, str), sscanf(input, fmt, strr));
-  ck_assert_str_eq(str, strr); // Должно быть "Hello"
+  ck_assert_str_eq(str, strr);
 }
 END_TEST
 
-// Тест 4: Чтение строки с пропуском присваивания
 START_TEST(test_s21_sscanf_s_skip_assignment) {
   const char *input = "Hello World";
   char str[20] = {0};
-  const char *fmt = "%*s"; // Пропуск первой строки
+  const char *fmt = "%*s";
   ck_assert_int_eq(s21_sscanf(input, fmt, str), sscanf(input, fmt, str));
 }
 END_TEST
 
-// Тест 5: Чтение нескольких строк
 START_TEST(test_s21_sscanf_s_multiple) {
   const char *input = "Hello World 123";
   char str1[20] = {0}, str2[20] = {0}, str1r[20] = {0}, str2r[20] = {0};
   const char *fmt = "%s %s";
   ck_assert_int_eq(s21_sscanf(input, fmt, str1, str2),
                    sscanf(input, fmt, str1r, str2r));
-  ck_assert_str_eq(str1, str1r); // Должно быть "Hello"
-  ck_assert_str_eq(str2, str2r); // Должно быть "World"
+  ck_assert_str_eq(str1, str1r);
+  ck_assert_str_eq(str2, str2r);
 }
 END_TEST
 
-// Тест: Чтение wide-строки с разделителями
 START_TEST(test_s21_sscanf_s_separators_comp) {
   // const char *input = "Hello , Wide : World!";
   const char *input = "Hello, , Wide : World!";
   char wstr1_s21[50] = {0}, wstr2_s21[50] = {0}, wstr3_s21[50] = {0};
   char wstr1_sscanf[50] = {0}, wstr2_sscanf[50] = {0}, wstr3_sscanf[50] = {0};
-  char *fmt = "%s , %s : %s"; // Форматная строка
-  // char *fmt = ""; // Форматная строка
+  char *fmt = "%s , %s : %s";
 
   int result_s21 = s21_sscanf(input, fmt, wstr1_s21, wstr2_s21, wstr3_s21);
   int result_sscanf =
@@ -455,81 +438,74 @@ START_TEST(test_s21_sscanf_s_separators_comp) {
 }
 END_TEST
 
-// Тест 6: Чтение строки с пустым вводом
 START_TEST(test_s21_sscanf_s_empty) {
   const char *input = "";
   char str[20] = {0}, strr[20] = {0};
   const char *fmt = "%s";
   ck_assert_int_eq(s21_sscanf(input, fmt, str), sscanf(input, fmt, strr));
-  ck_assert_str_eq(str, strr); // Должно быть пустая строка
+  ck_assert_str_eq(str, strr);
 }
 END_TEST
 
-// Тест 7: Чтение строки с неверным форматом
 START_TEST(test_s21_sscanf_s_wrong_fmt) {
   const char *input = "Hello World";
   char str[20] = {0}, strr[20] = {0};
-  const char *fmt = "%d"; // Неверный формат для строки
+  const char *fmt = "%d";
   ck_assert_int_eq(s21_sscanf(input, fmt, str), sscanf(input, fmt, strr));
-  ck_assert_str_eq(str, strr); // Должно быть пустая строка
+  ck_assert_str_eq(str, strr);
 }
 END_TEST
 
-// Тест 8: Чтение строки с модификатором ширины и неверным форматом
 START_TEST(test_s21_sscanf_s_width_wrong_fmt) {
   const char *input = "Hello World";
   char str[20] = {0}, strr[20] = {0};
-  const char *fmt = "%5d"; // Неверный формат для строки
+  const char *fmt = "%5d";
   ck_assert_int_eq(s21_sscanf(input, fmt, str), sscanf(input, fmt, strr));
-  ck_assert_str_eq(str, strr); // Должно быть пустая строка
+  ck_assert_str_eq(str, strr);
 }
 END_TEST
 
-// Тест 9: Чтение строки с разделителями (пробелы, табуляция, новая строка)
 START_TEST(test_s21_sscanf_s_separators) {
   const char *input = " \t\nHello \t\nWorld \t\n";
   char str1[20] = {0}, str2[20] = {0}, str1r[20] = {0}, str2r[20] = {0};
   const char *fmt = "%s %s";
   ck_assert_int_eq(s21_sscanf(input, fmt, str1, str2),
                    sscanf(input, fmt, str1r, str2r));
-  ck_assert_str_eq(str1, str1r); // Должно быть "Hello"
-  ck_assert_str_eq(str2, str2r); // Должно быть "World"
+  ck_assert_str_eq(str1, str1r);
+  ck_assert_str_eq(str2, str2r);
 }
 END_TEST
 
-// Тест 10: Чтение строки с модификатором ширины и разделителями
 START_TEST(test_s21_sscanf_s_width_separators) {
   const char *input = " \t\nHello \t\nWorld \t\n";
   char str1[20] = {0}, str2[20] = {0}, str1r[20] = {0}, str2r[20] = {0};
-  const char *fmt = "%3s %3s"; // Чтение только 3 символов
+  const char *fmt = "%3s %3s";
   ck_assert_int_eq(s21_sscanf(input, fmt, str1, str2),
                    sscanf(input, fmt, str1r, str2r));
-  ck_assert_str_eq(str1, str1r); // Должно быть "Hel"
-  ck_assert_str_eq(str2, str2r); // Должно быть "Wor"
+  ck_assert_str_eq(str1, str1r);
+  ck_assert_str_eq(str2, str2r);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_s_add_spaces) {
   const char *input = "  Hello    World";
   char str[20] = {0}, strr[20] = {0};
-  const char *fmt = " %d "; // Неверный формат для строки
+  const char *fmt = " %d ";
   ck_assert_int_eq(s21_sscanf(input, fmt, str), sscanf(input, fmt, strr));
-  ck_assert_str_eq(str, strr); // Должно быть пустая строка
+  ck_assert_str_eq(str, strr);
 }
 END_TEST
 
-// Тест: Чтение одного символа без модификаторов
 START_TEST(s21_test_sscanf_c_single_char) {
   const char *input = "abc";
   char c;
   int result = s21_sscanf(input, "%c", &c);
-  ck_assert_int_eq(result, 1); // Успешно прочитан один символ
-  ck_assert_int_eq(c, 'a'); // Проверяем значение символа
+  ck_assert_int_eq(result, 1);
+  ck_assert_int_eq(c, 'a');
   printf("Test s21_test_sscanf_c_single_char passed.\n");
 }
 END_TEST
 
-// Тест: Чтение четырех символов без модификаторов
 START_TEST(s21_test_sscanf_c_four_chars) {
   const char *input = "abcd";
   char c1, c2, c3, c4;
@@ -537,7 +513,7 @@ START_TEST(s21_test_sscanf_c_four_chars) {
 
   int result = s21_sscanf(input, "%c%c%c%c", &c1, &c2, &c3, &c4);
   int result_r = sscanf(input, "%c%c%c%c", &c1_r, &c2_r, &c3_r, &c4_r);
-  // ck_assert_int_eq(result, 4); // Успешно прочитано четыре символа
+  // ck_assert_int_eq(result, 4);
   ck_assert_int_eq(c1, c1_r);
   ck_assert_int_eq(c2, c2_r);
   ck_assert_int_eq(c3, c3_r);
@@ -547,53 +523,49 @@ START_TEST(s21_test_sscanf_c_four_chars) {
 }
 END_TEST
 
-// Тест: Пропуск символов с помощью ширины '*'
 START_TEST(s21_test_sscanf_c_skip_with_width) {
   const char *input = "abcde";
   char c1, c2;
 
   int result = s21_sscanf(input, "%*c%c%*c%c", &c1, &c2);
-  ck_assert_int_eq(result, 2); // Успешно прочитано два символа
+  ck_assert_int_eq(result, 2);
   ck_assert_int_eq(c1, 'b');
   ck_assert_int_eq(c2, 'd');
   printf("Test s21_test_sscanf_c_skip_with_width passed.\n");
 }
 END_TEST
 
-// Тест: Чтение wide-символа с модификатором 'l'
 START_TEST(s21_test_sscanf_c_wide_char) {
   setlocale(LC_ALL, "en_US.utf8");
   const char *input = "Ωβγ"; // UTF-8 представление 'Ω', 'β', 'γ'
   wchar_t wc;
 
   int result = s21_sscanf(input, "%lc", &wc);
-  ck_assert_int_eq(result, 1); // Успешно прочитан один wide-символ
-  ck_assert_int_eq(wc, L'Ω'); // Проверяем значение wide-символа
+  ck_assert_int_eq(result, 1);
+  ck_assert_int_eq(wc, L'Ω');
   printf("Test s21_test_sscanf_c_wide_char passed.\n");
 }
 END_TEST
 
-// Тест: Чтение нескольких wide-символов с ограничением по ширине
 START_TEST(s21_test_sscanf_c_wide_chars_with_width) {
   setlocale(LC_ALL, "en_US.utf8");
   const char *input = "Ωβγδ"; // UTF-8 представление 'Ω', 'β', 'γ', 'δ'
   wchar_t wc[2];
 
   int result = s21_sscanf(input, "%2lc", wc);
-  ck_assert_int_eq(result, 1); // Успешно прочитан один wide-символ
-  ck_assert_int_eq(wc[0], L'Ω'); // Проверяем значение первого wide-символа
+  ck_assert_int_eq(result, 1);
+  ck_assert_int_eq(wc[0], L'Ω');
   printf("Test s21_test_sscanf_c_wide_chars_with_width passed.\n");
 }
 END_TEST
 
-// Тест: Чтение символов с игнорированием флага '*'
 START_TEST(s21_test_sscanf_c_ignore_flag) {
   const char *input = "abc";
   char c;
 
   int result = s21_sscanf(input, "%*c%c", &c);
-  ck_assert_int_eq(result, 1); // Успешно прочитан один символ
-  ck_assert_int_eq(c, 'b'); // Первый символ проигнорирован
+  ck_assert_int_eq(result, 1);
+  ck_assert_int_eq(c, 'b');
   printf("Test s21_test_sscanf_c_ignore_flag passed.\n");
 }
 END_TEST
@@ -608,32 +580,28 @@ static int compare_wstrings(const wchar_t *a, const wchar_t *b) {
   return wcscmp(a, b) == 0;
 }
 
-// Тест: Простое чтение wide-строки
 START_TEST(test_s21_sscanf_ls_simple) {
   setlocale(LC_ALL, "en_US.utf8");
   const char *input = "Hello Wide World";
   wchar_t wstr_s21[50], wstr_sscanf[50];
-  char *fmt = "%ls"; // Форматная строка
+  char *fmt = "%ls";
 
   // Проверяем s21_sscanf
   int result_s21 = s21_sscanf(input, fmt, wstr_s21);
-  // Проверяем sscanf
+
   int result_sscanf = sscanf(input, fmt, wstr_sscanf);
 
-  ck_assert_int_eq(
-      result_s21, result_sscanf); // Сравниваем количество прочитанных элементов
-  ck_assert(
-      compare_wstrings(wstr_s21, wstr_sscanf)); // Сравниваем значения строк
+  ck_assert_int_eq(result_s21, result_sscanf);
+  ck_assert(compare_wstrings(wstr_s21, wstr_sscanf));
   printf("Test test_s21_sscanf_ls_simple passed.\n");
 }
 END_TEST
 
-// Тест: Чтение wide-строки с пробелами
 START_TEST(test_s21_sscanf_ls_space) {
   setlocale(LC_ALL, "en_US.utf8");
   const char *input = "   Hello   ";
   wchar_t wstr_s21[50], wstr_sscanf[50];
-  char *fmt = "%ls"; // Форматная строка
+  char *fmt = "%ls";
 
   int result_s21 = s21_sscanf(input, fmt, wstr_s21);
   int result_sscanf = sscanf(input, fmt, wstr_sscanf);
@@ -644,12 +612,11 @@ START_TEST(test_s21_sscanf_ls_space) {
 }
 END_TEST
 
-// Тест: Чтение wide-строки с ограничением по ширине
 START_TEST(test_s21_sscanf_ls_width) {
   setlocale(LC_ALL, "en_US.utf8");
   const char *input = "HelloWideWorld";
   wchar_t wstr_s21[50], wstr_sscanf[50];
-  char *fmt = "%4ls"; // Форматная строка
+  char *fmt = "%4ls";
 
   int result_s21 = s21_sscanf(input, fmt, wstr_s21);
   int result_sscanf = sscanf(input, fmt, wstr_sscanf);
@@ -660,13 +627,12 @@ START_TEST(test_s21_sscanf_ls_width) {
 }
 END_TEST
 
-// Тест: Чтение нескольких wide-строк
 START_TEST(test_s21_sscanf_ls_multiple) {
   setlocale(LC_ALL, "en_US.utf8");
   const char *input = "Hello Wide World";
   wchar_t wstr1_s21[50], wstr2_s21[50], wstr3_s21[50];
   wchar_t wstr1_sscanf[50], wstr2_sscanf[50], wstr3_sscanf[50];
-  char *fmt = "%ls %ls %ls"; // Форматная строка
+  char *fmt = "%ls %ls %ls";
 
   int result_s21 = s21_sscanf(input, fmt, wstr1_s21, wstr2_s21, wstr3_s21);
   int result_sscanf =
@@ -680,12 +646,11 @@ START_TEST(test_s21_sscanf_ls_multiple) {
 }
 END_TEST
 
-// Тест: Чтение пустой строки
 START_TEST(test_s21_sscanf_ls_empty) {
   setlocale(LC_ALL, "en_US.utf8");
   const char *input = "";
   wchar_t wstr_s21[50] = {0}, wstr_sscanf[50] = {0};
-  char *fmt = "%ls"; // Форматная строка
+  char *fmt = "%ls";
 
   int result_s21 = s21_sscanf(input, fmt, wstr_s21);
   int result_sscanf = sscanf(input, fmt, wstr_sscanf);
@@ -697,12 +662,11 @@ START_TEST(test_s21_sscanf_ls_empty) {
 }
 END_TEST
 
-// Тест: Неверный формат строки
 START_TEST(test_s21_sscanf_ls_wrong_fmt) {
   setlocale(LC_ALL, "en_US.utf8");
   const char *input = "Hello";
   wchar_t wstr_s21[50], wstr_sscanf[50];
-  char *fmt = "%l"; // Неверный формат
+  char *fmt = "%l";
 
   int result_s21 = s21_sscanf(input, fmt, wstr_s21);
   int result_sscanf = sscanf(input, fmt, wstr_sscanf);
@@ -712,14 +676,13 @@ START_TEST(test_s21_sscanf_ls_wrong_fmt) {
 }
 END_TEST
 
-// Тест: Чтение wide-строки с разделителями
 START_TEST(test_s21_sscanf_ls_separators) {
   setlocale(LC_ALL, "en_US.utf8");
   const char *input = "Hello, Wide: World!";
   wchar_t wstr1_s21[50] = {0}, wstr2_s21[50] = {0}, wstr3_s21[50] = {0};
   wchar_t wstr1_sscanf[50] = {0}, wstr2_sscanf[50] = {0},
           wstr3_sscanf[50] = {0};
-  char *fmt = "%ls , %ls : %ls"; // Форматная строка
+  char *fmt = "%ls , %ls : %ls";
 
   int result_s21 = s21_sscanf(input, fmt, wstr1_s21, wstr2_s21, wstr3_s21);
   int result_sscanf =
@@ -733,14 +696,13 @@ START_TEST(test_s21_sscanf_ls_separators) {
 }
 END_TEST
 
-// Тест: Чтение wide-строки с шириной и разделителями
 START_TEST(test_s21_sscanf_ls_width_separators) {
   setlocale(LC_ALL, "en_US.utf8");
   const char *input = "Hello , Wide : World!";
   wchar_t wstr1_s21[50] = {0}, wstr2_s21[50] = {0}, wstr3_s21[50] = {0};
   wchar_t wstr1_sscanf[50] = {0}, wstr2_sscanf[50] = {0},
           wstr3_sscanf[50] = {0};
-  char *fmt = "%4ls, %3ls %5ls"; // Форматная строка
+  char *fmt = "%4ls, %3ls %5ls";
 
   int result_s21 = s21_sscanf(input, fmt, wstr1_s21, wstr2_s21, wstr3_s21);
   int result_sscanf =
@@ -754,12 +716,11 @@ START_TEST(test_s21_sscanf_ls_width_separators) {
 }
 END_TEST
 
-// Тест: Пропуск присваивания (%*ls)
 START_TEST(test_s21_sscanf_ls_skip_assignment) {
   setlocale(LC_ALL, "en_US.utf8");
   const char *input = "Hello Wide World";
   wchar_t wstr_s21[50] = {0}, wstr_sscanf[50] = {0};
-  char *fmt = "%*ls %ls"; // Форматная строка
+  char *fmt = "%*ls %ls";
 
   int result_s21 = s21_sscanf(input, fmt, wstr_s21);
   int result_sscanf = sscanf(input, fmt, wstr_sscanf);
@@ -770,7 +731,6 @@ START_TEST(test_s21_sscanf_ls_skip_assignment) {
 }
 END_TEST
 
-// Тест 1: Чтение чисел, разделённых пробелами
 START_TEST(test_s21_sscanf_d_separator_space) {
   const char *input = "123 456 789";
   int x = 0, y = 0, z = 0;
@@ -780,97 +740,90 @@ START_TEST(test_s21_sscanf_d_separator_space) {
   int result = s21_sscanf(input, fmt, &x, &y, &z);
   int resultr = sscanf(input, fmt, &xr, &yr, &zr);
 
-  ck_assert_int_eq(result, resultr); // Ожидается 3 (успешное чтение трёх чисел)
-  ck_assert_int_eq(x, xr); // Ожидается 123
-  ck_assert_int_eq(y, yr); // Ожидается 456
-  ck_assert_int_eq(z, zr); // Ожидается 789
+  ck_assert_int_eq(result, resultr);
+  ck_assert_int_eq(x, xr);
+  ck_assert_int_eq(y, yr);
+  ck_assert_int_eq(z, zr);
 }
 END_TEST
 
-// Тест 2: Чтение чисел, разделённых табуляцией
 START_TEST(test_s21_sscanf_d_separator_tab) {
   const char *input = "123\t456\t789";
   int x = 0, y = 0, z = 0;
   int xr = 0, yr = 0, zr = 0;
-  const char *fmt = "%d%d%d"; // Формат без явных разделителей
+  const char *fmt = "%d%d%d";
 
   int result = s21_sscanf(input, fmt, &x, &y, &z);
   int resultr = sscanf(input, fmt, &xr, &yr, &zr);
 
-  ck_assert_int_eq(result, resultr); // Ожидается 3 (успешное чтение трёх чисел)
-  ck_assert_int_eq(x, xr); // Ожидается 123
-  ck_assert_int_eq(y, yr); // Ожидается 456
-  ck_assert_int_eq(z, zr); // Ожидается 789
+  ck_assert_int_eq(result, resultr);
+  ck_assert_int_eq(x, xr);
+  ck_assert_int_eq(y, yr);
+  ck_assert_int_eq(z, zr);
 }
 END_TEST
 
-// Тест 3: Чтение чисел, разделённых запятыми
 START_TEST(test_s21_sscanf_d_separator_comma) {
   const char *input = "123,456,789";
   int x = 0, y = 0, z = 0;
   int xr = 0, yr = 0, zr = 0;
-  const char *fmt = "%d,%d,%d"; // Явное указание запятых как разделителей
+  const char *fmt = "%d,%d,%d";
 
   int result = s21_sscanf(input, fmt, &x, &y, &z);
   int resultr = sscanf(input, fmt, &xr, &yr, &zr);
 
-  ck_assert_int_eq(result, resultr); // Ожидается 3 (успешное чтение трёх чисел)
-  ck_assert_int_eq(x, xr); // Ожидается 123
-  ck_assert_int_eq(y, yr); // Ожидается 456
-  ck_assert_int_eq(z, zr); // Ожидается 789
+  ck_assert_int_eq(result, resultr);
+  ck_assert_int_eq(x, xr);
+  ck_assert_int_eq(y, yr);
+  ck_assert_int_eq(z, zr);
 }
 END_TEST
 
-// Тест 4: Чтение чисел, разделённых смешанными разделителями (пробелы и
-// запятые)
 START_TEST(test_s21_sscanf_d_separator_mixed) {
   const char *input = "123, 456, 789";
   int x = 0, y = 0, z = 0;
   int xr = 0, yr = 0, zr = 0;
-  const char *fmt = "%d, %d, %d"; // Явное указание разделителей
+  const char *fmt = "%d, %d, %d";
 
   int result = s21_sscanf(input, fmt, &x, &y, &z);
   int resultr = sscanf(input, fmt, &xr, &yr, &zr);
 
-  ck_assert_int_eq(result, resultr); // Ожидается 3 (успешное чтение трёх чисел)
-  ck_assert_int_eq(x, xr); // Ожидается 123
-  ck_assert_int_eq(y, yr); // Ожидается 456
-  ck_assert_int_eq(z, zr); // Ожидается 789
+  ck_assert_int_eq(result, resultr);
+  ck_assert_int_eq(x, xr);
+  ck_assert_int_eq(y, yr);
+  ck_assert_int_eq(z, zr);
 }
 END_TEST
 
-// Тест 5: Чтение чисел, разделённых новыми строками
 START_TEST(test_s21_sscanf_d_separator_newline) {
   const char *input = "123\n456\n789";
   int x = 0, y = 0, z = 0;
   int xr = 0, yr = 0, zr = 0;
-  const char *fmt = "%d%d%d"; // Формат без явных разделителей
+  const char *fmt = "%d%d%d";
 
   int result = s21_sscanf(input, fmt, &x, &y, &z);
   int resultr = sscanf(input, fmt, &xr, &yr, &zr);
 
-  ck_assert_int_eq(result, resultr); // Ожидается 3 (успешное чтение трёх чисел)
-  ck_assert_int_eq(x, xr); // Ожидается 123
-  ck_assert_int_eq(y, yr); // Ожидается 456
-  ck_assert_int_eq(z, zr); // Ожидается 789
+  ck_assert_int_eq(result, resultr);
+  ck_assert_int_eq(x, xr);
+  ck_assert_int_eq(y, yr);
+  ck_assert_int_eq(z, zr);
 }
 END_TEST
 
-// Тест 6: Чтение чисел с нестандартными разделителями (например, точка с
-// запятой)
 START_TEST(test_s21_sscanf_d_separator_semicolon) {
   const char *input = "123;456;789";
   int x = 0, y = 0, z = 0;
   int xr = 0, yr = 0, zr = 0;
-  const char *fmt = "%d;%d;%d"; // Явное указание разделителей
+  const char *fmt = "%d;%d;%d";
 
   int result = s21_sscanf(input, fmt, &x, &y, &z);
   int resultr = sscanf(input, fmt, &xr, &yr, &zr);
 
-  ck_assert_int_eq(result, resultr); // Ожидается 3 (успешное чтение трёх чисел)
-  ck_assert_int_eq(x, xr); // Ожидается 123
-  ck_assert_int_eq(y, yr); // Ожидается 456
-  ck_assert_int_eq(z, zr); // Ожидается 789
+  ck_assert_int_eq(result, resultr);
+  ck_assert_int_eq(x, xr);
+  ck_assert_int_eq(y, yr);
+  ck_assert_int_eq(z, zr);
 }
 END_TEST
 
@@ -878,15 +831,15 @@ START_TEST(test_s21_sscanf_d_separator_skip) {
   const char *input = "123abc456def789";
   int x = 0, y = 0, z = 0;
   int xr = 0, yr = 0, zr = 0;
-  const char *fmt = "%d%*c%d%*c%d"; // Пропуск одного символа между числами
+  const char *fmt = "%d%*c%d%*c%d";
 
   int result = s21_sscanf(input, fmt, &x, &y, &z);
   int resultr = sscanf(input, fmt, &xr, &yr, &zr);
 
-  ck_assert_int_eq(result, resultr); // Ожидается 3 (успешное чтение трёх чисел)
-  ck_assert_int_eq(x, xr); // Ожидается 123
-  ck_assert_int_eq(y, yr); // Ожидается 456
-  ck_assert_int_eq(z, zr); // Ожидается 789
+  ck_assert_int_eq(result, resultr);
+  ck_assert_int_eq(x, xr);
+  ck_assert_int_eq(y, yr);
+  ck_assert_int_eq(z, zr);
 }
 END_TEST
 
@@ -1082,8 +1035,8 @@ START_TEST(test_s21_sscanf_hu_simple) {
   int result_s21 = s21_sscanf(input, "%hu", &hu);
   int result_std = sscanf(input, "%hu", &hu);
 
-  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-  ck_assert_uint_eq(hu, 12345); // Проверяем значение
+  ck_assert_int_eq(result_s21, result_std);
+  ck_assert_uint_eq(hu, 12345);
 }
 END_TEST
 
@@ -1094,8 +1047,8 @@ START_TEST(test_s21_sscanf_hu_width) {
   int result_s21 = s21_sscanf(input, "%4hu", &hu);
   int result_std = sscanf(input, "%4hu", &hu);
 
-  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-  ck_assert_uint_eq(hu, 1234); // Проверяем значение с ограничением по ширине
+  ck_assert_int_eq(result_s21, result_std);
+  ck_assert_uint_eq(hu, 1234);
 }
 END_TEST
 
@@ -1106,23 +1059,20 @@ START_TEST(test_s21_sscanf_hu_flag_star) {
   int result_s21 = s21_sscanf(input, fmt, &hu);
   int result_std = sscanf(input, fmt, &hu);
 
-  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-  ck_assert_uint_eq(hu, 0); // Значение не должно быть прочитано из-за флага '*'
+  ck_assert_int_eq(result_s21, result_std);
+  ck_assert_uint_eq(hu, 0);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_hu_overflow) {
-  const char *input =
-      "65536"; // Значение больше, чем может вместить unsigned short
+  const char *input = "65536";
   unsigned short hu = 0;
 
   int result_s21 = s21_sscanf(input, "%hu", &hu);
   int result_std = sscanf(input, "%hu", &hu);
 
-  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-  ck_assert_uint_eq(
-      hu,
-      0); // При переполнении результат зависит от реализации, но часто это 0
+  ck_assert_int_eq(result_s21, result_std);
+  ck_assert_uint_eq(hu, 0);
 }
 END_TEST
 
@@ -1133,8 +1083,8 @@ START_TEST(test_s21_sscanf_lu_simple) {
   int result_s21 = s21_sscanf(input, "%lu", &lu);
   int result_std = sscanf(input, "%lu", &lu);
 
-  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-  ck_assert_uint_eq(lu, 1234567890); // Проверяем значение
+  ck_assert_int_eq(result_s21, result_std);
+  ck_assert_uint_eq(lu, 1234567890);
 }
 END_TEST
 
@@ -1145,9 +1095,8 @@ START_TEST(test_s21_sscanf_lu_width) {
   int result_s21 = s21_sscanf(input, "%10lu", &lu);
   int result_std = sscanf(input, "%10lu", &lu);
 
-  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-  ck_assert_uint_eq(lu,
-                    1234567890); // Проверяем значение с ограничением по ширине
+  ck_assert_int_eq(result_s21, result_std);
+  ck_assert_uint_eq(lu, 1234567890);
 }
 END_TEST
 
@@ -1159,22 +1108,21 @@ START_TEST(test_s21_sscanf_lu_flag_star) {
   int result_s21 = s21_sscanf(input, fmt, &lu);
   int result_std = sscanf(input, fmt, &lu);
 
-  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-  ck_assert_uint_eq(lu, 0); // Значение не должно быть прочитано из-за флага '*'
+  ck_assert_int_eq(result_s21, result_std);
+  ck_assert_uint_eq(lu, 0);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_lu_overflow) {
-  const char *input = "18446744073709551616"; // Значение больше, чем может
-                                              // вместить unsigned long
+  const char *input = "18446744073709551616";
+
   unsigned long lu = 0;
 
   int result_s21 = s21_sscanf(input, "%lu", &lu);
   int result_std = sscanf(input, "%lu", &lu);
 
-  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-  ck_assert_uint_eq(lu, ULONG_MAX); // Результат зависит от платформы, но обычно
-                                    // это максимальное значение unsigned long
+  ck_assert_int_eq(result_s21, result_std);
+  ck_assert_uint_eq(lu, ULONG_MAX);
 }
 END_TEST
 
@@ -1186,9 +1134,9 @@ START_TEST(test_s21_sscanf_hu_and_lu_combination) {
   int result_s21 = s21_sscanf(input, "%hu %lu", &hu, &lu);
   int result_std = sscanf(input, "%hu %lu", &hu, &lu);
 
-  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-  ck_assert_uint_eq(hu, 12345); // Проверяем первое значение
-  ck_assert_uint_eq(lu, 67890); // Проверяем второе значение
+  ck_assert_int_eq(result_s21, result_std);
+  ck_assert_uint_eq(hu, 12345);
+  ck_assert_uint_eq(lu, 67890);
 }
 END_TEST
 
@@ -1200,9 +1148,9 @@ START_TEST(test_s21_sscanf_hu_and_lu_with_width) {
   int result_s21 = s21_sscanf(input, "%4hu %5lu", &hu, &lu);
   int result_std = sscanf(input, "%4hu %5lu", &hu_std, &lu_std);
 
-  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-  ck_assert_uint_eq(hu, hu_std); // Первое значение с ограничением по ширине
-  ck_assert_uint_eq(lu, lu_std); // Второе значение с ограничением по ширине
+  ck_assert_int_eq(result_s21, result_std);
+  ck_assert_uint_eq(hu, hu_std);
+  ck_assert_uint_eq(lu, lu_std);
 }
 END_TEST
 
@@ -1214,8 +1162,8 @@ START_TEST(test_s21_sscanf_hu_and_lu_with_star_flag) {
   int result_s21 = s21_sscanf(input, fmt, &lu);
   int result_std = sscanf(input, fmt, &lu);
 
-  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-  ck_assert_uint_eq(lu, 67890); // Первое значение должно быть пропущено
+  ck_assert_int_eq(result_s21, result_std);
+  ck_assert_uint_eq(lu, 67890);
 }
 END_TEST
 
@@ -1227,9 +1175,9 @@ START_TEST(test_s21_sscanf_hu_and_lu_with_spaces) {
   int result_s21 = s21_sscanf(input, "%hu%lu", &hu, &lu);
   int result_std = sscanf(input, "%hu%lu", &hu, &lu);
 
-  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-  ck_assert_uint_eq(hu, 12345); // Пробелы должны быть проигнорированы
-  ck_assert_uint_eq(lu, 67890); // Пробелы должны быть проигнорированы
+  ck_assert_int_eq(result_s21, result_std);
+  ck_assert_uint_eq(hu, 12345);
+  ck_assert_uint_eq(lu, 67890);
 }
 END_TEST
 
@@ -1240,8 +1188,8 @@ START_TEST(test_s21_sscanf_hu_with_zero_flag) {
   int result_s21 = s21_sscanf(input, "%hu", &hu);
   int result_std = sscanf(input, "%hu", &hu);
 
-  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-  ck_assert_uint_eq(hu, 12345); // Префикс '0' должен быть проигнорирован
+  ck_assert_int_eq(result_s21, result_std);
+  ck_assert_uint_eq(hu, 12345);
 }
 END_TEST
 
@@ -1252,8 +1200,8 @@ START_TEST(test_s21_sscanf_lu_with_zero_flag) {
   int result_s21 = s21_sscanf(input, "%lu", &lu);
   int result_std = sscanf(input, "%lu", &lu);
 
-  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-  ck_assert_uint_eq(lu, 1234567890); // Префикс '0' должен быть проигнорирован
+  ck_assert_int_eq(result_s21, result_std);
+  ck_assert_uint_eq(lu, 1234567890);
 }
 END_TEST
 
@@ -1264,9 +1212,8 @@ START_TEST(test_s21_sscanf_hu_with_large_width) {
   int result_s21 = s21_sscanf(input, "%10hu", &hu_s21);
   int result_std = sscanf(input, "%10hu", &hu);
 
-  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-  ck_assert_uint_eq(hu,
-                    hu_s21); // Ширина больше, чем может вместить unsigned short
+  ck_assert_int_eq(result_s21, result_std);
+  ck_assert_uint_eq(hu, hu_s21);
 }
 END_TEST
 
@@ -1277,8 +1224,8 @@ START_TEST(test_s21_sscanf_lu_with_large_width) {
   int result_s21 = s21_sscanf(input, "%20lu", &lu_s21);
   int result_std = sscanf(input, "%20lu", &lu);
 
-  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-  ck_assert_uint_eq(lu, lu_s21); // Ширина больше, чем длина числа
+  ck_assert_int_eq(result_s21, result_std);
+  ck_assert_uint_eq(lu, lu_s21);
 }
 END_TEST
 
@@ -1289,9 +1236,8 @@ START_TEST(test_s21_sscanf_n_simple) {
   int result_s21 = s21_sscanf(input, "%n", &n);
   int result_std = sscanf(input, "%n", &n);
 
-  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-  ck_assert_int_eq(n,
-                   0); // %n не считывает символы, а записывает текущую позицию
+  ck_assert_int_eq(result_s21, result_std);
+  ck_assert_int_eq(n, 0);
 }
 END_TEST
 
@@ -1302,8 +1248,8 @@ START_TEST(test_s21_sscanf_n_with_string) {
   int result_s21 = s21_sscanf(input, "%4s%n", (char[5]){0}, &n);
   int result_std = sscanf(input, "%4s%n", (char[5]){0}, &n);
 
-  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-  ck_assert_int_eq(n, 4); // Позиция должна быть равна 4 после чтения 4 символов
+  ck_assert_int_eq(result_s21, result_std);
+  ck_assert_int_eq(n, 4);
 }
 END_TEST
 
@@ -1314,8 +1260,8 @@ START_TEST(test_s21_sscanf_n_with_width) {
   int result_s21 = s21_sscanf(input, "%*4d%n", &n);
   int result_std = sscanf(input, "%*4d%n", &n);
 
-  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-  ck_assert_int_eq(n, 4); // Позиция должна быть равна 4 после чтения 4 цифр
+  ck_assert_int_eq(result_s21, result_std);
+  ck_assert_int_eq(n, 4);
 }
 END_TEST
 
@@ -1326,9 +1272,8 @@ START_TEST(test_s21_sscanf_n_with_star_flag) {
   int result_s21 = s21_sscanf(input, "%*d%n", &n);
   int result_std = sscanf(input, "%*d%n", &n);
 
-  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-  ck_assert_int_eq(
-      n, 5); // Позиция должна быть равна 5, так как число 12345 пропущено
+  ck_assert_int_eq(result_s21, result_std);
+  ck_assert_int_eq(n, 5);
 }
 END_TEST
 
@@ -1342,10 +1287,10 @@ START_TEST(test_s21_scanf_n_with_length_modifiers) {
       s21_sscanf(input, "%4s%hn%*4s%n%ln", (char[5]){0}, &hn, &n, &ln);
   int result_std = sscanf(input, "%4s%hn%*4s%n%ln", (char[5]){0}, &hn, &n, &ln);
 
-  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-  ck_assert_int_eq(hn, 4); // Позиция после первого %n
-  ck_assert_int_eq(n, 8);  // Позиция после второго %n
-  ck_assert_int_eq(ln, 8); // Позиция после третьего %n
+  ck_assert_int_eq(result_s21, result_std);
+  ck_assert_int_eq(hn, 4);
+  ck_assert_int_eq(n, 8);
+  ck_assert_int_eq(ln, 8);
 }
 END_TEST
 
@@ -1357,10 +1302,8 @@ START_TEST(test_s21_sscanf_n_with_zero_width) {
   int result_s21 = s21_sscanf(input, fmt, &a_s21, &n_s21);
   int result_std = sscanf(input, fmt, &a, &n);
   ck_assert_int_eq(a_s21, a);
-  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-  ck_assert_int_eq(
-      n,
-      n_s21); // Ширина 0 означает, что ничего не читается, позиция остается 0
+  ck_assert_int_eq(result_s21, result_std);
+  ck_assert_int_eq(n, n_s21);
 }
 END_TEST
 
@@ -1391,8 +1334,8 @@ START_TEST(test_s21_sscanf_n_with_spaces) {
   int result_s21 = s21_sscanf(input, "   %n", &n_s21);
   int result_std = sscanf(input, "   %n", &n);
 
-  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-  ck_assert_int_eq(n, n_s21); // Пробелы учитываются при определении позиции
+  ck_assert_int_eq(result_s21, result_std);
+  ck_assert_int_eq(n, n_s21);
 }
 END_TEST
 
@@ -1403,8 +1346,8 @@ START_TEST(test_s21_sscanf_n_with_separator) {
   int result_s21 = s21_sscanf(input, "%*4d,%n", &n_s21);
   int result_std = sscanf(input, "%*4d,%n", &n);
 
-  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-  ck_assert_int_eq(n, n_s21); // Позиция должна быть равна 5 (4 цифры + запятая)
+  ck_assert_int_eq(result_s21, result_std);
+  ck_assert_int_eq(n, n_s21);
 }
 END_TEST
 
@@ -1415,9 +1358,8 @@ START_TEST(test_s21_sscanf_n_with_large_input) {
   int result_s21 = s21_sscanf(input, "%*10d%n", &n_s21);
   int result_std = sscanf(input, "%*10d%n", &n);
 
-  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-  ck_assert_int_eq(n,
-                   n_s21); // Позиция должна быть равна 10 после чтения 10 цифр
+  ck_assert_int_eq(result_s21, result_std);
+  ck_assert_int_eq(n, n_s21);
 }
 END_TEST
 
@@ -1428,9 +1370,8 @@ START_TEST(test_s21_sscanf_n_with_no_conversion) {
   int result_s21 = s21_sscanf(input, "%*d%n", &n);
   int result_std = sscanf(input, "%*d%n", &n);
 
-  ck_assert_int_eq(result_s21, result_std); // Сравниваем коды завершения
-  ck_assert_int_eq(
-      n, 5); // Число 12345 пропущено, но позиция все равно обновляется
+  ck_assert_int_eq(result_s21, result_std);
+  ck_assert_int_eq(n, 5);
 }
 END_TEST
 
@@ -1502,7 +1443,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_percent_space_2) {
   char str[] = "Use %triple space in format string";
-  //  char *fmt="%s%%% %s";
+
   char *fmt = "%s%% %s";
   char str1[20] = {0}, str2[20] = "TEST", str1r[20] = {0}, str2r[20] = "TEST";
 
@@ -1740,7 +1681,18 @@ END_TEST
 START_TEST(test_s21_sscanf_x_simple) {
   const char *input = "0xf3";
   int x = 10, xr = 10;
-  const char *fmt = "%i";
+  const char *fmt = "%x";
+  s21_sscanf(input, fmt, &x);
+  sscanf(input, fmt, &xr);
+  ck_assert_int_eq(x, xr);
+  ck_assert_int_eq(s21_sscanf(input, fmt, &x), sscanf(input, fmt, &xr));
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_xh_simple) {
+  const char *input = "0xf3";
+  short int x = 10, xr = 10;
+  const char *fmt = "%hx";
   s21_sscanf(input, fmt, &x);
   sscanf(input, fmt, &xr);
   ck_assert_int_eq(x, xr);
@@ -2370,39 +2322,30 @@ START_TEST(test_s21_sscanf_p) {
   void *ptr1 = NULL, *ptr2 = NULL;
   void *ptr3 = NULL, *ptr4 = NULL;
 
-  // Вызов s21_sscanf
   int res1 = s21_sscanf(str, fmt, &ptr1, &ptr2);
-
-  // Вызов оригинальной sscanf
   int res2 = sscanf(str, fmt, &ptr3, &ptr4);
 
-  // Проверка результатов
   ck_assert_ptr_eq(ptr1, ptr3);
   ck_assert_ptr_eq(ptr2, ptr4);
   ck_assert_int_eq(res1, res2);
 }
 END_TEST
 
-// Тестовый случай для проверки %p с подавлением присваивания (*)
 START_TEST(test_s21_sscanf_p_suppress) {
   const char *str = "0xABCD 0x1234";
   char *fmt = "%*p %p";
   void *ptr1 = NULL;
   void *ptr2 = NULL;
 
-  // Вызов s21_sscanf
   int res1 = s21_sscanf(str, fmt, &ptr1);
 
-  // Вызов оригинальной sscanf
   int res2 = sscanf(str, fmt, &ptr2);
 
-  // Проверка результатов
   ck_assert_ptr_eq(ptr1, ptr2);
   ck_assert_int_eq(res1, res2);
 }
 END_TEST
 
-// Тестовый случай для проверки %p в комбинации с другими спецификаторами
 START_TEST(test_s21_sscanf_p_combination) {
   const char *str = "0xABCD 42 0x1234";
   char *fmt = "%p %d %p";
@@ -2410,13 +2353,10 @@ START_TEST(test_s21_sscanf_p_combination) {
   void *ptr3 = NULL, *ptr4 = NULL;
   int num1 = 0, num2 = 0;
 
-  // Вызов s21_sscanf
   int res1 = s21_sscanf(str, fmt, &ptr1, &num1, &ptr2);
 
-  // Вызов оригинальной sscanf
   int res2 = sscanf(str, fmt, &ptr3, &num2, &ptr4);
 
-  // Проверка результатов
   ck_assert_ptr_eq(ptr1, ptr3);
   ck_assert_int_eq(num1, num2);
   ck_assert_ptr_eq(ptr2, ptr4);
@@ -2424,10 +2364,413 @@ START_TEST(test_s21_sscanf_p_combination) {
 }
 END_TEST
 
+START_TEST(test_s21_sscanf_g) {
+  char str[] = "12345";
+  double res1 = 0, res2 = 0;
+
+  char *fmt = "%g";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_double_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_g_zero) {
+  char str[] = "0";
+  double res1 = 0, res2 = 0;
+
+  char *fmt = "%g";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_double_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_g_max) {
+  char str1[] = "1.7976931348623157E+308";
+  double res_s21 = 0, res = 0;
+  int ret = 123, ret_s21 = 123;
+
+  char *fmt1 = "%g";
+  ret_s21 = s21_sscanf(str1, fmt1, &res_s21);
+  ret = sscanf(str1, fmt1, &res);
+
+  ck_assert_int_eq(ret, ret_s21);
+  ck_assert_double_eq_tol(res_s21, res, 1e-9);
+
+  long double res2_s21 = 0, res2 = 0;
+  char *fmt2 = "%Lg";
+  char str2[] = "1.7976931348623157E+308";
+  res = 123;
+  ret_s21 = 123;
+  ret_s21 = s21_sscanf(str2, fmt2, &res2_s21);
+  ret = sscanf(str2, fmt2, &res2);
+
+  ck_assert_int_eq(ret_s21, ret);
+  ck_assert_double_eq(res2_s21, res2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_g_overflow) {
+  char str[] = "1.7976931348623158E+308";
+  long double res = 0, res_s21 = 0;
+
+  char *fmt = "%g";
+  int ret1 = s21_sscanf(str, fmt, &res_s21);
+  int ret2 = sscanf(str, fmt, &res);
+
+  ck_assert_double_eq(res, res_s21);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_g_negative) {
+  char str[] = "-12345";
+  double res1 = 0, res2 = 0;
+
+  char *fmt = "%g";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_double_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_g_width) {
+  char str[] = "12345";
+  double res1 = 0, res2 = 0;
+
+  char *fmt = "%5g";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_double_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_g_width_zero) {
+  char str[] = "0";
+  double res1 = 0, res2 = 0;
+
+  char *fmt = "%5g";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_double_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_g_width_max) {
+  char str[] = "1.7976931348623157E+308";
+  double res1 = 0, res2 = 0;
+
+  char *fmt = "%5g";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_double_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_g_width_overflow) {
+  char str[] = "1.7976931348623158E+308";
+  double res1 = 0, res2 = 0;
+
+  char *fmt = "%5g";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_double_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_g_width_negative) {
+  char str[] = "-12345";
+  double res1 = 0, res2 = 0;
+
+  char *fmt = "%5g";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_double_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_g_width_star) {
+  char str[] = "12345";
+  double res1 = 0, res2 = 0;
+
+  char *fmt = "%*5g";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_double_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_g_width_star_zero) {
+  char str[] = "0";
+  double res1 = 0, res2 = 0;
+
+  char *fmt = "%*5g";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_double_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_g_width_star_max) {
+  char str[] = "1.7976931348623157E+308";
+  double res1 = 0, res2 = 0;
+
+  char *fmt = "%*5g";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_double_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_g_width_star_overflow) {
+  char str[] = "1.7976931348623158E+308";
+  double res1 = 0, res2 = 0;
+
+  char *fmt = "%*5g";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_double_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_g_width_star_negative) {
+  char str[] = "-12345";
+  double res1 = 0, res2 = 0;
+
+  char *fmt = "%*5g";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_double_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_f) {
+  char str[] = "12345";
+  float res1 = 555, res2 = 555;
+
+  char *fmt = "%f";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_float_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_f_zero) {
+  char str[] = "0";
+  float res1 = 555, res2 = 555;
+
+  char *fmt = "%f";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_float_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_f_max) {
+  char str[] = "3.402823466E+38";
+  float res1 = 555, res2 = 555;
+
+  char *fmt = "%f";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_float_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_f_overflow) {
+  char str[] = "3.402823467E+38";
+  float res1 = 555, res2 = 555;
+
+  char *fmt = "%f";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_float_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_f_negative) {
+  char str[] = "-12345";
+  float res1 = 555, res2 = 555;
+
+  char *fmt = "%f";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_float_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_f_width) {
+  char str[] = "12345";
+  float res1 = 555, res2 = 555;
+
+  char *fmt = "%5f";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_float_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_f_width_zero) {
+  char str[] = "0";
+  float res1 = 555, res2 = 555;
+
+  char *fmt = "%5f";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_float_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_f_width_max) {
+  char str[] = "3.402823466E+38";
+  float res1 = 555, res2 = 555;
+
+  char *fmt = "%5f";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_float_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_f_width_overflow) {
+  char str[] = "3.402823467E+38";
+  float res1 = 555, res2 = 555;
+
+  char *fmt = "%5f";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_float_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_f_width_negative) {
+  char str[] = "-12345";
+  float res1 = 0, res2 = 0;
+
+  char *fmt = "%5f";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_float_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_f_width_star) {
+  char str[] = "12345";
+  float res1 = 0, res2 = 0;
+
+  char *fmt = "%*5f";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_float_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_f_width_star_zero) {
+  char str[] = "0";
+  float res1 = 0, res2 = 0;
+
+  char *fmt = "%*5f";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_float_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_f_width_star_max) {
+  char str[] = "3.402823466E+38";
+  float res1 = 0, res2 = 0;
+
+  char *fmt = "%*5f";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_float_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_f_width_star_overflow) {
+  char str[] = "3.402823467E+38";
+  float res1 = 0, res2 = 0;
+
+  char *fmt = "%*5f";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_float_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_f_width_star_negative) {
+  char str[] = "-12345";
+  float res1 = 0, res2 = 0;
+
+  char *fmt = "%*5f";
+  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret2 = sscanf(str, fmt, &res2);
+
+  ck_assert_float_eq(res1, res2);
+  ck_assert_int_eq(ret1, ret2);
+}
+END_TEST
+
 Suite *s21_sscanf_suite(void) {
   Suite *suite;
   TCase *tc_core_d, *tc_core_c, *tc_core_s, *tc_core_u, *tc_core_n, *tc_debug,
-      *tc_core_pcnt, *tc_core_i, *tc_core_o, *tc_core_x, *tc_core_p;
+      *tc_core_pcnt, *tc_core_i, *tc_core_o, *tc_core_x, *tc_core_p, *tc_core_g,
+      *tc_core_f;
 
   suite = suite_create("s21_sscanf");
   // tc_core = tcase_create("Core");
@@ -2440,6 +2783,8 @@ Suite *s21_sscanf_suite(void) {
   tc_core_o = tcase_create("Specifier= %o");
   tc_core_x = tcase_create("Specifier= %x");
   tc_core_p = tcase_create("Specifier= %p");
+  tc_core_g = tcase_create("Specifier= %g");
+  tc_core_f = tcase_create("Specifier= %f");
   tc_core_pcnt = tcase_create("Specifier= %%");
   tc_debug = tcase_create("Debug");
 
@@ -2597,6 +2942,7 @@ Suite *s21_sscanf_suite(void) {
   tcase_add_test(tc_core_o, test_s21_sscanf_o);
 
   tcase_add_test(tc_core_x, test_s21_sscanf_x_simple);
+  tcase_add_test(tc_core_x, test_s21_sscanf_xh_simple);
   tcase_add_test(tc_core_x, test_s21_sscanf_x_width_star_negative);
   tcase_add_test(tc_core_x, test_s21_sscanf_x_width_star_overflow);
   tcase_add_test(tc_core_x, test_s21_sscanf_x_width_star_max);
@@ -2634,6 +2980,38 @@ Suite *s21_sscanf_suite(void) {
   tcase_add_test(tc_core_p, test_s21_sscanf_p_suppress);
   tcase_add_test(tc_core_p, test_s21_sscanf_p_combination);
 
+  tcase_add_test(tc_core_g, test_s21_sscanf_g_width_star_negative);
+  tcase_add_test(tc_core_g, test_s21_sscanf_g_width_star_overflow);
+  tcase_add_test(tc_core_g, test_s21_sscanf_g_width_star_max);
+  tcase_add_test(tc_core_g, test_s21_sscanf_g_width_star_zero);
+  tcase_add_test(tc_core_g, test_s21_sscanf_g_width_star);
+  tcase_add_test(tc_core_g, test_s21_sscanf_g_width_negative);
+  tcase_add_test(tc_core_g, test_s21_sscanf_g_width_overflow);
+  tcase_add_test(tc_core_g, test_s21_sscanf_g_width_max);
+  tcase_add_test(tc_core_g, test_s21_sscanf_g_width_zero);
+  tcase_add_test(tc_core_g, test_s21_sscanf_g_width);
+  tcase_add_test(tc_core_g, test_s21_sscanf_g_negative);
+  tcase_add_test(tc_core_g, test_s21_sscanf_g_overflow);
+  tcase_add_test(tc_core_g, test_s21_sscanf_g_max);
+  tcase_add_test(tc_core_g, test_s21_sscanf_g_zero);
+  tcase_add_test(tc_core_g, test_s21_sscanf_g);
+
+  tcase_add_test(tc_core_f, test_s21_sscanf_f_width_star_negative);
+  tcase_add_test(tc_core_f, test_s21_sscanf_f_width_star_overflow);
+  tcase_add_test(tc_core_f, test_s21_sscanf_f_width_star_max);
+  tcase_add_test(tc_core_f, test_s21_sscanf_f_width_star_zero);
+  tcase_add_test(tc_core_f, test_s21_sscanf_f_width_star);
+  tcase_add_test(tc_core_f, test_s21_sscanf_f_width_negative);
+  tcase_add_test(tc_core_f, test_s21_sscanf_f_width_overflow);
+  tcase_add_test(tc_core_f, test_s21_sscanf_f_width_max);
+  tcase_add_test(tc_core_f, test_s21_sscanf_f_width_zero);
+  tcase_add_test(tc_core_f, test_s21_sscanf_f_width);
+  tcase_add_test(tc_core_f, test_s21_sscanf_f_negative);
+  tcase_add_test(tc_core_f, test_s21_sscanf_f_overflow);
+  tcase_add_test(tc_core_f, test_s21_sscanf_f_max);
+  tcase_add_test(tc_core_f, test_s21_sscanf_f_zero);
+  tcase_add_test(tc_core_f, test_s21_sscanf_f);
+
   //[ ] Uncomment additional test case
   suite_add_tcase(suite, tc_core_c);
   suite_add_tcase(suite, tc_core_d);
@@ -2644,10 +3022,12 @@ Suite *s21_sscanf_suite(void) {
   suite_add_tcase(suite, tc_core_o);
   suite_add_tcase(suite, tc_core_x);
   suite_add_tcase(suite, tc_core_p);
+  suite_add_tcase(suite, tc_core_g);
+  suite_add_tcase(suite, tc_core_f);
   suite_add_tcase(suite, tc_core_pcnt);
 
   //[ ] Delete debug suite
-  tcase_add_test(tc_debug, test_s21_sscanf_p_suppress);
+  tcase_add_test(tc_debug, test_s21_sscanf_g_max);
   suite_add_tcase(suite, tc_debug);
 
   return suite;

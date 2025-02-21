@@ -1,7 +1,7 @@
 #include "s21_string.h"
 #include "s21_utils.c"
 
-float s21_pow(int x, int y);
+long double s21_pow(int x, int y);
 int get_number(const char *p, long int *res);
 int proc_spec_s(const char *str, va_list args, const Specifiers st_spec);
 int proc_spec_d(const char *str, va_list args, const Specifiers st_spec);
@@ -72,7 +72,9 @@ int s21_sscanf(const char *str, const char *format, ...) {
             DEBUG_PRINT(" after process %%d Result=%d\n", res);
             DEBUG_PRINT(" FINISH *String position=%s\n", p);
 
-          } else if (st_spec.specifier == 'f') {
+          } else if (st_spec.specifier == 'f' || st_spec.specifier == 'g' ||
+                     st_spec.specifier == 'G' || st_spec.specifier == 'e' ||
+                     st_spec.specifier == 'E') {
             while ((is_space(*p)) && *p != '-') {
               DEBUG_PRINT("Noop symbol:|%c|\n", *p);
               p++;
@@ -215,6 +217,9 @@ int get_number(const char *p, long int *res) {
     znak = -1;
     p++;
     i++;
+  } else if (*p == '+' && is_digit(*(p + 1))) {
+    p++;
+    i++;
   }
   while (is_digit(*p)) {
     *res = *res * 10 + (*p - '0');
@@ -341,10 +346,18 @@ int proc_spec_f(const char *str, va_list args, const Specifiers st_spec) {
     p += get_number(p, &res);
     DEBUG_PRINT(" exp=%ld\n", res);
     result = result * s21_pow(10, (res));
+    DEBUG_PRINT(" result=%Lf\n", (s21_pow(10, (res))));
   }
   if (p - arg_str > 0 && st_spec.flag != '*') {
-    float *ch = va_arg(args, float *);
-    *ch = result;
+    if (st_spec.length == 'L') {
+      DEBUG_PRINT("Process proc_spec_f(): length=L, result=%Lf\n", result);
+      long double *ch = va_arg(args, long double *);
+      *ch = result;
+    } else {
+      DEBUG_PRINT("Process proc_spec_f(): float, result=%f\n", (float)result);
+      float *ch = va_arg(args, float *);
+      *ch = (float)result;
+    }
     p++;
     i++;
     DEBUG_PRINT(" Float=%Lf\n", result);
@@ -711,15 +724,16 @@ int proc_spec_p(const char *str, va_list args, const Specifiers st_spec) {
         if (conv != 0 && address > 0) {
           p += conv;
           res = p - str;
-          DEBUG_PRINT("SKIP: pointer not assig, res =%d\n", res); // Выводим адрес
+          DEBUG_PRINT("SKIP: pointer not assig, res =%d\n",
+                      res); // Выводим адрес
         } else {
           res = -1;
         }
       }
     }
-  }else {
-      res = -1;
-    }
-
-    return res;
+  } else {
+    res = -1;
   }
+
+  return res;
+}

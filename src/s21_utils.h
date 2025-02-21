@@ -3,7 +3,7 @@
 #include "s21_string.h"
 
 //[ ] Добавил для функции *s21_memmove(void *dest, const void *src, s21_size_t
-//n);
+// n);
 // ВОзможно стоит перенести её в s21_sprintf, но без обяъвления в s21_string.h
 // #ifdef _WIN64
 // typedef unsigned long s21_size_t; // 64-bit Windows

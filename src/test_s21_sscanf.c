@@ -2344,12 +2344,90 @@ START_TEST(test_s21_sscanf_X_simple) {
 }
 END_TEST
 
+START_TEST(test_s21_sscanf_p_simple) {
+  int val = 44;
+  void *ptr = &val;
+  char ptr_address[50], ptr_address_s21[50];
 
+  sprintf(ptr_address, "%p", ptr);
+  sprintf(ptr_address_s21, "%p", ptr);
+  printf("Pointer: %s\n", ptr_address);
+  printf("Pointer s21: %s\n", ptr_address_s21);
+  void *read_prt = NULL, *read_prt_s21 = NULL;
+  int ret = sscanf(ptr_address, "%p", &read_prt);
+  int ret_s21 = s21_sscanf(ptr_address_s21, "%p", &read_prt_s21);
+
+  ck_assert_str_eq(ptr_address, ptr_address_s21);
+  ck_assert_ptr_eq(ptr, read_prt);
+  ck_assert_ptr_eq(ptr, read_prt_s21);
+  ck_assert_int_eq(ret, ret_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_p) {
+  const char *str = "0xABCD 0x1234";
+  char *fmt = "%p %p";
+  void *ptr1 = NULL, *ptr2 = NULL;
+  void *ptr3 = NULL, *ptr4 = NULL;
+
+  // Вызов s21_sscanf
+  int res1 = s21_sscanf(str, fmt, &ptr1, &ptr2);
+
+  // Вызов оригинальной sscanf
+  int res2 = sscanf(str, fmt, &ptr3, &ptr4);
+
+  // Проверка результатов
+  ck_assert_ptr_eq(ptr1, ptr3);
+  ck_assert_ptr_eq(ptr2, ptr4);
+  ck_assert_int_eq(res1, res2);
+}
+END_TEST
+
+// Тестовый случай для проверки %p с подавлением присваивания (*)
+START_TEST(test_s21_sscanf_p_suppress) {
+  const char *str = "0xABCD 0x1234";
+  char *fmt = "%*p %p";
+  void *ptr1 = NULL;
+  void *ptr2 = NULL;
+
+  // Вызов s21_sscanf
+  int res1 = s21_sscanf(str, fmt, &ptr1);
+
+  // Вызов оригинальной sscanf
+  int res2 = sscanf(str, fmt, &ptr2);
+
+  // Проверка результатов
+  ck_assert_ptr_eq(ptr1, ptr2);
+  ck_assert_int_eq(res1, res2);
+}
+END_TEST
+
+// Тестовый случай для проверки %p в комбинации с другими спецификаторами
+START_TEST(test_s21_sscanf_p_combination) {
+  const char *str = "0xABCD 42 0x1234";
+  char *fmt = "%p %d %p";
+  void *ptr1 = NULL, *ptr2 = NULL;
+  void *ptr3 = NULL, *ptr4 = NULL;
+  int num1 = 0, num2 = 0;
+
+  // Вызов s21_sscanf
+  int res1 = s21_sscanf(str, fmt, &ptr1, &num1, &ptr2);
+
+  // Вызов оригинальной sscanf
+  int res2 = sscanf(str, fmt, &ptr3, &num2, &ptr4);
+
+  // Проверка результатов
+  ck_assert_ptr_eq(ptr1, ptr3);
+  ck_assert_int_eq(num1, num2);
+  ck_assert_ptr_eq(ptr2, ptr4);
+  ck_assert_int_eq(res1, res2);
+}
+END_TEST
 
 Suite *s21_sscanf_suite(void) {
   Suite *suite;
   TCase *tc_core_d, *tc_core_c, *tc_core_s, *tc_core_u, *tc_core_n, *tc_debug,
-      *tc_core_pcnt, *tc_core_i, *tc_core_o, *tc_core_x;
+      *tc_core_pcnt, *tc_core_i, *tc_core_o, *tc_core_x, *tc_core_p;
 
   suite = suite_create("s21_sscanf");
   // tc_core = tcase_create("Core");
@@ -2361,6 +2439,7 @@ Suite *s21_sscanf_suite(void) {
   tc_core_i = tcase_create("Specifier= %i");
   tc_core_o = tcase_create("Specifier= %o");
   tc_core_x = tcase_create("Specifier= %x");
+  tc_core_p = tcase_create("Specifier= %p");
   tc_core_pcnt = tcase_create("Specifier= %%");
   tc_debug = tcase_create("Debug");
 
@@ -2550,6 +2629,11 @@ Suite *s21_sscanf_suite(void) {
   tcase_add_test(tc_core_x, test_s21_sscanf_X_zero);
   tcase_add_test(tc_core_x, test_s21_sscanf_X);
 
+  tcase_add_test(tc_core_p, test_s21_sscanf_p_simple);
+  tcase_add_test(tc_core_p, test_s21_sscanf_p);
+  tcase_add_test(tc_core_p, test_s21_sscanf_p_suppress);
+  tcase_add_test(tc_core_p, test_s21_sscanf_p_combination);
+
   //[ ] Uncomment additional test case
   suite_add_tcase(suite, tc_core_c);
   suite_add_tcase(suite, tc_core_d);
@@ -2559,10 +2643,11 @@ Suite *s21_sscanf_suite(void) {
   suite_add_tcase(suite, tc_core_i);
   suite_add_tcase(suite, tc_core_o);
   suite_add_tcase(suite, tc_core_x);
+  suite_add_tcase(suite, tc_core_p);
   suite_add_tcase(suite, tc_core_pcnt);
 
   //[ ] Delete debug suite
-  tcase_add_test(tc_debug, test_s21_sscanf_x_simple);
+  tcase_add_test(tc_debug, test_s21_sscanf_p_suppress);
   suite_add_tcase(suite, tc_debug);
 
   return suite;

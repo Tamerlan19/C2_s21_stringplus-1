@@ -13,11 +13,25 @@ int proc_spec_n(long int result, va_list args, const Specifiers st_spec);
 int proc_spec_i(const char *str, va_list args, const Specifiers st_spec);
 int proc_spec_o(const char *str, va_list args, const Specifiers st_spec);
 int proc_spec_x(const char *str, va_list args, const Specifiers st_spec);
+int proc_spec_p(const char *str, va_list args, const Specifiers st_spec);
 int is_alpha(char c);
 int is_digit(char c);
 int is_space(char c);
 
 int str_to_int(const char *p, long int *res, int base);
+
+void proc_str(const char **p, int step, Specifiers st_spec, int *res) {
+  DEBUG_PRINT("next_val(): step=%d, res =%d \n", step, *res);
+  if (step > 0) {
+    *p = *p + step;
+    if (st_spec.flag != '*') {
+      *res = *res + 1;
+    }
+  } else if (step < 0 && *res == 0) {
+    *res = -1;
+  }
+  DEBUG_PRINT("next_val(): step=%d, res =%d \n", step, *res);
+}
 
 int s21_sscanf(const char *str, const char *format, ...) {
   va_list args;
@@ -42,17 +56,10 @@ int s21_sscanf(const char *str, const char *format, ...) {
           DEBUG_PRINT(" format=%s\n", fmt);
           fmt += parse_specifiers(fmt, &st_spec);
           DEBUG_PRINT("format after parse =%s\n", fmt);
+          int step = 0;
           if (st_spec.specifier == 'c') {
-            int step = 0;
             step = proc_spec_c(p, args, st_spec);
-            if (step > 0) {
-              p = p + step;
-              if (st_spec.flag != '*') {
-                res++;
-              }
-            } else if (step <= 0) {
-              res--;
-            }
+            proc_str(&p, step, st_spec, &res);
             DEBUG_PRINT(" after process Char Result=%d\n", res);
 
           } else if (st_spec.specifier == 'd') {
@@ -60,16 +67,8 @@ int s21_sscanf(const char *str, const char *format, ...) {
               DEBUG_PRINT("Noop symbol:|%c|\n", *p);
               p++;
             }
-            int step = 0;
             step = proc_spec_d(p, args, st_spec);
-            if (step > 0) {
-              p = p + step;
-              if (st_spec.flag != '*') {
-                res++;
-              }
-            } else if (step < 0 && res == 0) {
-              res = -1;
-            }
+            proc_str(&p, step, st_spec, &res);
             DEBUG_PRINT(" after process %%d Result=%d\n", res);
             DEBUG_PRINT(" FINISH *String position=%s\n", p);
 
@@ -78,47 +77,23 @@ int s21_sscanf(const char *str, const char *format, ...) {
               DEBUG_PRINT("Noop symbol:|%c|\n", *p);
               p++;
             }
-            int step = 0;
             step = proc_spec_f(p, args, st_spec);
-            if (step > 0) {
-              p = p + step;
-              if (st_spec.flag != '*') {
-                res++;
-              }
-            } else if (step < 0 && res == 0) {
-              res = -1;
-            }
+            proc_str(&p, step, st_spec, &res);
             DEBUG_PRINT(" after process %%f Result=%d\n", res);
             DEBUG_PRINT(" FINISH *String position=%s\n", p);
 
           } else if (st_spec.specifier == 's') {
-            int step = 0;
             step = proc_spec_s(p, args, st_spec);
+            proc_str(&p, step, st_spec, &res);
             DEBUG_PRINT("Incriment *p +step=%d\n", step);
-            if (step > 0) {
-              p = p + step;
-              if (st_spec.flag != '*') {
-                res++;
-              }
-            } else if (step < 0 && res == 0) {
-              res = -1;
-            }
             DEBUG_PRINT(" after process string Result=%d\n", res);
             DEBUG_PRINT(" p=|%s|\n", p);
             DEBUG_PRINT(" fmt=|%s|\n", fmt);
           } else if (st_spec.specifier == 'u') {
             DEBUG_PRINT("Start process %%u specificator...");
-            int step = 0;
             step = proc_spec_u(p, args, st_spec);
+            proc_str(&p, step, st_spec, &res);
             DEBUG_PRINT("Incriment *p +step=%d\n", step);
-            if (step > 0) {
-              p = p + step;
-              if (st_spec.flag != '*') {
-                res++;
-              }
-            } else if (step < 0 && res == 0) {
-              res = -1;
-            }
             DEBUG_PRINT(" after process string Result=%d\n", res);
             DEBUG_PRINT(" p=|%s|\n", p);
             DEBUG_PRINT(" fmt=|%s|\n", fmt);
@@ -133,16 +108,8 @@ int s21_sscanf(const char *str, const char *format, ...) {
               DEBUG_PRINT("Noop symbol:|%c|\n", *p);
               p++;
             }
-            int step = 0;
             step = proc_spec_i(p, args, st_spec);
-            if (step > 0) {
-              p = p + step;
-              if (st_spec.flag != '*') {
-                res++;
-              }
-            } else if (step < 0 && res == 0) {
-              res = -1;
-            }
+            proc_str(&p, step, st_spec, &res);
             DEBUG_PRINT(" after process %%n Result=%d\n", res);
             DEBUG_PRINT(" FINISH *String position=%s\n", p);
           } else if (st_spec.specifier == 'o') {
@@ -150,16 +117,8 @@ int s21_sscanf(const char *str, const char *format, ...) {
               DEBUG_PRINT("Noop symbol:|%c|\n", *p);
               p++;
             }
-            int step = 0;
             step = proc_spec_o(p, args, st_spec);
-            if (step > 0) {
-              p = p + step;
-              if (st_spec.flag != '*') {
-                res++;
-              }
-            } else if (step < 0 && res == 0) {
-              res = -1;
-            }
+            proc_str(&p, step, st_spec, &res);
             DEBUG_PRINT(" after process %%d Result=%d\n", res);
             DEBUG_PRINT(" FINISH *String position=%s\n", p);
 
@@ -168,17 +127,19 @@ int s21_sscanf(const char *str, const char *format, ...) {
               DEBUG_PRINT("Noop symbol:|%c|\n", *p);
               p++;
             }
-            int step = 0;
             step = proc_spec_x(p, args, st_spec);
-            if (step > 0) {
-              p = p + step;
-              if (st_spec.flag != '*') {
-                res++;
-              }
-            } else if (step < 0 && res == 0) {
-              res = -1;
-            }
+            proc_str(&p, step, st_spec, &res);
             DEBUG_PRINT(" after process %%d Result=%d\n", res);
+            DEBUG_PRINT(" FINISH *String position=%s\n", p);
+
+          } else if (st_spec.specifier == 'p') {
+            while ((is_space(*p)) && *p != '-') {
+              DEBUG_PRINT("Noop symbol:|%c|\n", *p);
+              p++;
+            }
+            step = proc_spec_p(p, args, st_spec);
+            proc_str(&p, step, st_spec, &res);
+            DEBUG_PRINT(" after process %%p Result=%d\n", res);
             DEBUG_PRINT(" FINISH *String position=%s\n", p);
 
           } else if (st_spec.specifier == '%') {
@@ -187,6 +148,8 @@ int s21_sscanf(const char *str, const char *format, ...) {
               p++;
             } else
               stop = 1;
+
+            step = 0;
           }
 
           noop_space(&fmt);
@@ -708,3 +671,55 @@ int proc_spec_x(const char *str, va_list args, const Specifiers st_spec) {
 
   return res;
 }
+
+int proc_spec_p(const char *str, va_list args, const Specifiers st_spec) {
+  int res = 0;
+  DEBUG_PRINT("pointer String=%s\n", str);
+  if (str != NULL) {
+    const char *p = str;
+    if (st_spec.flag != '*') {
+      void **ch = va_arg(args, void **);
+      if (ch != S21_NULL) {
+        // Проверяем, что строка начинается с "0x" и содержит шестнадцатеричные
+        // символы
+        if (*p == '0' && (*(p + 1) == 'x' || *(p + 1) == 'X')) {
+          p += 2;
+          long int address;
+          int conv = 0;
+          conv = str_to_int(p, &address, 16);
+          if (conv != 0 && address > 0) {
+            *ch = (void *)address;
+            p += conv;
+            res = p - str;
+            DEBUG_PRINT("pointer assign=%p, res =%d\n", *ch,
+                        res); // Выводим адрес
+          } else {
+            res = -1;
+          }
+        } else {
+          res = -1;
+        }
+      } else {
+        res = -1;
+      }
+    } else {
+      if (*p == '0' && (*(p + 1) == 'x' || *(p + 1) == 'X')) {
+        p += 2;
+        long int address;
+        int conv = 0;
+        conv = str_to_int(p, &address, 16);
+        if (conv != 0 && address > 0) {
+          p += conv;
+          res = p - str;
+          DEBUG_PRINT("SKIP: pointer not assig, res =%d\n", res); // Выводим адрес
+        } else {
+          res = -1;
+        }
+      }
+    }
+  }else {
+      res = -1;
+    }
+
+    return res;
+  }

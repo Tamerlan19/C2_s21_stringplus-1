@@ -2,12 +2,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
-#define TEST_COUNT 10
+#define TEST_COUNT 20
 #define TEST_VAR 3
+#define SPEC_COUNTS 15
 
 typedef struct {
-  char spec[10];
+  char spec[50];
   char type[50];
   char init[50];
 } spec_type;
@@ -25,37 +27,108 @@ char *get_input(int t) {
       "longword X FF",           // для %10s %*c %X
       "77 8888 1A2B hello",      // для %o %u %x %s
       "12.345 1.2E5 255"         // для %5.3g %LE %hhu
+      "123 456789 3.14159",      // для %hd %ld %Lf
+      "12345 ignore X",          // для %5d %*s %c
+      "12.34 255 FF",            // для %5.2f %hhu %x
+      "hello Z 77 9999",         // для %s %c %o %u
+      "1.23E4 3.14G 0.00001 %",  // для %E %G %g %%
+      "0x123abc 9F 2.71e-3",     // для %p %X %e
+      "-128 4294967295 2.71828", // для %hhd %lu %Lf
+      "longword X FF",           // для %10s %*c %X
+      "77 8888 1A2B hello",      // для %o %u %x %s
+      "12.345 1.2E5 255"         // для %5.3g %LE %hhu
   };
   return inputs[t];
 }
-spec_type get_fmt(int t) {
-  if (t > TEST_COUNT || t < 0) {
-    t = TEST_COUNT - t;
+
+
+//`%[*][ширина][длина]спецификатор`
+
+int set_fmt_flags(spec_type *fmt) {
+  int res = 0;
+  char res_fmt[10]="%";
+  char *spec=fmt->spec;
+
+
+  int random_width = rand() % 20;
+  char *width[20] = {"","0","1","2","","3","4","","5","6","","7","","8","9","10","15","20","","50"};
+  if (strpbrk(fmt->spec, "np%") == NULL) {  
+    strcat(res_fmt,width[random_width]);
+    printf("DEBUG: res_fmt=%s. Add width=%s\n", res_fmt, width[random_width]);
   }
-  spec_type spec[50] = {
-      {"%d", "int ", "=555"}, // Целое число (int)
-      {"%u", "unsigned int ", "=123"}, // Беззнаковое целое число (unsigned int)
-      {"%f", "float ", "=1.123"}, // Вещественное число (float)
-      {"%c", "char ", "='A'"},    // Символ (char)
-      {"%s", "char [1024]", "=\"ABC\""},    // Строка (char *)
-      {"%p", "unsigned int ", "=0x123ABC"}, // Указатель (void *)
-      {"%x", "unsigned int ", "=123"}, // Шестнадцатеричное целое число (int)
-      {"%X", "unsigned int ",
-       "=123"}, // Шестнадцатеричное целое число (int, заглавные буквы)
-      {"%o", "unsigned int ", "=123"}, // Восьмеричное целое число (int)
-      {"%i", "int ",
-       "=-123"}, // Целое число (автоматическое определение системы счисления)
-      {"%e", "float ",
-       "=1.123"}, // Вещественное число в научной нотации (float)
-      {"%E", "float ", "=1.123"}, // Вещественное число в научной нотации
-                                  // (float, заглавные буквы)
-      {"%g", "float ", "=1.123"}, // Вещественное число в кратчайшей форме
-                                  // (float или scientific)
-      {"%G", "float ", "=1.123"}, // Вещественное число в кратчайшей форме
-                                  // (float или scientific, заглавные буквы)
-      {"%%", "", ""} // Символ процента (%)
+    // sprintf(res_fmt, "%d", width[random_number]);
+    
+    if (strpbrk(spec, "sc") != NULL) {
+      char *length[3] = {"","l"};
+      int random_len = rand() % 2;
+        if (strpbrk(length[random_len],"l") !=NULL) {
+          char tmp[20]="wchar_t ";
+          memset(fmt->type,'\0',strlen(fmt->type));
+          // strcat(tmp,fmt->type);
+          memmove(fmt->type, tmp, strlen(tmp));
+        }
+        strcat(res_fmt,length[random_len]);
+    } else if (strpbrk(spec, "feEgG") != NULL) {
+      int random_len = rand() % 2;
+      char *length[3] = {"","L"};
+        char tmp[50]="long double ";
+        memmove(fmt->type, tmp, strlen(tmp));
+      strcat(res_fmt,length[random_len]);
+    } else {
+      int random_len = rand() % 2;
+      char *length[3] = {"","L"};
+        char tmp[50]="long ";
+        strcat(tmp,fmt->type);
+        memmove(fmt->type, tmp, strlen(tmp));
+      strcat(res_fmt,length[random_len]);
+    }
+    printf("DEBUG: after add legth flags: res_fmt=%s\n", res_fmt);
+    
+    strcat(res_fmt, spec); //add specifiers
+
+  memmove(fmt->spec, res_fmt, strlen(res_fmt));
+  printf("DEBUG: spec=%s\n", fmt->spec);
+
+  return res;
+}
+spec_type get_fmt(int t) {
+  if (t > SPEC_COUNTS || t < 0) {
+    t = SPEC_COUNTS - t;
+  }
+  spec_type spec[SPEC_COUNTS] = {
+      {"d", "int ", "=555"}, 
+      {"u", "unsigned int ", "=123"}, 
+      {"f", "float ", "=1.123"}, 
+      {"c", "char ", "='A'"},    
+      {"s", "char [1024]", "=\"ABC\""},    
+      {"p", "unsigned int ", "=0x123ABC"}, 
+      {"x", "unsigned int ", "=123"}, 
+      {"X", "unsigned int ", "=123"}, 
+      {"o", "unsigned int ", "=123"},
+      {"i", "int ",       "=-123"}, 
+      {"e", "float ",       "=1.123"}, 
+      {"E", "float ", "=1.123"},                                   
+      {"g", "float ", "=1.123"},                                   
+      {"G", "float ", "=1.123"},                                  
+      {"%", "", ""}
+      // {"hd", "int ", "=555"}, 
+      // {"hu", "unsigned int ", "=123"}, 
+      // {"Lf", "float ", "=1.123"}, 
+      // {"lc", "char ", "='A'"},    
+      // {"ls", "char [1024]", "=\"ABC\""},    
+      // {"hp", "unsigned int ", "=0x123ABC"}, 
+      // {"hx", "unsigned int ", "=123"}, 
+      // {"hX", "unsigned int ", "=123"}, 
+      // {"ho", "unsigned int ", "=123"},
+      // {"hi", "int ",       "=-123"}, 
+      // {"Le", "float ",       "=1.123"}, 
+      // {"LE", "float ", "=1.123"},                                   
+      // {"Lg", "float ", "=1.123"},                                   
+      // {"LG", "float ", "=1.123"}                                 
   };
 
+  set_fmt_flags(&spec[t]);
+  // memcpy(spec->spec, s, strlen(s));
   return spec[t];
 }
 int add_checks(spec_type fmt, char *checks, int i) {
@@ -118,13 +191,12 @@ int get_var(spec_type fmt[TEST_VAR], char *vars, char *args_sscanf,
 
 char *get_separator(int i) {
   char *spr[10] = {"", " ", ",", ".", ":", "%", "_", "  ", "   ", "!"};
-
   return spr[i];
 }
 
 int main(void) {
   int res = 0;
-
+  srand(time(NULL));
   const char *flname = "test_gen_s21_sscanf.c";
   FILE *file = fopen(flname, "w");
   if (file == NULL) {
@@ -134,13 +206,13 @@ int main(void) {
   int n = 0;
   fprintf(file, "#include \"s21_string.h\"\n#include <check.h>\n");
 
-  for (int j = 0; j < TEST_COUNT; j++) { // TEST_STRING
+  for (int j = 0; j < TEST_COUNT && n < 2; j++) { // TEST_STRING
     char *input = get_input(j);
 
     for (int s = 0; s < 10; s++) { // separator
       char *fmt_spr = get_separator(s);
 
-      for (int i = 0; i < TEST_COUNT; i++) {
+      for (int i = 0; i < TEST_COUNT; i++) { //specifiers
 
         spec_type fmt_arr[50];
         char test_name[50];
@@ -153,8 +225,12 @@ int main(void) {
         char checks[1000] = {0};
 
         for (int i = 0; i < TEST_VAR; i++) {
-          fmt_arr[i] = get_fmt(i);
+
+          int random_number = rand() % SPEC_COUNTS;
+          printf("DEBUG: i=%d, random_number=%d\n", i, random_number);
+          fmt_arr[i] = get_fmt(random_number);
         }
+        n++;
 
         get_var(fmt_arr, vars, args_sscanf, args_sscanf_s21, args_fmt, checks,
                 fmt_spr);
@@ -171,7 +247,7 @@ int main(void) {
   ",
                 test_name, input, vars, args_fmt, args_sscanf, args_sscanf_s21,
                 checks);
-        n++;
+
       }
     }
   }

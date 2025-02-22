@@ -135,7 +135,7 @@ int parse_specifiers(const char *fmt, Specifiers *st_spec) {
               "Precision=%i,  Width=%d, Flags=%c\n",
               format - fmt, st_spec->specifier, st_spec->length,
               st_spec->precision, st_spec->width, st_spec->flag);
-  DEBUG_PRINT(" fmt_length=%ld, format_length=%ld\n", s21_strlen(fmt),
+  DEBUG_PRINT(" fmt_length=%lu, format_length=%lu\n", s21_strlen(fmt),
               s21_strlen(format));
   return format - fmt;
 }

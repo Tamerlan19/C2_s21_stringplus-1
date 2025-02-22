@@ -352,7 +352,7 @@ void handle_unsigned(char **buffer, Specifiers flags, unsigned int u) {
   **buffer = '\0';
 }
 void handle_char(char **buffer, Specifiers flags, int c) {
-  char tmp[2] = {(char)c, '\0'};
+  const char tmp[2] = {(char)c, '\0'};
   int len = 1;
 
   // Определяем общую длину с учетом ширины

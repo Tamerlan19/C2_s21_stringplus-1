@@ -255,7 +255,7 @@ void *s21_trim(const char *src, const char *trim_chars) {
 
   if (trim_length == 0) {
     trim_chars = " \t\n\r";
-    trim_length = s21_strlen(trim_chars);
+    // trim_length = s21_strlen(trim_chars);
   }
 
   s21_size_t start = 0; // определяю начало

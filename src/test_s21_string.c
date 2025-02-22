@@ -279,8 +279,8 @@ START_TEST(test_s21_memset_overlap) {
 END_TEST
 
 START_TEST(test_s21_memcmp_identical_blocks) {
-  char buffer1[] = "abcdef";
-  char buffer2[] = "abcdef";
+  const char buffer1[] = "abcdef";
+  const char buffer2[] = "abcdef";
   s21_size_t n = 6;
 
   int result = s21_memcmp(buffer1, buffer2, n);
@@ -291,8 +291,8 @@ END_TEST
 
 // Тестовый случай 2: Разные блоки памяти
 START_TEST(test_s21_memcmp_different_blocks) {
-  char buffer1[] = "abcde";
-  char buffer2[] = "abcdz";
+  const char buffer1[] = "abcde";
+  const char buffer2[] = "abcdz";
   s21_size_t n = 5;
 
   int result = s21_memcmp(buffer1, buffer2, n);
@@ -303,8 +303,8 @@ END_TEST
 
 // Тестовый случай 3: Частичное сравнение с идентичными байтами
 START_TEST(test_s21_memcmp_partial_identical) {
-  char buffer1[] = "abcdefgh";
-  char buffer2[] = "abcdefxy";
+  const char buffer1[] = "abcdefgh";
+  const char buffer2[] = "abcdefxy";
   s21_size_t n = 6;
 
   int result = s21_memcmp(buffer1, buffer2, n);
@@ -315,8 +315,8 @@ END_TEST
 
 // Тестовый случай 4: Частичное сравнение с разными байтами
 START_TEST(test_s21_memcmp_partial_different) {
-  char buffer1[] = "abcdefg";
-  char buffer2[] = "abcdefh";
+  const char buffer1[] = "abcdefg";
+  const char buffer2[] = "abcdefh";
   s21_size_t n = 7;
 
   int result = s21_memcmp(buffer1, buffer2, n);
@@ -327,8 +327,8 @@ END_TEST
 
 // Тестовый случай 5: Сравнение с n = 0
 START_TEST(test_s21_memcmp_zero_length) {
-  char buffer1[] = "abcdef";
-  char buffer2[] = "ABCDEF";
+  const char buffer1[] = "abcdef";
+  const char buffer2[] = "ABCDEF";
   s21_size_t n = 0;
 
   int result = s21_memcmp(buffer1, buffer2, n);
@@ -338,8 +338,8 @@ START_TEST(test_s21_memcmp_zero_length) {
 END_TEST
 
 START_TEST(test_s21_memcmp_negative_values) {
-  char buffer1[] = {1, 2, -3, 4, 5};
-  char buffer2[] = {1, 2, -2, 4, 5};
+  const char buffer1[] = {1, 2, -3, 4, 5};
+  const char buffer2[] = {1, 2, -2, 4, 5};
   s21_size_t n = 5;
 
   int result = s21_memcmp(buffer1, buffer2, n);
@@ -376,8 +376,8 @@ START_TEST(test_s21_memcmp_large_blocks) {
 }
 END_TEST
 START_TEST(test_s21_memcmp_case_sensitive) {
-  char buffer1[] = "abcdef";
-  char buffer2[] = "ABCDEF";
+  const char buffer1[] = "abcdef";
+  const char buffer2[] = "ABCDEF";
   s21_size_t n = 6;
 
   int result = s21_memcmp(buffer1, buffer2, n);
@@ -483,7 +483,7 @@ END_TEST
 START_TEST(test_s21_strncat) {
   char dest1[100] = "Hello, ";
   char dest2[100] = "Hello, ";
-  char src[] = "World!";
+  const char src[] = "World!";
   size_t n = 5;
 
   s21_strncat(dest1, src, n);
@@ -496,7 +496,7 @@ END_TEST
 START_TEST(test_s21_strncat_empty_dest) {
   char dest1[100] = "";
   char dest2[100] = "";
-  char src[] = "World!";
+  const char src[] = "World!";
   size_t n = 5;
 
   s21_strncat(dest1, src, n);
@@ -509,7 +509,7 @@ END_TEST
 START_TEST(test_s21_strncat_zero_n) {
   char dest1[100] = "Hello, ";
   char dest2[100] = "Hello, ";
-  char src[] = "World!";
+  const char src[] = "World!";
   size_t n = 0;
 
   s21_strncat(dest1, src, n);
@@ -522,7 +522,7 @@ END_TEST
 START_TEST(test_s21_strncat_large_n) {
   char dest1[100] = "Hello, ";
   char dest2[100] = "Hello, ";
-  char src[] = "World!";
+  const char src[] = "World!";
   size_t n = 100;
 
   s21_strncat(dest1, src, n);
@@ -673,7 +673,7 @@ END_TEST
 
 // Тест 1: Копирование строки
 START_TEST(test_s21_memcpy_string) {
-  char src[] = "Hello, world!";
+  const char src[] = "Hello, world!";
   char dest[50] = {0};
 
   s21_memcpy(dest, src, strlen(src)); // Копируем строку с нулевым байтом
@@ -684,7 +684,7 @@ END_TEST
 
 // Тест 2: Копирование нулевого количества байт
 START_TEST(test_s21_memcpy_zero_bytes) {
-  char src[] = "Hello, world!";
+  const char src[] = "Hello, world!";
   char dest[50] = "Original content";
 
   s21_memcpy(dest, src, 0); // Копируем 0 байт

@@ -7,6 +7,7 @@
 Suite *s21_string_suite(void);
 Suite *s21_sprintf_suite(void);
 Suite *s21_sscanf_suite(void);
+Suite *s21_sscanf_gen_suite(void);
 
 int main(void) {
   int number_failed = 0, failed_sum = 0, checks = 0;

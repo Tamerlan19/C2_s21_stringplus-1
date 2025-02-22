@@ -3,7 +3,7 @@ CC = gcc
 CFLAGS = -Werror -Wall -Wextra -std=c11 -DDEBUG
 TESTFLAGS = -lcheck -lsubunit -lm
 SRC_DIR =./
-SOURCES = test.c s21_string.c s21_sprintf.c s21_sscanf.c s21_utils.c s21_utils.h test_s21_string.c test_s21_sscanf.c test_s21_sprintf.c s21_string.h
+SOURCES = test.c s21_string.c s21_sprintf.c s21_sscanf.c s21_utils.c s21_utils.h test_s21_string.c test_s21_sscanf.c test_s21_sprintf.c s21_string.h test_s21_sscanf_gen.c
 SRCS = test.c s21_string.c test_s21_string.c test_s21_sscanf.c test_s21_sprintf.c s21_sscanf.c s21_sprintf.c s21_utils.c
 OBJS = $(SRCS:.c=.o)
 TARGET = ./
@@ -25,6 +25,12 @@ test: clean s21_string.a test_s21_string.c test_s21_sscanf.c test_s21_sprintf.c
 	$(CC) $(CFLAGS) -o test.exe test.c test_s21_string.c test_s21_sscanf.c test_s21_sprintf.c -L. -l:s21_string.a $(TESTFLAGS)
 	./test.exe
 
+test2: clean s21_string.a 
+	$(CC) $(CFLAGS) -o test_gen_s21_sscanf.exe test_s21_sscanf_gen.c
+	./test_gen_s21_sscanf.exe
+	$(CC) $(CFLAGS) -o test2_s21_sscanf.exe test_gen_s21_sscanf.c -L. -l:s21_string.a $(TESTFLAGS)
+	./test2_s21_sscanf.exe
+
 gcov_report: clean 
 	$(CC) $(CFLAGS) -fprofile-arcs -ftest-coverage -c s21_string.c -o s21_string.o
 	$(CC) $(CFLAGS) -fprofile-arcs -ftest-coverage -c s21_sprintf.c -o s21_sprintf.o
@@ -45,7 +51,7 @@ gcov_report: clean
 rebuild: clean build
 
 clean:
-	rm -f $(OBJS) $(TARGET)/*.a $(TARGET)/*.gcov $(TARGET)/*.gcda $(TARGET)/*.gcno $(TARGET)/*.exe *.info
+	rm -f $(OBJS) $(TARGET)/*.a $(TARGET)/*.gcov $(TARGET)/*.gcda $(TARGET)/*.gcno $(TARGET)/*.exe *.info test_gen_*
 	@if [ -d "./gcov_report/" ]; then \
 		rm -r ./gcov_report/; \
 	fi

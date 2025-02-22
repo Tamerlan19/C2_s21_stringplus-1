@@ -169,7 +169,7 @@ END_TEST
 // Тестовый кейс 7: Комбинация ширины, точности и заполнения нулями
 START_TEST(test_s21_sprintf_u_complex_case) {
   char buffer[1024] = {0};
-  char fmt[30] = "Number: %08u";
+  const char fmt[30] = "Number: %08u";
   s21_sprintf(buffer, fmt, 789);
   ck_assert_str_eq(buffer, "Number: 00000789");
   printf("%s", fmt);

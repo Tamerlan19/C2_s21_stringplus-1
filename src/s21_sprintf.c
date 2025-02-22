@@ -2,8 +2,8 @@
 #include "s21_utils.h"
 
 void handle_char(char **buffer, Specifiers flags, int c);
-void handle_int(char **buffer, Specifiers flags, int d);
-void handle_float(char **buffer, Specifiers flags, double f);
+void handle_int(char **buffer, Specifiers flags,  va_list argc);
+void handle_float(char **buffer, Specifiers flags, va_list argc);
 void handle_string(char **buffer, Specifiers flags, const char *s);
 void handle_unsigned(char **buffer, Specifiers flags, unsigned int u);
 void handle_percent(char **buffer, Specifiers flags);
@@ -19,38 +19,38 @@ void handle_percent(char **buffer, Specifiers flags);
 //     DEBUG_PRINT("len = %d, format= = %s\n", len, format);
 //     return len;
 //   }
-  
+
   void int_to_str(int num, char *str, int base) {
     int i = 0;
     int is_negative = 0;
-  
+
     // Обрабатываем 0 отдельно
     if (num == 0) {
       str[i++] = '0';
       str[i] = '\0';
       return;
     }
-  
+
     // Обрабатываем отрицательные числа для десятичной системы
     if (num < 0 && base == 10) {
       is_negative = 1;
       num = -num; // Преобразуем в положительное
     }
-  
+
     // Преобразуем число в строку (обратный порядок)
     while (num > 0) {
       int digit = num % base;
       str[i++] = (digit > 9) ? (digit - 10) + 'A' : digit + '0';
       num /= base;
     }
-  
+
     // Добавляем знак минус для десятичной системы
     if (is_negative) {
       str[i++] = '-';
     }
-  
+
     str[i] = '\0'; // Завершаем строку
-  
+
     // Переворачиваем строку
     int start = 0, end = i - 1;
     while (start < end) {
@@ -61,7 +61,7 @@ void handle_percent(char **buffer, Specifiers flags);
       end--;
     }
   }
-  
+
   int s21_sprintf(char *str, const char *format, ...) {
       va_list args;
       va_start(args, format);
@@ -81,12 +81,11 @@ void handle_percent(char **buffer, Specifiers flags);
                   if (flags.specifier== 'c') {
                       int c = va_arg(args, int);
                       handle_char(&buffer, flags, c);
-                  } else if (flags.specifier== 'd') {
-                      int d = va_arg(args, int);
-                      handle_int(&buffer, flags, d);
+                  } else if (flags.specifier== 'd') { 
+                      handle_int(&buffer, flags, args);
                   } else if (flags.specifier == 'f') {
-                      double f = va_arg(args, double);
-                      handle_float(&buffer, flags, f);
+              
+                     handle_float(&buffer, flags, args);
                   } else if (flags.specifier == 's') {
                       const char *s = va_arg(args, const char *);
                       handle_string(&buffer, flags, s);
@@ -101,12 +100,12 @@ void handle_percent(char **buffer, Specifiers flags);
               *buffer++ = *ptr++;
           }
       }
-    
+
     *buffer = '\0';
     va_end(args);
     return (int)s21_strlen(str);
   }
-  
+
   /**
    * @brief Handles the formatting of an integer according to the specified flags.
    *
@@ -115,13 +114,21 @@ void handle_percent(char **buffer, Specifiers flags);
    * @param flags The flags specifying the formatting options.
    * @param d The integer to be formatted.
    */
-  void handle_int(char **buffer, Specifiers flags, int d) {
+  void handle_int(char **buffer, Specifiers flags, va_list args) {
+    long int d;
+    if(flags.specifier == 'h') {
+      d = (short int)va_arg(args, int);
+    } else if(flags.specifier == 'l'){
+       d = va_arg(args, long int);
+    } else{
+      d = (int)va_arg(args, int);
+    }
     char tmp[300] = {0};
     int is_negative = (d < 0);
-    int num = (is_negative) ? -d : d; // Работаем с положительным числом
-    int len = 0;
+    long int num = (is_negative) ? -d : d; // Работаем с положительным числом
+    int len = 0; 
+
   
-    // Преобразуем число в строку вручную
     if (num == 0) {
       tmp[len++] = '0';
     } else {
@@ -130,12 +137,12 @@ void handle_percent(char **buffer, Specifiers flags);
         num /= 10;
       }
     }
-  
+
     // Если число отрицательное, добавляем минус
     if (is_negative) {
       tmp[len++] = '-';
     }
-  
+
     // Если задана точность, дополняем нулями слева
     if (flags.precision >= 0 && len < flags.precision) {
       int padding = flags.precision - len;
@@ -147,19 +154,19 @@ void handle_percent(char **buffer, Specifiers flags);
       }
       len += padding;
     }
-  
+
     // Разворачиваем строку, так как мы записывали цифры в обратном порядке
     for (int i = 0, j = len - 1; i < j; i++, j--) {
       char temp = tmp[i];
       tmp[i] = tmp[j];
       tmp[j] = temp;
     }
-  
+
     // Определяем общую длину с учетом ширины
     int total_width = flags.width > 0 ? flags.width : 0;
     int padding = total_width > len ? total_width - len : 0;
     DEBUG_PRINT("padding= %d, total_width=%d\n", padding, total_width);
-  
+
     // Копируем результат в буфер с учетом ширины
     if (flags.flag == '-') { // Левое выравнивание
       // Сначала копируем число
@@ -167,7 +174,7 @@ void handle_percent(char **buffer, Specifiers flags);
         *(*buffer + i) = tmp[i];
       }
       *buffer += len;
-  
+
       // Затем добавляем пробелы справа
       for (int i = 0; i < padding; i++) {
         *(*buffer) = ' ';
@@ -188,88 +195,96 @@ void handle_percent(char **buffer, Specifiers flags);
       }
       *buffer += len;
     }
-  
+
     // Добавляем завершающий нулевой символ, если необходимо
     *(*buffer) = '\0';
   }
-  
-  void handle_float(char **buffer, Specifiers flags, double f) {
-      char tmp[200] = {0};
-      int len = 0;
-  
-      // Преобразуем число в строку вручную
-      if (flags.precision >= 0) {
-          // Используем массив для хранения целой части и дробной части
-          long int_part = (long)f;
-          double frac_part = f - int_part;
-  
-          // Преобразуем целую часть
-          if (int_part == 0) {
-              tmp[len++] = '0';
-          } else {
-              int int_len = 0;
-              if (int_part < 0) {
-                  tmp[len++] = '-';
-                  int_part = -int_part;
-              }
-              long n = int_part;
-              while (n > 0) {
-                  tmp[int_len++] = '0' + (n % 10);
-                  n /= 10;
-              }
-              for (int i = 0; i < int_len / 2; i++) {
-                  char temp = tmp[i];
-                  tmp[i] = tmp[int_len - i - 1];
-                  tmp[int_len - i - 1] = temp;
-              }
-              len += int_len;
-          }
-  
-          // Добавляем точку
-          tmp[len++] = '.';
-  
-          // Преобразуем дробную часть
-          for (int i = 0; i < flags.precision; i++) {
-              frac_part *= 10;
-              int digit = (int)frac_part;
-              tmp[len++] = '0' + digit;
-              frac_part -= digit;
-          }
-      } else {
-          // Если точность не указана, используем значение по умолчанию
-          sprintf(tmp, "%f", f); // Можно заменить на ручную реализацию
-          len = s21_strlen(tmp);
-      }
-  
-      // Добавляем '+' только если флаг установлен
-      if (flags.flag == '+') {
-          memmove(tmp + 1, tmp, len);
-          tmp[0] = '+';
-          len++;
-      }
-  
-      // Обработка ширины и выравнивания
-      int total_width = flags.width > 0 ? flags.width : 0;
-      int padding = total_width > len ? total_width - len : 0;
-  
-      if (flags.flag == '-') { // Левое выравнивание
-          s21_memcpy(*buffer, tmp, len);
-          *buffer += len;
-          s21_memset(*buffer, ' ', padding);
-          *buffer += padding;
-      } else { // Правое выравнивание
-          char fill_char = (flags.flag == '0') ? '0' : ' ';
-          s21_memset(*buffer, fill_char, padding);
-          *buffer += padding;
-          s21_memcpy(*buffer, tmp, len);
-          *buffer += len;
-      }
-  
-      **buffer = '\0';
-  }
-  
-  
-  void handle_string(char **buffer, Specifiers flags, const char *s) {
+
+  void handle_float(char **buffer, Specifiers flags, va_list args) {
+    char tmp[200] = {0};
+    int len = 0;
+
+    // Определяем тип числа в зависимости от модификатора длины
+    double f;
+    if (flags.length == 'l') {
+        // Для 'l' используем double (по умолчанию)
+        f = va_arg(args, double);
+    } else {
+        // Без модификатора длины также используем double
+        f = va_arg(args, double);
+    }
+
+    // Преобразуем число в строку вручную
+    if (flags.precision >= 0) {
+        // Используем массив для хранения целой части и дробной части
+        long int_part = (long)f;
+        double frac_part = f - int_part;
+
+        // Преобразуем целую часть
+        if (int_part == 0) {
+            tmp[len++] = '0';
+        } else {
+            int int_len = 0;
+            if (int_part < 0) {
+                tmp[len++] = '-';
+                int_part = -int_part;
+            }
+            long n = int_part;
+            while (n > 0) {
+                tmp[int_len++] = '0' + (n % 10);
+                n /= 10;
+            }
+            for (int i = 0; i < int_len / 2; i++) {
+                char temp = tmp[i];
+                tmp[i] = tmp[int_len - i - 1];
+                tmp[int_len - i - 1] = temp;
+            }
+            len += int_len;
+        }
+
+        // Добавляем точку
+        tmp[len++] = '.';
+
+        // Преобразуем дробную часть
+        for (int i = 0; i < flags.precision; i++) {
+            frac_part *= 10;
+            int digit = (int)frac_part;
+            tmp[len++] = '0' + digit;
+            frac_part -= digit;
+        }
+    } else {
+        // Если точность не указана, используем значение по умолчанию
+        sprintf(tmp, "%f", f); // Можно заменить на ручную реализацию
+        len = s21_strlen(tmp);
+    }
+
+    // Добавляем '+' только если флаг установлен
+    if (flags.flag == '+') {
+        memmove(tmp + 1, tmp, len);
+        tmp[0] = '+';
+        len++;
+    }
+
+    // Обработка ширины и выравнивания
+    int total_width = flags.width > 0 ? flags.width : 0;
+    int padding = total_width > len ? total_width - len : 0;
+
+    if (flags.flag == '-') { // Левое выравнивание
+        s21_memcpy(*buffer, tmp, len);
+        *buffer += len;
+        s21_memset(*buffer, ' ', padding);
+        *buffer += padding;
+    } else { // Правое выравнивание
+        char fill_char = (flags.flag == '0') ? '0' : ' ';
+        s21_memset(*buffer, fill_char, padding);
+        *buffer += padding;
+        s21_memcpy(*buffer, tmp, len);
+        *buffer += len;
+    }
+
+    **buffer = '\0';
+}
+ void handle_string(char **buffer, Specifiers flags, const char *s) {
       if (s == NULL) {
           s = "(null)";
       }
@@ -299,11 +314,11 @@ void handle_percent(char **buffer, Specifiers flags);
   
       **buffer = '\0';
   }
-  
+
   void handle_unsigned(char **buffer, Specifiers flags, unsigned int u) {
       char tmp[100] = {0}; // Буфер для временного хранения числа
       int len = 0;         // Длина числа в строковом представлении
-  
+
       // Шаг 1: Преобразуем число в строку
       char *ptr = tmp + sizeof(tmp) - 1; // Начинаем с конца массива
       *ptr = '\0';                      // Завершающий нулевой символ
@@ -317,7 +332,7 @@ void handle_percent(char **buffer, Specifiers flags);
               num /= 10;
               len++;
           } while (num > 0);
-  
+
           // Применяем точность (precision)
           if (flags.precision >= 0 && len < flags.precision) {
               int pad = flags.precision - len;
@@ -326,12 +341,12 @@ void handle_percent(char **buffer, Specifiers flags);
               len += pad;
           }
       }
-    
-  
+
+
     // Шаг 2: Определяем общую длину с учетом ширины
     int total_width = flags.width > 0 ? flags.width : 0;
     int padding = total_width > len ? total_width - len : 0;
-  
+
     // Шаг 3: Выравнивание
     if (flags.flag == '-') { // Левое выравнивание
       s21_memcpy(*buffer, ptr, len);
@@ -345,18 +360,18 @@ void handle_percent(char **buffer, Specifiers flags);
       s21_memcpy(*buffer, ptr, len);
       *buffer += len;
     }
-  
+
     // Шаг 4: Завершающий нулевой символ
     **buffer = '\0';
   }
   void handle_char(char **buffer, Specifiers flags, int c) {
     char tmp[2] = {(char)c, '\0'};
     int len = 1;
-  
+
     // Определяем общую длину с учетом ширины
     int total_width = flags.width > 0 ? flags.width : 0;
     int padding = total_width > len ? total_width - len : 0;
-  
+
     if (flags.flag == '-') { // Левое выравнивание
       s21_memcpy(*buffer, tmp, len);
       *buffer += len;
@@ -369,12 +384,12 @@ void handle_percent(char **buffer, Specifiers flags);
       s21_memcpy(*buffer, tmp, len);
       *buffer += len;
     }
-  
+
     **buffer = '\0';
   }
   void handle_percent(char **buffer, Specifiers flags) {
     if (flags.specifier == '%') {
-  
+
       *(*buffer)++ = '%';
       **buffer = '\0';
     }

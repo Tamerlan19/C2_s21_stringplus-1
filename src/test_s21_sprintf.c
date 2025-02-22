@@ -76,8 +76,8 @@ START_TEST(test_s21_sprintf_f_precision_flag) {
   int ret_s21 = s21_sprintf(buffer, "Float: %.2f", 3.14759);
   int ret = sprintf(buffer2, "Float: %.2f", 3.14759);
 
-  ck_assert_str_eq(buffer, buffer2);
   ck_assert_str_eq(ret, ret_s21);
+  ck_assert_str_eq(buffer, buffer2);
 }
 END_TEST
 

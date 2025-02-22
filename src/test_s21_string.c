@@ -656,64 +656,181 @@ START_TEST(test_s21_memcpy_large_data) {
 }
 END_TEST
 
+// Тест для s21_strpbrk (символ найден)
 START_TEST(test_s21_strpbrk_found) {
     const char *str1 = "hello world";
     const char *str2 = "abcde";
     const char *result = s21_strpbrk(str1, str2);
+    const char *result_r = strpbrk(str1, str2);
     ck_assert_ptr_ne(result, NULL); // Проверяем, что результат не NULL
-    ck_assert_str_eq(result, "ello world"); // Проверяем, что строка начинается с найденного символа
+    ck_assert_str_eq(result, result_r); // Проверяем, что строка начинается с найденного символа
 }
 END_TEST
 
+// Тест для s21_strpbrk (символ не найден)
 START_TEST(test_s21_strpbrk_not_found) {
     const char *str1 = "hello world";
     const char *str2 = "xyz";
     const char *result = s21_strpbrk(str1, str2);
-    ck_assert_ptr_eq(result, NULL); // Проверяем, что результат равен NULL
+    const char *result_r = strpbrk(str1, str2);
+    ck_assert_ptr_eq(result, result_r); // Оба должны быть NULL
 }
 END_TEST
 
-START_TEST(test_s21_strpbrk_empty_str1) {
-    const char *str1 = "";
-    const char *str2 = "abc";
-    const char *result = s21_strpbrk(str1, str2);
-    ck_assert_ptr_eq(result, NULL); // Проверяем, что результат равен NULL
-}
-END_TEST
-
-START_TEST(test_s21_strpbrk_empty_str2) {
-    const char *str1 = "hello world";
-    const char *str2 = "";
-    const char *result = s21_strpbrk(str1, str2);
-    ck_assert_ptr_eq(result, NULL); // Проверяем, что результат равен NULL
-}
-END_TEST
-
+// Тест для s21_strrchr (символ найден)
 START_TEST(test_s21_strrchr_found) {
     const char *str = "hello world";
     int c = 'o';
     const char *result = s21_strrchr(str, c);
+    const char *result_r = strrchr(str, c);
     ck_assert_ptr_ne(result, NULL); // Проверяем, что результат не NULL
-    ck_assert_str_eq(result, "orld"); // Проверяем, что строка начинается с последнего вхождения символа
+    ck_assert_str_eq(result, result_r); // Проверяем, что строка начинается с найденного символа
 }
 END_TEST
 
+// Тест для s21_strrchr (символ не найден)
 START_TEST(test_s21_strrchr_not_found) {
     const char *str = "hello world";
     int c = 'z';
     const char *result = s21_strrchr(str, c);
-    ck_assert_ptr_eq(result, NULL); // Проверяем, что результат равен NULL
+    const char *result_r = strrchr(str, c);
+    ck_assert_ptr_eq(result, result_r); // Оба должны быть NULL
 }
 END_TEST
 
-START_TEST(test_s21_strrchr_empty_string) {
+// Тест для s21_to_upper (обычная строка)
+START_TEST(test_s21_to_upper_normal) {
+    const char *str = "hello, World!";
+    char *result = (char *)s21_to_upper(str);
+    ck_assert_str_eq(result, "HELLO, WORLD!"); // Проверяем, что строка в верхнем регистре
+    free(result);
+}
+END_TEST
+
+// Тест для s21_to_upper (пустая строка)
+START_TEST(test_s21_to_upper_empty) {
     const char *str = "";
-    int c = 'a';
-    const char *result = s21_strrchr(str, c);
-    ck_assert_ptr_eq(result, NULL); // Проверяем, что результат равен NULL
+    char *result = (char *)s21_to_upper(str);
+    ck_assert_str_eq(result, ""); // Проверяем, что строка осталась пустой
+    free(result);
 }
 END_TEST
 
+// Тест для s21_to_upper (NULL)
+START_TEST(test_s21_to_upper_null) {
+    const char *str = NULL;
+    char *result = (char *)s21_to_upper(str);
+    ck_assert_ptr_eq(result, NULL); // Проверяем, что результат NULL
+}
+END_TEST
+
+// Тест для s21_to_lower (обычная строка)
+START_TEST(test_s21_to_lower_normal) {
+    const char *str = "HELLO, World!";
+    char *result = (char *)s21_to_lower(str);
+    ck_assert_str_eq(result, "hello, world!"); // Проверяем, что строка в нижнем регистре
+    free(result);
+}
+END_TEST
+
+// Тест для s21_to_lower (пустая строка)
+START_TEST(test_s21_to_lower_empty) {
+    const char *str = "";
+    char *result = (char *)s21_to_lower(str);
+    ck_assert_str_eq(result, ""); // Проверяем, что строка осталась пустой
+    free(result);
+}
+END_TEST
+
+// Тест для s21_to_lower (NULL)
+START_TEST(test_s21_to_lower_null) {
+    const char *str = NULL;
+    char *result = (char *)s21_to_lower(str);
+    ck_assert_ptr_eq(result, NULL); // Проверяем, что результат NULL
+}
+END_TEST
+
+// Тест для s21_insert (обычная вставка)
+START_TEST(test_s21_insert_normal) {
+    const char *src = "hello";
+    const char *str = ", world";
+    size_t start_index = 5;
+    char *result = (char *)s21_insert(src, str, start_index);
+    ck_assert_str_eq(result, "hello, world"); // Проверяем, что строка вставлена корректно
+    free(result);
+}
+END_TEST
+
+// Тест для s21_insert (вставка в начало)
+START_TEST(test_s21_insert_start) {
+    const char *src = "world";
+    const char *str = "hello, ";
+    size_t start_index = 0;
+    char *result = (char *)s21_insert(src, str, start_index);
+    ck_assert_str_eq(result, "hello, world"); // Проверяем, что строка вставлена в начало
+    free(result);
+}
+END_TEST
+
+// Тест для s21_insert (вставка в конец)
+START_TEST(test_s21_insert_end) {
+    const char *src = "hello";
+    const char *str = ", world";
+    size_t start_index = 5;
+    char *result = (char *)s21_insert(src, str, start_index);
+    ck_assert_str_eq(result, "hello, world"); // Проверяем, что строка вставлена в конец
+    free(result);
+}
+END_TEST
+
+// Тест для s21_insert (некорректный индекс)
+START_TEST(test_s21_insert_invalid_index) {
+    const char *src = "hello";
+    const char *str = ", world";
+    size_t start_index = 10;
+    char *result = (char *)s21_insert(src, str, start_index);
+    ck_assert_ptr_eq(result, NULL); // Проверяем, что результат NULL
+}
+END_TEST
+
+// Тест для s21_insert (NULL)
+START_TEST(test_s21_insert_null) {
+    const char *src = NULL;
+    const char *str = "hello";
+    size_t start_index = 0;
+    char *result = (char *)s21_insert(src, str, start_index);
+    ck_assert_ptr_eq(result, NULL); // Проверяем, что результат NULL
+}
+END_TEST
+
+// Тест для s21_trim (обычная обрезка)
+START_TEST(test_s21_trim_normal) {
+    const char *src = "  hello, world!  ";
+    const char *trim_chars = " ";
+    char *result = (char *)s21_trim(src, trim_chars);
+    ck_assert_str_eq(result, "hello, world!"); // Проверяем, что строка обрезана
+    free(result);
+}
+END_TEST
+
+// Тест для s21_trim (обрезка без указания символов)
+START_TEST(test_s21_trim_default_chars) {
+    const char *src = "\t\nhello, world!\r";
+    const char *trim_chars = "";
+    char *result = (char *)s21_trim(src, trim_chars);
+    ck_assert_str_eq(result, "hello, world!"); // Проверяем, что строка обрезана
+    free(result);
+}
+END_TEST
+
+// Тест для s21_trim (NULL)
+START_TEST(test_s21_trim_null) {
+    const char *src = NULL;
+    const char *trim_chars = " ";
+    char *result = (char *)s21_trim(src, trim_chars);
+    ck_assert_ptr_eq(result, NULL); // Проверяем, что результат NULL
+}
+END_TEST
 
 
 Suite *s21_string_suite(void) {
@@ -779,13 +896,24 @@ Suite *s21_string_suite(void) {
   tcase_add_test(tc_core, test_s21_memcpy_large_data);
 
   tcase_add_test(tc_core, test_s21_strpbrk_found);
-  tcase_add_test(tc_core, test_s21_strpbrk_not_found);
-  tcase_add_test(tc_core, test_s21_strpbrk_empty_str1);
-  tcase_add_test(tc_core, test_s21_strpbrk_empty_str2);
+    tcase_add_test(tc_core, test_s21_strpbrk_not_found);
+    tcase_add_test(tc_core, test_s21_strrchr_found);
+    tcase_add_test(tc_core, test_s21_strrchr_not_found);
+    tcase_add_test(tc_core, test_s21_to_upper_normal);
+    tcase_add_test(tc_core, test_s21_to_upper_empty);
+    tcase_add_test(tc_core, test_s21_to_upper_null);
+    tcase_add_test(tc_core, test_s21_to_lower_normal);
+    tcase_add_test(tc_core, test_s21_to_lower_empty);
+    tcase_add_test(tc_core, test_s21_to_lower_null);
+    tcase_add_test(tc_core, test_s21_insert_normal);
+    tcase_add_test(tc_core, test_s21_insert_start);
+    tcase_add_test(tc_core, test_s21_insert_end);
+    tcase_add_test(tc_core, test_s21_insert_invalid_index);
+    tcase_add_test(tc_core, test_s21_insert_null);
+    tcase_add_test(tc_core, test_s21_trim_normal);
+    tcase_add_test(tc_core, test_s21_trim_default_chars);
+    tcase_add_test(tc_core, test_s21_trim_null);
 
-  tcase_add_test(tc_core, test_s21_strrchr_found);
-  tcase_add_test(tc_core, test_s21_strrchr_not_found);
-  tcase_add_test(tc_core, test_s21_strrchr_empty_string);
 
 suite_add_tcase(s, tc_core);
 

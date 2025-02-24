@@ -25,11 +25,16 @@ test: clean s21_string.a test_s21_string.c test_s21_sscanf.c test_s21_sprintf.c
 	$(CC) $(CFLAGS) -o test.exe test.c test_s21_string.c test_s21_sscanf.c test_s21_sprintf.c -L. -l:s21_string.a $(TESTFLAGS)
 	./test.exe
 
-test2: clean s21_string.a 
+
+testgen: clean s21_string.a 
 	$(CC) $(CFLAGS) -o test_gen_s21_sscanf.exe test_s21_sscanf_gen.c
 	./test_gen_s21_sscanf.exe
-	$(CC) $(CFLAGS) -o test2_s21_sscanf.exe test_gen_s21_sscanf.c -L. -l:s21_string.a $(TESTFLAGS)
-	./test2_s21_sscanf.exe
+
+test2: s21_string.a 
+	$(CC) $(CFLAGS) -o test_s21_sscanf_gen.exe test_gen_s21_sscanf.c -L. -l:s21_string.a $(TESTFLAGS)
+	./test_s21_sscanf_gen.exe
+
+gtest: clean s21_string.a testgen test2
 
 gcov_report: clean 
 	$(CC) $(CFLAGS) -fprofile-arcs -ftest-coverage -c s21_string.c -o s21_string.o

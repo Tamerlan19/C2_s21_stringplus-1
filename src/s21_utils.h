@@ -1,5 +1,6 @@
 #ifndef S21_LIB_UTIL
 #define S21_LIB_UTIL
+#include <locale.h>
 #include "s21_string.h"
 
 typedef struct {
@@ -27,4 +28,5 @@ int is_digit(char c);
 int is_alpha(char c);
 int is_space(char c);
 long double s21_pow(int x, int y);
+
 #endif

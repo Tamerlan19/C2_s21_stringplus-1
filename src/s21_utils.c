@@ -164,10 +164,10 @@ void noop_space(const char **str) {
 long double s21_pow(int x, int y) {
   long double result = 1.0;
   if (y < 0) {
-    while (y < 0) {
-      result = 1 / s21_pow(x, y * -1);
-      y++;
-    }
+    // while (y < 0) {
+      result = result / s21_pow(x, y*-1);
+      // y++;
+    // }
   } else {
     while (y > 0) {
       result = result * x;
@@ -175,4 +175,15 @@ long double s21_pow(int x, int y) {
     }
   }
   return result;
+}
+
+int get_width(const char *str, const Specifiers st_spec) {
+  int width =0;
+  if ( st_spec.width >= 0 && st_spec.width < (int)s21_strlen(str)) {
+    width = st_spec.width;
+  }else {
+    width = (int)s21_strlen(str);
+  }
+  DEBUG_PRINT("Width set =%d\n", width);
+return width;
 }

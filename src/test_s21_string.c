@@ -656,6 +656,187 @@ START_TEST(test_s21_memcpy_large_data) {
 }
 END_TEST
 
+// Тест для s21_strpbrk (символ найден)
+START_TEST(test_s21_strpbrk_found) {
+    const char *str1 = "hello world";
+    const char *str2 = "abcde";
+    const char *result = s21_strpbrk(str1, str2);
+    const char *result_r = strpbrk(str1, str2);
+    ck_assert_ptr_ne(result, NULL); // Проверяем, что результат не NULL
+    ck_assert_str_eq(result, result_r); // Проверяем, что строка начинается с найденного символа
+}
+END_TEST
+
+// Тест для s21_strpbrk (символ не найден)
+START_TEST(test_s21_strpbrk_not_found) {
+    const char *str1 = "hello world";
+    const char *str2 = "xyz";
+    const char *result = s21_strpbrk(str1, str2);
+    const char *result_r = strpbrk(str1, str2);
+    ck_assert_ptr_eq(result, result_r); // Оба должны быть NULL
+}
+END_TEST
+
+// Тест для s21_strrchr (символ найден)
+START_TEST(test_s21_strrchr_found) {
+    const char *str = "hello world";
+    int c = 'o';
+    const char *result = s21_strrchr(str, c);
+    const char *result_r = strrchr(str, c);
+    ck_assert_ptr_ne(result, NULL); // Проверяем, что результат не NULL
+    ck_assert_str_eq(result, result_r); // Проверяем, что строка начинается с найденного символа
+}
+END_TEST
+
+// Тест для s21_strrchr (символ не найден)
+START_TEST(test_s21_strrchr_not_found) {
+    const char *str = "hello world";
+    int c = 'z';
+    const char *result = s21_strrchr(str, c);
+    const char *result_r = strrchr(str, c);
+    ck_assert_ptr_eq(result, result_r); // Оба должны быть NULL
+}
+END_TEST
+
+// Тест 1: Символ находится в строке
+START_TEST(test_s21_memchr_found) {
+    const char *str = "Hello, world!";
+    int c = 'o';
+    size_t n = strlen(str);
+    void *result = s21_memchr(str, c, n);
+    void *result_r = memchr(str, c, n);
+    ck_assert_ptr_ne(result, NULL); // Проверяем, что результат не NULL
+    ck_assert_ptr_eq(result, result_r); // Сравниваем с оригинальной функцией
+}
+END_TEST
+
+// Тест 2: Символ не находится в строке
+START_TEST(test_s21_memchr_not_found) {
+    const char *str = "Hello, world!";
+    int c = 'z';
+    size_t n = strlen(str);
+    void *result = s21_memchr(str, c, n);
+    void *result_r = memchr(str, c, n);
+    ck_assert_ptr_eq(result, result_r); // Оба должны быть NULL
+}
+END_TEST
+
+// Тест 3: Пустая строка
+START_TEST(test_s21_memchr_empty_string) {
+    const char *str = "";
+    int c = 'a';
+    size_t n = strlen(str);
+    void *result = s21_memchr(str, c, n);
+    void *result_r = memchr(str, c, n);
+    ck_assert_ptr_eq(result, result_r); // Оба должны быть NULL
+}
+END_TEST
+
+// Тест 4: Символ находится в начале строки
+START_TEST(test_s21_memchr_at_start) {
+    const char *str = "abc";
+    int c = 'a';
+    size_t n = strlen(str);
+    void *result = s21_memchr(str, c, n);
+    void *result_r = memchr(str, c, n);
+    ck_assert_ptr_ne(result, NULL); // Проверяем, что результат не NULL
+    ck_assert_ptr_eq(result, result_r); // Сравниваем с оригинальной функцией
+}
+END_TEST
+
+// Тест 5: Символ находится в конце строки
+START_TEST(test_s21_memchr_at_end) {
+    const char *str = "abc";
+    int c = 'c';
+    size_t n = strlen(str);
+    void *result = s21_memchr(str, c, n);
+    void *result_r = memchr(str, c, n);
+    ck_assert_ptr_ne(result, NULL); // Проверяем, что результат не NULL
+    ck_assert_ptr_eq(result, result_r); // Сравниваем с оригинальной функцией
+}
+END_TEST
+
+// Тест 6: Длина n равна 0
+START_TEST(test_s21_memchr_zero_length) {
+    const char *str = "abc";
+    int c = 'b';
+    size_t n = 0;
+    void *result = s21_memchr(str, c, n);
+    void *result_r = memchr(str, c, n);
+    ck_assert_ptr_eq(result, result_r); // Оба должны быть NULL
+}
+END_TEST
+
+// Тест 7: Крайний случай — символ \0
+START_TEST(test_s21_memchr_null_character) {
+    const char *str = "abc\0def";
+    int c = '\0';
+    size_t n = strlen(str) + 4; // Учитываем символ \0 и часть строки после него
+    void *result = s21_memchr(str, c, n);
+    void *result_r = memchr(str, c, n);
+    ck_assert_ptr_ne(result, NULL); // Проверяем, что результат не NULL
+    ck_assert_ptr_eq(result, result_r); // Сравниваем с оригинальной функцией
+}
+END_TEST
+
+// Тест 1: Обычная строка с маленькими буквами
+START_TEST(test_s21_to_upper_normal_string) {
+    const char *input = "hello world";
+    void *result = s21_to_upper(input);
+    ck_assert_ptr_nonnull(result); // Проверяем, что результат не NULL
+    ck_assert_str_eq((char *)result, "HELLO WORLD"); // Сравниваем с ожидаемым результатом
+    free(result); // Освобождаем выделенную память
+}
+END_TEST
+
+// Тест 2: Строка с уже большими буквами
+START_TEST(test_s21_to_upper_all_uppercase) {
+    const char *input = "HELLO WORLD";
+    void *result = s21_to_upper(input);
+    ck_assert_ptr_nonnull(result); // Проверяем, что результат не NULL
+    ck_assert_str_eq((char *)result, "HELLO WORLD"); // Сравниваем с ожидаемым результатом
+    free(result); // Освобождаем выделенную память
+}
+END_TEST
+
+// Тест 3: Смешанные регистры
+START_TEST(test_s21_to_upper_mixed_case) {
+    const char *input = "HeLLo WoRld";
+    void *result = s21_to_upper(input);
+    ck_assert_ptr_nonnull(result); // Проверяем, что результат не NULL
+    ck_assert_str_eq((char *)result, "HELLO WORLD"); // Сравниваем с ожидаемым результатом
+    free(result); // Освобождаем выделенную память
+}
+END_TEST
+
+// Тест 4: Пустая строка
+START_TEST(test_s21_to_upper_empty_string) {
+    const char *input = "";
+    void *result = s21_to_upper(input);
+    ck_assert_ptr_nonnull(result); // Проверяем, что результат не NULL
+    ck_assert_str_eq((char *)result, ""); // Сравниваем с ожидаемым результатом
+    free(result); // Освобождаем выделенную память
+}
+END_TEST
+
+// Тест 5: Входной параметр NULL
+START_TEST(test_s21_to_upper_null_input) {
+    const char *input = NULL;
+    void *result = s21_to_upper(input);
+    ck_assert_ptr_null(result); // Проверяем, что результат равен NULL
+}
+END_TEST
+
+// Тест 6: Строка с символами, которые не являются буквами
+START_TEST(test_s21_to_upper_non_alpha_characters) {
+    const char *input = "123!@#abc";
+    void *result = s21_to_upper(input);
+    ck_assert_ptr_nonnull(result); // Проверяем, что результат не NULL
+    ck_assert_str_eq((char *)result, "123!@#ABC"); // Сравниваем с ожидаемым результатом
+    free(result); // Освобождаем выделенную память
+}
+END_TEST
+
 
 Suite *s21_string_suite(void) {
   Suite *s;
@@ -719,6 +900,26 @@ Suite *s21_string_suite(void) {
   tcase_add_test(tc_core, test_s21_memcpy_zero_bytes);
   tcase_add_test(tc_core, test_s21_memcpy_large_data);
 
+  tcase_add_test(tc_core, test_s21_strpbrk_found);
+  tcase_add_test(tc_core, test_s21_strpbrk_not_found);
+  tcase_add_test(tc_core, test_s21_strrchr_found);
+  tcase_add_test(tc_core, test_s21_strrchr_not_found);
+   
+  tcase_add_test(tc_core, test_s21_memchr_found);
+  tcase_add_test(tc_core, test_s21_memchr_not_found);
+  tcase_add_test(tc_core, test_s21_memchr_empty_string);
+  tcase_add_test(tc_core, test_s21_memchr_at_start);
+  tcase_add_test(tc_core, test_s21_memchr_at_end);
+  tcase_add_test(tc_core, test_s21_memchr_zero_length);
+  tcase_add_test(tc_core, test_s21_memchr_null_character);
+
+  tcase_add_test(tc_core, test_s21_to_upper_normal_string);
+  tcase_add_test(tc_core, test_s21_to_upper_all_uppercase);
+  tcase_add_test(tc_core, test_s21_to_upper_mixed_case);
+  tcase_add_test(tc_core, test_s21_to_upper_empty_string);
+  tcase_add_test(tc_core, test_s21_to_upper_null_input);
+  tcase_add_test(tc_core, test_s21_to_upper_non_alpha_characters);
+  
 
 suite_add_tcase(s, tc_core);
 

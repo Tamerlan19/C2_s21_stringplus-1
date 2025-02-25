@@ -715,16 +715,12 @@ END_TEST
 
 START_TEST(test_s21_sterror_all){
   for (int i = -50; i < 200; i++) {
-    // char res_s21[100],res[100];
-    // int i = 5;
     char *res = strerror(i);
     char *res_s21 = s21_strerror(i);
-    // DEBUG_PRINT("{%i, |%s|\t\t\t|%s|},\n",i,res,res_s21);
     ck_assert_str_eq(res, res_s21);
-    // free(res);
-    // free(res_s21);
   }
 }
+
 
 
 Suite *s21_string_suite(void) {

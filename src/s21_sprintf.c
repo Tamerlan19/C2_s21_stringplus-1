@@ -1,5 +1,7 @@
+// [ ] Удалить импорт библиотеки, использовалась для отладки кода
 #include "s21_string.h"
 #include "s21_utils.h"
+#include <stdio.h>
 
 void handle_char(char **buffer, Specifiers flags, int c);
 void handle_int(char **buffer, Specifiers flags,  va_list argc);
@@ -132,10 +134,22 @@ void handle_percent(char **buffer, Specifiers flags);
     if (num == 0) {
       tmp[len++] = '0';
     } else {
-      while (num > 0) {
-        tmp[len++] = '0' + (num % 10); // Получаем цифру и добавляем её в массив
-        num /= 10;
+      int int_len = 0;
+      if (int_part < 0) {
+        tmp[len++] = '-';
+        int_part = -int_part;
       }
+      long n = int_part;
+      while (n > 0) {
+        tmp[int_len++] = '0' + (n % 10);
+        n /= 10;
+      }
+      for (int i = 0; i < int_len / 2; i++) {
+        char temp = tmp[i];
+        tmp[i] = tmp[int_len - i - 1];
+        tmp[int_len - i - 1] = temp;
+      }
+      len += int_len;
     }
 
     // Если число отрицательное, добавляем минус
@@ -145,14 +159,10 @@ void handle_percent(char **buffer, Specifiers flags);
 
     // Если задана точность, дополняем нулями слева
     if (flags.precision >= 0 && len < flags.precision) {
-      int padding = flags.precision - len;
-      for (int i = len - 1; i >= 0; i--) {
-        tmp[i + padding] = tmp[i]; // Сдвигаем символы вправо
-      }
-      for (int i = 0; i < padding; i++) {
-        tmp[i] = '0'; // Добавляем нули
-      }
-      len += padding;
+      int pad = flags.precision - len;
+      s21_memmove(ptr + pad, ptr, len); // Сдвигаем число вправо
+      s21_memset(ptr, '0', pad); // Дополняем нулями слева
+      len += pad;
     }
 
     // Разворачиваем строку, так как мы записывали цифры в обратном порядке

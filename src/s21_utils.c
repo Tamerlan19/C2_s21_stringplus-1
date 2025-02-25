@@ -135,13 +135,14 @@ int parse_specifiers(const char *fmt, Specifiers *st_spec) {
               "Precision=%i,  Width=%d, Flags=%c\n",
               format - fmt, st_spec->specifier, st_spec->length,
               st_spec->precision, st_spec->width, st_spec->flag);
-  DEBUG_PRINT(" fmt_length=%lu, format_length=%lu\n", (unsigned long) s21_strlen(fmt),
-  (unsigned long) s21_strlen(format)); 
+  DEBUG_PRINT(" fmt_length=%lu, format_length=%lu\n",
+              (unsigned long)s21_strlen(fmt),
+              (unsigned long)s21_strlen(format));
   return format - fmt;
 }
 
 int is_digit(char c) { return (c >= '0' && c <= '9'); }
-int is_octa(char c) { return (c >= '0' && c <= '7'); } 
+int is_octa(char c) { return (c >= '0' && c <= '7'); }
 int is_hex(char c) {
   return ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'F'));
 }

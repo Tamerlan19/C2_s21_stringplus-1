@@ -43,7 +43,8 @@ typedef struct {
 //   return inputs[t];
 // }
 
-// int set_input_for_specs(const spec_type *spec, int t, char *str) { // 2025-02-25 19:43:22 @morrigem: fix style: neve used
+// int set_input_for_specs(const spec_type *spec, int t, char *str) { //
+// 2025-02-25 19:43:22 @morrigem: fix style: neve used
 
 //   int res = 0;
 //   for (int i = 0; i < t; i++) {
@@ -142,7 +143,7 @@ int set_input_str(spec_type *spec) {
              strchr(spec->spec, 'e') != NULL ||
              strchr(spec->spec, 'E') != NULL ||
              strchr(spec->spec, 'f') != NULL) {
-              const char *test_str[50] = {
+    const char *test_str[50] = {
         "123",    "456789",     "3.14159", "12.34",   "255",         "9.45",
         "1.23E4", "3.14",       "0.00001", "-128",    "4294,967295", "2.71828",
         "12.345", "1.2E5",      "255",     "4.723e6", "456789",      "3.14159",
@@ -155,7 +156,7 @@ int set_input_str(spec_type *spec) {
     }
 
   } else {
-   const char *test_str[50] = {
+    const char *test_str[50] = {
         "123",    "456789",     "3.14159", "12.34",  "255",         "9.45",
         "1.234",  "314",        "0.00001", "-128",   "4294,967295", "2.71828",
         "12.345", "1.2",        "255",     "4.723",  "456789",      "3.14159",
@@ -194,8 +195,8 @@ int set_fmt_flags(spec_type *fmt) {
 
   int random_width = rand() % 20;
   if (strpbrk(fmt->spec, "np%") == NULL) {
-  const char *width[] = {"", "0", "1", "2", "",  "3",  "4",  "",   "5", "6",
-                     "", "7", "",  "8", "9", "10", "15", "20", "",  "50"};
+    const char *width[] = {"", "0", "1", "2", "",  "3",  "4",  "",   "5", "6",
+                           "", "7", "",  "8", "9", "10", "15", "20", "",  "50"};
     strcat(res_fmt, width[random_width]);
     // printf("DEBUG: res_fmt=%s. Add width=%s\n", res_fmt,
     // width[random_width]);
@@ -241,7 +242,7 @@ int set_fmt_flags(spec_type *fmt) {
   return res;
 }
 spec_type get_fmt(int t) {
-  if (t >= SPEC_COUNTS ) {
+  if (t >= SPEC_COUNTS) {
     t = SPEC_COUNTS - t;
   } else if (t < 0) {
     t = SPEC_COUNTS + t;
@@ -264,7 +265,7 @@ spec_type get_fmt(int t) {
       {"%", "", "", ""}
       // {"p", "unsigned int ", "0x123ABC"},
   };
-  if (t<= SPEC_COUNTS) {
+  if (t <= SPEC_COUNTS) {
 
     set_input_str(&spec[t]);
     set_fmt_flags(&spec[t]);
@@ -344,7 +345,7 @@ int get_var(spec_type fmt[TEST_VAR], char *vars, char *args_sscanf,
 
 char *get_separator(int i) {
   const char *spr[15] = {"",    " ", ",", ".", ":",   "%%",  "_", "  ",
-                   "   ", "!", ",", "$", "\\n", "\\t", "A"};
+                         "   ", "!", ",", "$", "\\n", "\\t", "A"};
   return spr[i];
 }
 

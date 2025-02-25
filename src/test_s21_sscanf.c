@@ -1,9 +1,8 @@
+#include "s21_string.h"
 #include <check.h>
 #include <limits.h>
 #include <locale.h>
 #include <stdio.h>
-#include "s21_string.h"
-
 
 START_TEST(test_s21_sscanf_d_simple) {
   const char *input = "123";
@@ -1486,9 +1485,9 @@ END_TEST
 START_TEST(test_s21_sscanf_percent_space_2) {
   const char str[] = "Use %triple space in format string";
 
-   const char *fmt = "%s%% %s";
-   char str1_s21[20] = {0}, str2_s21[20] = "TEST", str1r[20] = {0},
-             str2r[20] = "TEST";
+  const char *fmt = "%s%% %s";
+  char str1_s21[20] = {0}, str2_s21[20] = "TEST", str1r[20] = {0},
+       str2r[20] = "TEST";
 
   int ret_s21 = s21_sscanf(str, fmt, str1_s21, str2_s21);
   int ret = sscanf(str, fmt, str1r, str2r);
@@ -1502,8 +1501,7 @@ END_TEST
 START_TEST(test_s21_sscanf_percent_space_triple) {
   const char str[] = "Use%triple space in format string";
   const char *fmt = "%s%%% %s";
-  char str1[20] = {0}, str2[20] = "TEST", str1r[20] = {0},
-             str2r[20] = "TEST";
+  char str1[20] = {0}, str2[20] = "TEST", str1r[20] = {0}, str2r[20] = "TEST";
 
   int ret_s21 = s21_sscanf(str, fmt, str1, str2);
   int ret = sscanf(str, fmt, str1r, str2r);
@@ -2222,8 +2220,8 @@ END_TEST
 START_TEST(test_s21_sscanf_X_width_star) {
   const char str[] = "12345";
 
-  int ret1 = s21_sscanf(str,  "%*5X");
-  int ret2 = sscanf(str,  "%*5X");
+  int ret1 = s21_sscanf(str, "%*5X");
+  int ret2 = sscanf(str, "%*5X");
 
   ck_assert_int_eq(ret1, ret2);
 }
@@ -2232,8 +2230,8 @@ END_TEST
 START_TEST(test_s21_sscanf_X_width_star_zero) {
   const char str[] = "0";
 
-  int ret1 = s21_sscanf(str,  "%*5X");
-  int ret2 = sscanf(str,  "%*5X");
+  int ret1 = s21_sscanf(str, "%*5X");
+  int ret2 = sscanf(str, "%*5X");
 
   ck_assert_int_eq(ret1, ret2);
 }
@@ -2242,8 +2240,8 @@ END_TEST
 START_TEST(test_s21_sscanf_X_width_star_max) {
   const char str[] = "ffffffff";
 
-  int ret1 = s21_sscanf(str,  "%*5X");
-  int ret2 = sscanf(str,  "%*5X");
+  int ret1 = s21_sscanf(str, "%*5X");
+  int ret2 = sscanf(str, "%*5X");
 
   ck_assert_int_eq(ret1, ret2);
 }
@@ -2252,8 +2250,8 @@ END_TEST
 START_TEST(test_s21_sscanf_X_width_star_overflow) {
   const char str[] = "100000000";
 
-  int ret1 = s21_sscanf(str,  "%*5X");
-  int ret2 = sscanf(str,  "%*5X");
+  int ret1 = s21_sscanf(str, "%*5X");
+  int ret2 = sscanf(str, "%*5X");
 
   ck_assert_int_eq(ret1, ret2);
 }
@@ -2262,8 +2260,8 @@ END_TEST
 START_TEST(test_s21_sscanf_X_width_star_negative) {
   const char str[] = "-12345";
 
-  int ret1 = s21_sscanf(str,  "%*5X");
-  int ret2 = sscanf(str,  "%*5X");
+  int ret1 = s21_sscanf(str, "%*5X");
+  int ret2 = sscanf(str, "%*5X");
 
   ck_assert_int_eq(ret1, ret2);
 }
@@ -3053,8 +3051,8 @@ END_TEST
 START_TEST(test_s21_sscanf_cmpx_6523) {
   // const char *input="98  4294967295A4294967295";
   const char *input = "98  11111295A4294967295";
-  unsigned  var1 = 123, var1_s21 = 123;
-  unsigned  var2 = 123, var2_s21 = 123;
+  unsigned var1 = 123, var1_s21 = 123;
+  unsigned var2 = 123, var2_s21 = 123;
   float var3 = 1.123, var3_s21 = 1.123;
   const char *fmt = "%5u  %50xA%f";
 

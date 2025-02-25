@@ -39,8 +39,11 @@ void proc_str(const char **p, int step, Specifiers st_spec, int *res,
   } else if (step < -1) {
     *stop = 1;
     *res = -1;
-  // } else if ((st_spec.specifier != 'n' && st_spec.specifier != '%') && step == 0) { // add 2025-02-024 21:33
-  } else if ((st_spec.specifier != 'n' && st_spec.specifier != '%')) { // 2025-02-25 18:58:46 @morrigem: fix style
+    // } else if ((st_spec.specifier != 'n' && st_spec.specifier != '%') && step
+    // == 0) { // add 2025-02-024 21:33
+  } else if ((st_spec.specifier != 'n' &&
+              st_spec.specifier !=
+                  '%')) { // 2025-02-25 18:58:46 @morrigem: fix style
     DEBUG_PRINT("Specifiers.flag=%c\n", st_spec.flag);
     *stop = 1;
   }
@@ -49,7 +52,7 @@ void proc_str(const char **p, int step, Specifiers st_spec, int *res,
   // }
 
   DEBUG_PRINT("next_val(): step=%d, res =%d, string=|%s|, str_len=%lu \n", step,
-              *res, *p, (unsigned long) s21_strlen(*p));
+              *res, *p, (unsigned long)s21_strlen(*p));
 }
 
 int s21_sscanf(const char *str, const char *format, ...) {
@@ -68,7 +71,8 @@ int s21_sscanf(const char *str, const char *format, ...) {
       // DEBUG_PRINT("Start cycle (while (*p && *fmt && !stop))!\n");
       // Skip separator in format string for non char types
       // while ((*fmt == *p || *fmt == '%') && !stop) {
-      // while ((*fmt || *fmt == '%') && !stop) {  // 2025-02-25 18:56:12 @morrigem: fix style
+      // while ((*fmt || *fmt == '%') && !stop) {  // 2025-02-25 18:56:12
+      // @morrigem: fix style
       while ((*fmt) && !stop) {
         if (*fmt == '%') {
           Specifiers st_spec = {' ', -10, -1, '*', '*'};
@@ -312,8 +316,10 @@ int proc_spec_c(const char *str, va_list args, const Specifiers st_spec) {
             break;
         }
       } else {
-        // p += width > 0 ? width : 1; // 2025-02-25 19:03:17 @morrigem: fix style: style: Condition 'width>0' is always true 
-        p += width; // 2025-02-25 19:03:17 @morrigem: fix style: style: Condition 'width>0' is always true 
+        // p += width > 0 ? width : 1; // 2025-02-25 19:03:17 @morrigem: fix
+        // style: style: Condition 'width>0' is always true
+        p += width; // 2025-02-25 19:03:17 @morrigem: fix style: style:
+                    // Condition 'width>0' is always true
       }
     } else {
       if ((st_spec.length == 'l')) {
@@ -425,7 +431,8 @@ int proc_spec_s(const char *str, va_list args, const Specifiers st_spec) {
   const char *p = str;
   int res = 0;
   int i = 0;
-  DEBUG_PRINT("proc_spec_s(): String length=%lu\n", (unsigned long) s21_strlen(p));
+  DEBUG_PRINT("proc_spec_s(): String length=%lu\n",
+              (unsigned long)s21_strlen(p));
   noop_space(&p);
   if (*p) {
     if (st_spec.flag == '*') {
@@ -438,7 +445,7 @@ int proc_spec_s(const char *str, va_list args, const Specifiers st_spec) {
             DEBUG_PRINT("Error: Invalid multibyte sequence.\n");
             break; // Прерываем цикл при ошибке
           }
-          DEBUG_PRINT("mbr_res=%lu\n", (unsigned long) mbr_res);
+          DEBUG_PRINT("mbr_res=%lu\n", (unsigned long)mbr_res);
           p += mbr_res; // Перемещаем указатель на следующий символ
           // ch++;         // Перемещаем указатель на следующий широкий символ
           i++; // Увеличиваем счётчик прочитанных символов
@@ -476,7 +483,7 @@ int proc_spec_s(const char *str, va_list args, const Specifiers st_spec) {
         char *ch = va_arg(args, char *);
         if (ch != NULL) {
           DEBUG_PRINT("String write to args=|%s|, strlen=%lu, width=%d\n", p,
-            (unsigned long) s21_strlen(p), width);
+                      (unsigned long)s21_strlen(p), width);
           while (*p && !is_space(*p) && i < width) {
             *ch++ = *p++;
             DEBUG_PRINT("i=%d, symbol=%c\n", i, *(ch - 1)); // Отладочный вывод
@@ -783,10 +790,10 @@ int proc_spec_p(const char *str, va_list args, const Specifiers st_spec) {
           conv = str_to_int(p, &address, 16);
           if (conv != 0 && address > 0) {
             *ch = (void *)address;
-            // p += conv; // 2025-02-25 19:05:16 @morrigem: fiz style: Variable 'p' is assigned a value that is never used. [unreadVariable]
+            // p += conv; // 2025-02-25 19:05:16 @morrigem: fiz style: Variable
+            // 'p' is assigned a value that is never used. [unreadVariable]
             res = 0;
-            DEBUG_PRINT("pointer assign=%p, res =%d\n", *ch,
-                        res); 
+            DEBUG_PRINT("pointer assign=%p, res =%d\n", *ch, res);
           } else {
             res = -1;
           }

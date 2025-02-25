@@ -1,10 +1,10 @@
 
 #ifndef STR_LIB_H
 #define STR_LIB_H
+#include "s21_utils.h"
 #include <stdarg.h>
 #include <stdlib.h>
 #include <wchar.h>
-#include "s21_utils.h"
 
 #define S21_NULL ((void *)0) // macros NULL
 
@@ -15,7 +15,6 @@ typedef unsigned long s21_size_t; // 64-bit Linux/macOS
 #else
 typedef unsigned int s21_size_t; // 32-bit
 #endif
-
 
 void *s21_memchr(const void *str, int c, size_t n);
 int s21_memcmp(const void *str1, const void *str2, s21_size_t n);
@@ -34,14 +33,15 @@ char *s21_strrchr(const char *str, int c);
 // Объявления функций
 void *s21_to_upper(const char *str); // Преобразует строку в верхний регистр
 void *s21_to_lower(const char *str); // Преобразует строку в нижний регистр
-void *s21_insert(const char *src, const char *str, size_t start_index); // Вставляет строку в указанную позицию
-void *s21_trim(const char *src, const char *trim_chars); // Удаляет указанные символы с начала и конца строки
+void *s21_insert(const char *src, const char *str,
+                 size_t start_index); // Вставляет строку в указанную позицию
+void *s21_trim(const char *src,
+               const char *trim_chars); // Удаляет указанные символы с начала и
+                                        // конца строки
 
 int s21_sprintf(char *str, const char *format, ...);
 int s21_sscanf(const char *str, const char *format, ...);
 
 char *s21_strerror(int errnum);
-
-
 
 #endif

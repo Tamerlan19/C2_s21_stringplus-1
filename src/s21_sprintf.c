@@ -1,9 +1,11 @@
+// [ ] Удалить импорт библиотеки, использовалась для отладки кода
 #include "s21_string.h"
 #include "s21_utils.h"
+#include <stdio.h>
 
 void handle_char(char **buffer, Specifiers flags, int c);
-void handle_int(char **buffer, Specifiers flags, int d);
-void handle_float(char **buffer, Specifiers flags, double f);
+void handle_int(char **buffer, Specifiers flags, va_list argc);
+void handle_float(char **buffer, Specifiers flags, va_list argc);
 void handle_string(char **buffer, Specifiers flags, const char *s);
 void handle_unsigned(char **buffer, Specifiers flags, unsigned int u);
 void handle_percent(char **buffer, Specifiers flags);
@@ -20,47 +22,7 @@ void handle_percent(char **buffer, Specifiers flags);
 //     return len;
 //   }
 
-void int_to_str(int num, char *str, int base) {
-  int i = 0;
-  int is_negative = 0;
 
-  // Обрабатываем 0 отдельно
-  if (num == 0) {
-    str[i++] = '0';
-    str[i] = '\0';
-    return;
-  }
-
-  // Обрабатываем отрицательные числа для десятичной системы
-  if (num < 0 && base == 10) {
-    is_negative = 1;
-    num = -num; // Преобразуем в положительное
-  }
-
-  // Преобразуем число в строку (обратный порядок)
-  while (num > 0) {
-    int digit = num % base;
-    str[i++] = (digit > 9) ? (digit - 10) + 'A' : digit + '0';
-    num /= base;
-  }
-
-  // Добавляем знак минус для десятичной системы
-  if (is_negative) {
-    str[i++] = '-';
-  }
-
-  str[i] = '\0'; // Завершаем строку
-
-  // Переворачиваем строку
-  int start = 0, end = i - 1;
-  while (start < end) {
-    char temp = str[start];
-    str[start] = str[end];
-    str[end] = temp;
-    start++;
-    end--;
-  }
-}
 
 int s21_sprintf(char *str, const char *format, ...) {
   va_list args;
@@ -85,11 +47,10 @@ int s21_sprintf(char *str, const char *format, ...) {
         int c = va_arg(args, int);
         handle_char(&buffer, flags, c);
       } else if (flags.specifier == 'd') {
-        int d = va_arg(args, int);
-        handle_int(&buffer, flags, d);
+        handle_int(&buffer, flags, args);
       } else if (flags.specifier == 'f') {
-        double f = va_arg(args, double);
-        handle_float(&buffer, flags, f);
+
+        handle_float(&buffer, flags, args);
       } else if (flags.specifier == 's') {
         const char *s = va_arg(args, const char *);
         handle_string(&buffer, flags, s);
@@ -118,13 +79,20 @@ int s21_sprintf(char *str, const char *format, ...) {
  * @param flags The flags specifying the formatting options.
  * @param d The integer to be formatted.
  */
-void handle_int(char **buffer, Specifiers flags, int d) {
+void handle_int(char **buffer, Specifiers flags, va_list args) {
+  long int d;
+  if (flags.specifier == 'h') {
+    d = (short int)va_arg(args, int);
+  } else if (flags.specifier == 'l') {
+    d = va_arg(args, long int);
+  } else {
+    d = (int)va_arg(args, int);
+  }
   char tmp[300] = {0};
   int is_negative = (d < 0);
-  int num = (is_negative) ? -d : d; // Работаем с положительным числом
+  long int num = (is_negative) ? -d : d; // Работаем с положительным числом
   int len = 0;
 
-  // Преобразуем число в строку вручную
   if (num == 0) {
     tmp[len++] = '0';
   } else {
@@ -196,9 +164,19 @@ void handle_int(char **buffer, Specifiers flags, int d) {
   *(*buffer) = '\0';
 }
 
-void handle_float(char **buffer, Specifiers flags, double f) {
+void handle_float(char **buffer, Specifiers flags, va_list args) {
   char tmp[200] = {0};
   int len = 0;
+
+  // Определяем тип числа в зависимости от модификатора длины
+  double f;
+  if (flags.length == 'l') {
+    // Для 'l' используем double (по умолчанию)
+    f = va_arg(args, double);
+  } else {
+    // Без модификатора длины также используем double
+    f = va_arg(args, double);
+  }
 
   // Преобразуем число в строку вручную
   if (flags.precision >= 0) {
@@ -270,7 +248,6 @@ void handle_float(char **buffer, Specifiers flags, double f) {
 
   **buffer = '\0';
 }
-
 void handle_string(char **buffer, Specifiers flags, const char *s) {
   if (s == NULL) {
     s = "(null)";
@@ -352,7 +329,7 @@ void handle_unsigned(char **buffer, Specifiers flags, unsigned int u) {
   **buffer = '\0';
 }
 void handle_char(char **buffer, Specifiers flags, int c) {
-  const char tmp[2] = {(char)c, '\0'};
+  char tmp[2] = {(char)c, '\0'};
   int len = 1;
 
   // Определяем общую длину с учетом ширины

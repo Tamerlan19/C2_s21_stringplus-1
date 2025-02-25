@@ -1,8 +1,8 @@
-#include "s21_string.h"
 #include <check.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "s21_string.h"
 
 START_TEST(test_s21_strchr_found) {
   const char *str = "Hello, World!";
@@ -577,32 +577,30 @@ START_TEST(test_s21_strncpy_n_zero) {
 
   // Вызываем оригинальную функцию для получения эталонного результата
   char original_dest[50] = "Test";
-  strncpy(original_dest, src, n);
-
-  // Вызываем свою функцию
-  s21_strncpy(dest, src, n);
+  char *ret = strncpy(original_dest, src, n);
+  char *ret_s21 = s21_strncpy(dest, src, n);
 
   // Сравниваем результаты
   ck_assert_str_eq(dest, original_dest);
+  ck_assert_str_eq(ret, ret_s21);
 }
 END_TEST
 
 // Тест: Копирование пустой строки
 START_TEST(test_s21_strncpy_empty_src) {
-  char dest[50] = "Original";
   const char *src = "";
   s21_size_t n = 5;
-
-  // Вызываем оригинальную функцию для получения эталонного результата
+  char dest[50] = "Original";
   char original_dest[50] = "Original";
-  strncpy(original_dest, src, n);
+
+  char *ret = strncpy(original_dest, src, n);
+  char *ret_s21 = s21_strncpy(dest, src, n);
+
   original_dest[n] = '\0'; // Гарантируем завершающий нуль
-
-  // Вызываем свою функцию
-  s21_strncpy(dest, src, n);
-
-  // Сравниваем результаты
+  dest[n] = '\0'; // Гарантируем завершающий нуль
+  
   ck_assert_str_eq(dest, original_dest);
+  ck_assert_str_eq(ret, ret_s21);
 }
 END_TEST
 
@@ -715,6 +713,20 @@ START_TEST(test_s21_memcpy_large_data) {
 }
 END_TEST
 
+START_TEST(test_s21_sterror_all){
+  for (int i = -50; i < 200; i++) {
+    // char res_s21[100],res[100];
+    // int i = 5;
+    char *res = strerror(i);
+    char *res_s21 = s21_strerror(i);
+    // DEBUG_PRINT("{%i, |%s|\t\t\t|%s|},\n",i,res,res_s21);
+    ck_assert_str_eq(res, res_s21);
+    // free(res);
+    // free(res_s21);
+  }
+}
+
+
 Suite *s21_string_suite(void) {
   Suite *s;
   TCase *tc_core;
@@ -779,6 +791,8 @@ Suite *s21_string_suite(void) {
   tcase_add_test(tc_core, test_s21_memcpy_string);
   tcase_add_test(tc_core, test_s21_memcpy_zero_bytes);
   tcase_add_test(tc_core, test_s21_memcpy_large_data);
+
+  tcase_add_test(tc_core, test_s21_sterror_all);
 
   suite_add_tcase(s, tc_core);
 

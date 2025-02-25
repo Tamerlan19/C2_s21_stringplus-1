@@ -134,7 +134,6 @@ START_TEST(test_s21_sprintf_u_with_width) {
 }
 END_TEST
 
-// Тестовый кейс 3: Число с точностью
 START_TEST(test_s21_sprintf_u_with_precision) {
   char buffer[1024];
   s21_sprintf(buffer, "Number: %.5u", 678);
@@ -142,7 +141,6 @@ START_TEST(test_s21_sprintf_u_with_precision) {
 }
 END_TEST
 
-// Тестовый кейс 4: Левое выравнивание
 START_TEST(test_s21_sprintf_u_left_alignment) {
   char buffer[1024];
   s21_sprintf(buffer, "Number: %-5u", 45);
@@ -150,7 +148,6 @@ START_TEST(test_s21_sprintf_u_left_alignment) {
 }
 END_TEST
 
-// Тестовый кейс 5: Заполнение нулями
 START_TEST(test_s21_sprintf_u_zero_padding) {
   char buffer[1024];
   s21_sprintf(buffer, "Number: %05u", 45);
@@ -158,7 +155,6 @@ START_TEST(test_s21_sprintf_u_zero_padding) {
 }
 END_TEST
 
-// Тестовый кейс 6: Число равно 0 с точностью 0
 START_TEST(test_s21_sprintf_u_zero_with_zero_precision) {
   char buffer[1024];
   s21_sprintf(buffer, "Number: %.0u", 0);
@@ -166,15 +162,15 @@ START_TEST(test_s21_sprintf_u_zero_with_zero_precision) {
 }
 END_TEST
 
-// Тестовый кейс 7: Комбинация ширины, точности и заполнения нулями
 START_TEST(test_s21_sprintf_u_complex_case) {
   char buffer[1024] = {0};
   const char fmt[30] = "Number: %08u";
   s21_sprintf(buffer, fmt, 789);
   ck_assert_str_eq(buffer, "Number: 00000789");
-  printf("%s", fmt);
+  DEBUG_PRINT("%s", fmt);
 }
 END_TEST
+
 
 Suite *s21_sprintf_suite(void) {
   Suite *s;

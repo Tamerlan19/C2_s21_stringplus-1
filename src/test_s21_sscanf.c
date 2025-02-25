@@ -1,15 +1,18 @@
-#include "s21_string.h"
 #include <check.h>
 #include <limits.h>
 #include <locale.h>
 #include <stdio.h>
+#include "s21_string.h"
+
 
 START_TEST(test_s21_sscanf_d_simple) {
   const char *input = "123";
   int x = 0, xr = 0;
-  const char *fmt = "%d";
-  ck_assert_int_eq(s21_sscanf(input, fmt, &x), sscanf(input, fmt, &xr));
+  // const char *fmt = "%d";
+  int ret_s21 = s21_sscanf(input, "%d", &x);
+  int ret = sscanf(input, "%d", &xr);
   ck_assert_int_eq(x, xr);
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
@@ -17,8 +20,10 @@ START_TEST(test_s21_sscanf_d_neg) {
   const char *input = "-123";
   int x = 0, xr = 0;
   const char *fmt = "%d";
-  ck_assert_int_eq(s21_sscanf(input, fmt, &x), sscanf(input, fmt, &xr));
+  int ret_s21 = s21_sscanf(input, fmt, &x);
+  int ret = sscanf(input, fmt, &xr);
   ck_assert_int_eq(x, xr);
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
@@ -26,8 +31,10 @@ START_TEST(test_s21_sscanf_d_neg_twice) {
   const char *input = "--123";
   int x = 0, xr = 0;
   const char *fmt = "%d";
-  ck_assert_int_eq(s21_sscanf(input, fmt, &x), sscanf(input, fmt, &xr));
+  int ret_s21 = s21_sscanf(input, fmt, &x);
+  int ret = sscanf(input, fmt, &xr);
   ck_assert_int_eq(x, xr);
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
@@ -35,11 +42,12 @@ START_TEST(test_s21_sscanf_d_some) {
   const char *input = "123 -456 789";
   int x = 0, y = 0, z = 0, xr = 0, yr = 0, zr = 0;
   const char *fmt = "%d %d %d";
-  ck_assert_int_eq(s21_sscanf(input, fmt, &x, &y, &z),
-                   sscanf(input, fmt, &xr, &yr, &zr));
+  int ret_s21 = s21_sscanf(input, fmt, &x, &y, &z);
+  int ret = sscanf(input, fmt, &xr, &yr, &zr);
   ck_assert_int_eq(x, xr);
   ck_assert_int_eq(y, yr);
   ck_assert_int_eq(zr, zr);
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
@@ -47,8 +55,10 @@ START_TEST(test_s21_sscanf_d_space_bef) {
   const char *input = "  123";
   int x = 0, xr = 0;
   const char *fmt = "%d";
-  ck_assert_int_eq(s21_sscanf(input, fmt, &x), sscanf(input, fmt, &xr));
+  int ret_s21 = s21_sscanf(input, fmt, &x);
+  int ret = sscanf(input, fmt, &xr);
   ck_assert_int_eq(x, xr);
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
@@ -56,8 +66,10 @@ START_TEST(test_s21_sscanf_d_space_aft) {
   const char *input = "123   ";
   int x = 0, xr = 0;
   const char *fmt = "%d";
-  ck_assert_int_eq(s21_sscanf(input, fmt, &x), sscanf(input, fmt, &xr));
+  int ret_s21 = s21_sscanf(input, fmt, &x);
+  int ret = sscanf(input, fmt, &xr);
   ck_assert_int_eq(x, xr);
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
@@ -65,8 +77,10 @@ START_TEST(test_s21_sscanf_d_merge_string_end) {
   const char *input = "123Hello Worrld!!!";
   int x = 0, xr = 0;
   const char *fmt = "%d";
-  ck_assert_int_eq(s21_sscanf(input, fmt, &x), sscanf(input, fmt, &xr));
+  int ret_s21 = s21_sscanf(input, fmt, &x);
+  int ret = sscanf(input, fmt, &xr);
   ck_assert_int_eq(x, xr);
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
@@ -74,8 +88,10 @@ START_TEST(test_s21_sscanf_d_merge_string_start) {
   const char *input = "qwerty123";
   int x = 1, xr = 1; // var is not change value
   const char *fmt = "%d";
-  ck_assert_int_eq(s21_sscanf(input, fmt, &x), sscanf(input, fmt, &xr));
+  int ret_s21 = s21_sscanf(input, fmt, &x);
+  int ret = sscanf(input, fmt, &xr);
   ck_assert_int_eq(x, xr);
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
@@ -83,8 +99,10 @@ START_TEST(test_s21_sscanf_d_empty) {
   const char *input = "";
   int x = 0, xr = 0;
   const char *fmt = "%d";
-  ck_assert_int_eq(s21_sscanf(input, fmt, &x), sscanf(input, fmt, &xr));
+  int ret_s21 = s21_sscanf(input, fmt, &x);
+  int ret = sscanf(input, fmt, &xr);
   ck_assert_int_eq(x, xr);
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
@@ -92,17 +110,21 @@ START_TEST(test_s21_sscanf_d_max) {
   const char *input = "2147483647"; // INT_MAX
   int x = 0, xr = 0;
   const char *fmt = "%d";
-  ck_assert_int_eq(s21_sscanf(input, fmt, &x), sscanf(input, fmt, &xr));
+  int ret_s21 = s21_sscanf(input, fmt, &x);
+  int ret = sscanf(input, fmt, &xr);
   ck_assert_int_eq(x, xr);
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_d_min) {
-  const char *input = "-2147483648"; // INT_MIN
+  const char *input = " -2147483648"; // INT_MIN
   int x = 0, xr = 0;
   const char *fmt = "%d";
-  ck_assert_int_eq(s21_sscanf(input, fmt, &x), sscanf(input, fmt, &xr));
+  int ret_s21 = s21_sscanf(input, fmt, &x);
+  int ret = sscanf(input, fmt, &xr);
   ck_assert_int_eq(x, xr);
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
@@ -111,17 +133,18 @@ START_TEST(test_s21_sscanf_d_max_over) {
                                     // s21_scanf=-2147483639, sscanf=-2147483639
   int x = 0, xr = 0;
   const char *fmt = "%d";
-  ck_assert_int_eq(s21_sscanf(input, fmt, &x), sscanf(input, fmt, &xr));
+  int ret_s21 = s21_sscanf(input, fmt, &x);
+  int ret = sscanf(input, fmt, &xr);
   ck_assert_int_eq(x, xr);
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_d_miss) {
   const char *input = "9903456";
-  int x = -5, xr = -5;
-  const char *fmt = "%*d";
-  ck_assert_int_eq(s21_sscanf(input, fmt, &x), sscanf(input, fmt, &xr));
-  ck_assert_int_eq(x, xr);
+  int ret_s21 = s21_sscanf(input, "%*d");
+  int ret = sscanf(input, "%*d");
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
@@ -129,8 +152,10 @@ START_TEST(test_s21_sscanf_d_width) {
   const char *input = "123456";
   int x = 0, xr = 0;
   const char *fmt = "%3d";
-  ck_assert_int_eq(s21_sscanf(input, fmt, &x), sscanf(input, fmt, &xr));
+  int ret_s21 = s21_sscanf(input, fmt, &x);
+  int ret = sscanf(input, fmt, &xr);
   ck_assert_int_eq(x, xr);
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
@@ -138,8 +163,10 @@ START_TEST(test_s21_sscanf_d_wrong_fmt) {
   const char *input = "qwerty";
   int x = 0, xr = 0;
   const char *fmt = "%d";
-  ck_assert_int_eq(s21_sscanf(input, fmt, &x), sscanf(input, fmt, &xr));
+  int ret_s21 = s21_sscanf(input, fmt, &x);
+  int ret = sscanf(input, fmt, &xr);
   ck_assert_int_eq(x, xr);
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
@@ -147,8 +174,10 @@ START_TEST(test_s21_sscanf_d_wrong_fmt_width) {
   const char *input = "qwerty";
   int x = 0, xr = 0;
   const char *fmt = "%2d";
-  ck_assert_int_eq(s21_sscanf(input, fmt, &x), sscanf(input, fmt, &xr));
+  int ret_s21 = s21_sscanf(input, fmt, &x);
+  int ret = sscanf(input, fmt, &xr);
   ck_assert_int_eq(x, xr);
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
@@ -156,11 +185,12 @@ START_TEST(test_s21_sscanf_d_some_fmt_wrong) {
   const char *input = "123 -456 abc";
   int x = 0, y = 0, z = 0, xr = 0, yr = 0, zr = 0;
   const char *fmt = "%d %d %d";
-  ck_assert_int_eq(s21_sscanf(input, fmt, &x, &y, &z),
-                   sscanf(input, fmt, &xr, &yr, &zr));
+  int ret_s21 = s21_sscanf(input, fmt, &x, &y, &z);
+  int ret = sscanf(input, fmt, &xr, &yr, &zr);
   ck_assert_int_eq(x, xr);
   ck_assert_int_eq(y, yr);
   ck_assert_int_eq(zr, zr);
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
@@ -168,20 +198,22 @@ START_TEST(test_s21_sscanf_d_some_sep) {
   const char *input = " \t\n123 \t\n456 \t\n";
   int x = 0, y = 0, xr = 0, yr = 0;
   const char *fmt = "%d %d";
-  ck_assert_int_eq(s21_sscanf(input, fmt, &x, &y),
-                   sscanf(input, fmt, &xr, &yr));
+  int ret_s21 = s21_sscanf(input, fmt, &x, &y);
+  int ret = sscanf(input, fmt, &xr, &yr);
   ck_assert_int_eq(x, xr);
+  ck_assert_int_eq(y, yr);
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_d_zero) {
   const char *input = "0";
-  int x = 0, xr = 0;
+  int x = 111, xr = 111;
   const char *fmt = "%d";
   int ret = sscanf(input, fmt, &xr);
   int ret_s21 = s21_sscanf(input, fmt, &x);
-  ck_assert_int_eq(ret, ret_s21);
   ck_assert_int_eq(x, xr);
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
@@ -258,17 +290,19 @@ START_TEST(test_s21_sscanf_ld_empty) {
 END_TEST
 
 START_TEST(test_s21_sscanf_complex) {
-  int i, j,i_s21, j_s21;
-  float x, y;
-  float x_s21, y_s21;
+  int i = 0, j = 0, i_s21 = 0, j_s21 = 0;
+  float x = 0.0, y = 0.0;
+  float x_s21 = 0.0, y_s21 = 0.0;
   const char str1[10], str2[4];
   const char str1_s21[10], str2_s21[4];
   wchar_t warr[2];
   wchar_t warr_s21[2];
   setlocale(LC_ALL, "en_US.utf8");
   const char input[] = "25 54.32E-1 Thompson    56789 0123 56 ß水";
-  int ret_s21 = s21_sscanf(input, "%d%f%9s%2d%f %*d %2s %2lc", &i_s21, &x_s21, str1_s21, &j_s21, &y_s21,str2_s21, warr_s21);
-  int ret = s21_sscanf(input, "%d%f%9s%2d%f %*d %2s %2lc", &i, &x, str1, &j, &y,str2, warr);
+  int ret = s21_sscanf(input, "%d%f%9s%2d%f %*d %2s %2lc", &i, &x, str1, &j, &y,
+                       str2, warr);
+  int ret_s21 = s21_sscanf(input, "%d%f%9s%2d%f %*d %2s %2lc", &i_s21, &x_s21,
+                           str1_s21, &j_s21, &y_s21, str2_s21, warr_s21);
   ck_assert_int_eq(i, i_s21);
   ck_assert_float_eq(x, x_s21);
   ck_assert_str_eq(str1, str1_s21);
@@ -312,13 +346,13 @@ END_TEST
 START_TEST(test_s21_sscanf_lc) {
   setlocale(LC_ALL, "en_US.utf8");
 
-  wchar_t wc,wc_s21;
+  wchar_t wc, wc_s21;
   int count = sscanf("Ω", "%lc", &wc);
   int count_s21 = s21_sscanf("Ω", "%lc", &wc_s21);
   ck_assert_int_eq(count, count_s21);
   ck_assert_int_eq(wc, wc_s21);
 
-  wchar_t wstr[5],wstr_s21[5];
+  wchar_t wstr[5], wstr_s21[5];
   count_s21 = s21_sscanf("Δέλτα", "%4lc", wstr_s21);
   count = sscanf("Δέλτα", "%4lc", wstr);
   ck_assert_int_eq(count, count_s21);
@@ -379,47 +413,54 @@ END_TEST
 
 START_TEST(test_s21_sscanf_s_simple) {
   const char *input = "Hello World";
-  const char str[20] = {0}, strr[20] = {0};
+  char str[20] = {0}, strr[20] = {0};
   const char *fmt = "%s";
-  ck_assert_int_eq(s21_sscanf(input, fmt, str), sscanf(input, fmt, strr));
+  int ret_s21 = s21_sscanf(input, fmt, str);
+  int ret = sscanf(input, fmt, strr);
+  ck_assert_int_eq(ret, ret_s21);
   ck_assert_str_eq(str, strr);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_s_space) {
   const char *input = "Hello World";
-  const char str[20] = {0}, strr[20] = {0};
+  char str[20] = {0}, strr[20] = {0};
   const char *fmt = "%s";
-  ck_assert_int_eq(s21_sscanf(input, fmt, str), sscanf(input, fmt, strr));
+  int ret_s21 = s21_sscanf(input, fmt, str);
+  int ret = sscanf(input, fmt, strr);
   ck_assert_str_eq(str, strr);
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_s_width) {
   const char *input = "Hello World";
-  const char str[20] = {0}, strr[20] = {0};
+  char str[20] = {0}, strr[20] = {0};
   const char *fmt = "%5s";
-  ck_assert_int_eq(s21_sscanf(input, fmt, str), sscanf(input, fmt, strr));
+  int ret_s21 = s21_sscanf(input, fmt, str);
+  int ret = sscanf(input, fmt, strr);
   ck_assert_str_eq(str, strr);
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_s_skip_assignment) {
   const char *input = "Hello World";
-  const char str[20] = {0};
-  const char *fmt = "%*s";
-  ck_assert_int_eq(s21_sscanf(input, fmt, str), sscanf(input, fmt, str));
+  int ret_s21 = s21_sscanf(input, "%*s");
+  int ret = sscanf(input, "%*s");
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_s_multiple) {
   const char *input = "Hello World 123";
-  const char str1[20] = {0}, str2[20] = {0}, str1r[20] = {0}, str2r[20] = {0};
+  char str1[20] = {0}, str2[20] = {0}, str1r[20] = {0}, str2r[20] = {0};
   const char *fmt = "%s %s";
-  ck_assert_int_eq(s21_sscanf(input, fmt, str1, str2),
-                   sscanf(input, fmt, str1r, str2r));
+  int ret_s21 = s21_sscanf(input, fmt, str1, str2);
+  int ret = sscanf(input, fmt, str1r, str2r);
   ck_assert_str_eq(str1, str1r);
   ck_assert_str_eq(str2, str2r);
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
@@ -434,21 +475,21 @@ START_TEST(test_s21_sscanf_s_separators_comp) {
   int result_sscanf =
       sscanf(input, fmt, wstr1_sscanf, wstr2_sscanf, wstr3_sscanf);
 
-  printf("TEST: wstr1_sscanf=|%s|, wstr2_sscanf=|%s|, wstr3_sscanf=|%s|\n",
-         wstr1_sscanf, wstr2_sscanf, wstr3_sscanf);
-  printf("TEST: wstr1_s21=|%s|, wstr2_s21=|%s|, wstr3_s21=|%s|\n", wstr1_s21,
-         wstr2_s21, wstr3_s21);
-         ck_assert_str_eq(wstr1_s21, wstr1_sscanf);
-         ck_assert_str_eq(wstr2_s21, wstr2_sscanf);
-         ck_assert_str_eq(wstr3_s21, wstr3_sscanf);
-         ck_assert_int_eq(result_s21, result_sscanf);
-  printf("Test test_s21_sscanf_s_separators passed.\n");
+  DEBUG_PRINT("TEST: wstr1_sscanf=|%s|, wstr2_sscanf=|%s|, wstr3_sscanf=|%s|\n",
+              wstr1_sscanf, wstr2_sscanf, wstr3_sscanf);
+  DEBUG_PRINT("TEST: wstr1_s21=|%s|, wstr2_s21=|%s|, wstr3_s21=|%s|\n",
+              wstr1_s21, wstr2_s21, wstr3_s21);
+  ck_assert_str_eq(wstr1_s21, wstr1_sscanf);
+  ck_assert_str_eq(wstr2_s21, wstr2_sscanf);
+  ck_assert_str_eq(wstr3_s21, wstr3_sscanf);
+  ck_assert_int_eq(result_s21, result_sscanf);
+  DEBUG_PRINT("Test test_s21_sscanf_s_separators passed.\n");
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_s_empty) {
   const char *input = "";
-  const char str[20] = {0}, strr[20] = {0};
+  char str[20] = {0}, strr[20] = {0};
   const char *fmt = "%s";
   ck_assert_int_eq(s21_sscanf(input, fmt, str), sscanf(input, fmt, strr));
   ck_assert_str_eq(str, strr);
@@ -457,8 +498,8 @@ END_TEST
 
 START_TEST(test_s21_sscanf_s_wrong_fmt) {
   const char *input = "Hello World";
-  const char str[20] = {0}, strr[20] = {0};
-  const char *fmt = "%d";
+  char str[20] = {0}, strr[20] = {0};
+  const char *fmt = "%s";
   ck_assert_int_eq(s21_sscanf(input, fmt, str), sscanf(input, fmt, strr));
   ck_assert_str_eq(str, strr);
 }
@@ -466,8 +507,8 @@ END_TEST
 
 START_TEST(test_s21_sscanf_s_width_wrong_fmt) {
   const char *input = "Hello World";
-  const char str[20] = {0}, strr[20] = {0};
-  const char *fmt = "%5d";
+  char str[20] = {0}, strr[20] = {0};
+  const char *fmt = "%5s";
   ck_assert_int_eq(s21_sscanf(input, fmt, str), sscanf(input, fmt, strr));
   ck_assert_str_eq(str, strr);
 }
@@ -475,7 +516,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_s_separators) {
   const char *input = " \t\nHello \t\nWorld \t\n";
-  const char str1[20] = {0}, str2[20] = {0}, str1r[20] = {0}, str2r[20] = {0};
+  char str1[20] = {0}, str2[20] = {0}, str1r[20] = {0}, str2r[20] = {0};
   const char *fmt = "%s %s";
   ck_assert_int_eq(s21_sscanf(input, fmt, str1, str2),
                    sscanf(input, fmt, str1r, str2r));
@@ -486,21 +527,23 @@ END_TEST
 
 START_TEST(test_s21_sscanf_s_width_separators) {
   const char *input = " \t\nHello \t\nWorld \t\n";
-  const char str1[20] = {2}, str2[20] = {2}, str1r[20] = {2}, str2r[20] = {2};
+  char str1[20] = {2}, str2[20] = {2}, str1r[20] = {2}, str2r[20] = {2};
   const char *fmt = "%3s %3s";
   int ret_s21 = s21_sscanf(input, fmt, str1, str2);
   int ret = sscanf(input, fmt, str1r, str2r);
   ck_assert_str_eq(str1, str1r);
   ck_assert_str_eq(str2, str2r);
-  ck_assert_int_eq(ret,ret_s21);
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_s_add_spaces) {
   const char *input = "  Hello    World";
-  const char str[20] = {0}, strr[20] = {0};
-  const char *fmt = " %d ";
-  ck_assert_int_eq(s21_sscanf(input, fmt, str), sscanf(input, fmt, strr));
+  char str[20] = {0}, strr[20] = {0};
+  const char *fmt = " %s ";
+  int ret_s21 = s21_sscanf(input, fmt, str);
+  int ret = sscanf(input, fmt, strr);
+  ck_assert_int_eq(ret, ret_s21);
   ck_assert_str_eq(str, strr);
 }
 END_TEST
@@ -511,7 +554,7 @@ START_TEST(s21_test_sscanf_c_single_char) {
   int result = s21_sscanf(input, "%c", &c);
   ck_assert_int_eq(result, 1);
   ck_assert_int_eq(c, 'a');
-  printf("Test s21_test_sscanf_c_single_char passed.\n");
+  DEBUG_PRINT("Test s21_test_sscanf_c_single_char passed.\n");
 }
 END_TEST
 
@@ -528,7 +571,7 @@ START_TEST(s21_test_sscanf_c_four_chars) {
   ck_assert_int_eq(c3, c3_r);
   ck_assert_int_eq(c4, c4_r);
   ck_assert_int_eq(result, result_r);
-  printf("Test s21_test_sscanf_c_four_chars passed.\n");
+  DEBUG_PRINT("Test s21_test_sscanf_c_four_chars passed.\n");
 }
 END_TEST
 
@@ -540,7 +583,7 @@ START_TEST(s21_test_sscanf_c_skip_with_width) {
   ck_assert_int_eq(result, 2);
   ck_assert_int_eq(c1, 'b');
   ck_assert_int_eq(c2, 'd');
-  printf("Test s21_test_sscanf_c_skip_with_width passed.\n");
+  DEBUG_PRINT("Test s21_test_sscanf_c_skip_with_width passed.\n");
 }
 END_TEST
 
@@ -552,7 +595,7 @@ START_TEST(s21_test_sscanf_c_wide_char) {
   int result = s21_sscanf(input, "%lc", &wc);
   ck_assert_int_eq(result, 1);
   ck_assert_int_eq(wc, L'Ω');
-  printf("Test s21_test_sscanf_c_wide_char passed.\n");
+  DEBUG_PRINT("Test s21_test_sscanf_c_wide_char passed.\n");
 }
 END_TEST
 
@@ -564,7 +607,7 @@ START_TEST(s21_test_sscanf_c_wide_chars_with_width) {
   int result = s21_sscanf(input, "%2lc", wc);
   ck_assert_int_eq(result, 1);
   ck_assert_int_eq(wc[0], L'Ω');
-  printf("Test s21_test_sscanf_c_wide_chars_with_width passed.\n");
+  DEBUG_PRINT("Test s21_test_sscanf_c_wide_chars_with_width passed.\n");
 }
 END_TEST
 
@@ -575,7 +618,7 @@ START_TEST(s21_test_sscanf_c_ignore_flag) {
   int result = s21_sscanf(input, "%*c%c", &c);
   ck_assert_int_eq(result, 1);
   ck_assert_int_eq(c, 'b');
-  printf("Test s21_test_sscanf_c_ignore_flag passed.\n");
+  DEBUG_PRINT("Test s21_test_sscanf_c_ignore_flag passed.\n");
 }
 END_TEST
 
@@ -601,7 +644,7 @@ START_TEST(test_s21_sscanf_ls_simple) {
 
   ck_assert_int_eq(result_s21, result_sscanf);
   ck_assert(compare_wstrings(wstr_s21, wstr_sscanf));
-  printf("Test test_s21_sscanf_ls_simple passed.\n");
+  DEBUG_PRINT("Test test_s21_sscanf_ls_simple passed.\n");
 }
 END_TEST
 
@@ -616,7 +659,7 @@ START_TEST(test_s21_sscanf_ls_space) {
 
   ck_assert_int_eq(result_s21, result_sscanf);
   ck_assert(compare_wstrings(wstr_s21, wstr_sscanf));
-  printf("Test test_s21_sscanf_ls_space passed.\n");
+  DEBUG_PRINT("Test test_s21_sscanf_ls_space passed.\n");
 }
 END_TEST
 
@@ -631,7 +674,7 @@ START_TEST(test_s21_sscanf_ls_width) {
 
   ck_assert_int_eq(result_s21, result_sscanf);
   ck_assert(compare_wstrings(wstr_s21, wstr_sscanf));
-  printf("Test test_s21_sscanf_ls_width passed.\n");
+  DEBUG_PRINT("Test test_s21_sscanf_ls_width passed.\n");
 }
 END_TEST
 
@@ -650,7 +693,7 @@ START_TEST(test_s21_sscanf_ls_multiple) {
   ck_assert(compare_wstrings(wstr1_s21, wstr1_sscanf));
   ck_assert(compare_wstrings(wstr2_s21, wstr2_sscanf));
   ck_assert(compare_wstrings(wstr3_s21, wstr3_sscanf));
-  printf("Test test_s21_sscanf_ls_multiple passed.\n");
+  DEBUG_PRINT("Test test_s21_sscanf_ls_multiple passed.\n");
 }
 END_TEST
 
@@ -666,7 +709,7 @@ START_TEST(test_s21_sscanf_ls_empty) {
   ck_assert_int_eq(result_s21, result_sscanf);
   ck_assert(compare_wstrings(wstr_s21, wstr_sscanf));
   // ck_assert_(wstr_s21, wstr_sscanf);
-  printf("Test test_s21_sscanf_ls_empty passed.\n");
+  DEBUG_PRINT("Test test_s21_sscanf_ls_empty passed.\n");
 }
 END_TEST
 
@@ -680,7 +723,7 @@ START_TEST(test_s21_sscanf_ls_wrong_fmt) {
   int result_sscanf = sscanf(input, fmt, wstr_sscanf);
 
   ck_assert_int_eq(result_s21, result_sscanf);
-  printf("Test test_s21_sscanf_ls_wrong_fmt passed.\n");
+  DEBUG_PRINT("Test test_s21_sscanf_ls_wrong_fmt passed.\n");
 }
 END_TEST
 
@@ -700,7 +743,7 @@ START_TEST(test_s21_sscanf_ls_separators) {
   ck_assert(compare_wstrings(wstr1_s21, wstr1_sscanf));
   ck_assert(compare_wstrings(wstr2_s21, wstr2_sscanf));
   ck_assert(compare_wstrings(wstr3_s21, wstr3_sscanf));
-  printf("Test test_s21_sscanf_ls_separators passed.\n");
+  DEBUG_PRINT("Test test_s21_sscanf_ls_separators passed.\n");
 }
 END_TEST
 
@@ -720,7 +763,7 @@ START_TEST(test_s21_sscanf_ls_width_separators) {
   ck_assert(compare_wstrings(wstr1_s21, wstr1_sscanf));
   ck_assert(compare_wstrings(wstr2_s21, wstr2_sscanf));
   ck_assert(compare_wstrings(wstr3_s21, wstr3_sscanf));
-  printf("Test test_s21_sscanf_ls_width_separators passed.\n");
+  DEBUG_PRINT("Test test_s21_sscanf_ls_width_separators passed.\n");
 }
 END_TEST
 
@@ -735,7 +778,7 @@ START_TEST(test_s21_sscanf_ls_skip_assignment) {
 
   ck_assert_int_eq(result_s21, result_sscanf);
   ck_assert(compare_wstrings(wstr_s21, wstr_sscanf));
-  printf("Test test_s21_sscanf_ls_skip_assignment passed.\n");
+  DEBUG_PRINT("Test test_s21_sscanf_ls_skip_assignment passed.\n");
 }
 END_TEST
 
@@ -999,39 +1042,30 @@ END_TEST
 
 START_TEST(test_s21_sscanf_u_width_star_max) {
   const char str[] = "4294967295";
-  unsigned int res1 = {0}, res2 = {0};
-  const char *fmt = "%*5u";
 
-  int ret1 = s21_sscanf(str, fmt, &res1);
-  int ret2 = sscanf(str, fmt, &res2);
+  int ret1 = s21_sscanf(str, "%*5u");
+  int ret2 = sscanf(str, "%*5u");
 
-  ck_assert_int_eq(res1, res2);
   ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_u_width_star_overflow) {
   const char str[] = "4294967296";
-  unsigned int res1 = {0}, res2 = {0};
-  const char *fmt = "%*5u";
 
-  int ret1 = s21_sscanf(str, fmt, &res1);
-  int ret2 = sscanf(str, fmt, &res2);
+  int ret1 = s21_sscanf(str, "%*5u");
+  int ret2 = sscanf(str, "%*5u");
 
-  ck_assert_int_eq(res1, res2);
   ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_u_width_star_negative) {
   const char str[] = "-12345";
-  unsigned int res1 = 0, res2 = 0;
-  const char *fmt = "%*5u";
 
-  int ret1 = s21_sscanf(str, fmt, &res1);
-  int ret2 = sscanf(str, fmt, &res2);
+  int ret1 = s21_sscanf(str, "%*5u");
+  int ret2 = sscanf(str, "%*5u");
 
-  ck_assert_int_eq(res1, res2);
   ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
@@ -1389,12 +1423,12 @@ START_TEST(test_s21_sscanf_n_with_length_modifiers) {
   char s2[50] = {0}, s2_s21[50] = {0};
   short int hn = 1111, hn_s21 = 1111;
   int n = 111, n_s21 = 111;
-  long int ln = 222, ln_s21 = 222;
+  int ln = 222, ln_s21 = 222;
   const char *fmt = "%4s%hn%*4s%n%4s%n";
 
   int result_s21 =
-      s21_sscanf(input, fmt, s_s21, &hn_s21, &n_s21, &ln_s21, s2_s21);
-  int result_std = sscanf(input, fmt, s, &hn, &n, &ln, s2);
+      s21_sscanf(input, fmt, s_s21, &hn_s21, &n_s21, s2_s21, &ln_s21);
+  int result_std = sscanf(input, fmt, s, &hn, &n, s2, &ln);
 
   ck_assert_str_eq(s, s_s21);
   ck_assert_int_eq(n, n_s21);
@@ -1438,7 +1472,7 @@ END_TEST
 START_TEST(test_s21_sscanf_percent_space_s) {
   const char str[] = "12345%54321";
   const char *fmt = "%s %% %s";
-  const char str1[20] = {0}, str2[20] = {0}, str1r[20] = {0}, str2r[20] = {0};
+  char str1[20] = {0}, str2[20] = {0}, str1r[20] = {0}, str2r[20] = {0};
 
   int ret_s21 = s21_sscanf(str, fmt, str1, str2);
   int ret = sscanf(str, fmt, str1r, str2r);
@@ -1452,8 +1486,8 @@ END_TEST
 START_TEST(test_s21_sscanf_percent_space_2) {
   const char str[] = "Use %triple space in format string";
 
-  const char *fmt = "%s%% %s";
-  const char str1_s21[20] = {0}, str2_s21[20] = "TEST", str1r[20] = {0},
+   const char *fmt = "%s%% %s";
+   char str1_s21[20] = {0}, str2_s21[20] = "TEST", str1r[20] = {0},
              str2r[20] = "TEST";
 
   int ret_s21 = s21_sscanf(str, fmt, str1_s21, str2_s21);
@@ -1468,7 +1502,7 @@ END_TEST
 START_TEST(test_s21_sscanf_percent_space_triple) {
   const char str[] = "Use%triple space in format string";
   const char *fmt = "%s%%% %s";
-  const char str1[20] = {0}, str2[20] = "TEST", str1r[20] = {0},
+  char str1[20] = {0}, str2[20] = "TEST", str1r[20] = {0},
              str2r[20] = "TEST";
 
   int ret_s21 = s21_sscanf(str, fmt, str1, str2);
@@ -1612,72 +1646,57 @@ END_TEST
 
 START_TEST(test_s21_sscanf_i_width_star) {
   const char str[] = "12345";
-  int res1 = 0, res2 = 0;
 
-  const char *fmt = "%*5i";
-  int ret1 = s21_sscanf(str, fmt, &res1);
-  int ret2 = sscanf(str, fmt, &res2);
+  int ret1 = s21_sscanf(str, "%*5i");
+  int ret2 = sscanf(str, "%*5i");
 
-  ck_assert_int_eq(res1, res2);
   ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_i_width_star_zero) {
   const char str[] = "0";
-  int res1 = 0, res2 = 0;
 
-  const char *fmt = "%*5i";
-  int ret1 = s21_sscanf(str, fmt, &res1);
-  int ret2 = sscanf(str, fmt, &res2);
+  int ret1 = s21_sscanf(str, "%*5i");
+  int ret2 = sscanf(str, "%*5i");
 
-  ck_assert_int_eq(res1, res2);
   ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_i_width_star_max) {
   const char str[] = "2147483647";
-  int res1 = 0, res2 = 0;
 
-  const char *fmt = "%*5i";
-  int ret1 = s21_sscanf(str, fmt, &res1);
-  int ret2 = sscanf(str, fmt, &res2);
+  int ret1 = s21_sscanf(str, "%*5i");
+  int ret2 = sscanf(str, "%*5i");
 
-  ck_assert_int_eq(res1, res2);
   ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_i_width_star_overflow) {
   const char str[] = "2147483648";
-  int res1 = 0, res2 = 0;
 
-  const char *fmt = "%*5i";
-  int ret1 = s21_sscanf(str, fmt, &res1);
-  int ret2 = sscanf(str, fmt, &res2);
+  int ret1 = s21_sscanf(str, "%*5i");
+  int ret2 = sscanf(str, "%*5i");
 
-  ck_assert_int_eq(res1, res2);
   ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_i_width_star_negative) {
   const char str[] = "-12345";
-  int res1 = 0, res2 = 0;
 
-  const char *fmt = "%*5i";
-  int ret1 = s21_sscanf(str, fmt, &res1);
-  int ret2 = sscanf(str, fmt, &res2);
+  int ret1 = s21_sscanf(str, "%*5i");
+  int ret2 = sscanf(str, "%*5i");
 
-  ck_assert_int_eq(res1, res2);
   ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_o_simple) {
   const char *input = "01237";
-  int x = 10, xr = 10;
+  unsigned x = 10, xr = 10;
   const char *fmt = "%o";
 
   s21_sscanf(input, fmt, &x);
@@ -1690,7 +1709,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_x_simple) {
   const char *input = "0xf3";
-  int x = 10, xr = 10;
+  unsigned x = 10, xr = 10;
   const char *fmt = "%x";
   s21_sscanf(input, fmt, &x);
   sscanf(input, fmt, &xr);
@@ -1701,7 +1720,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_xh_simple) {
   const char *input = "0xf3";
-  short int x = 10, xr = 10;
+  short unsigned x = 10, xr = 10;
   const char *fmt = "%hx";
   s21_sscanf(input, fmt, &x);
   sscanf(input, fmt, &xr);
@@ -1712,7 +1731,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_o) {
   const char str[] = "12345";
-  int res1 = 0, res2 = 0;
+  unsigned res1 = 0, res2 = 0;
 
   const char *fmt = "%o";
   int ret1 = s21_sscanf(str, fmt, &res1);
@@ -1725,7 +1744,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_o_zero) {
   const char str[] = "0";
-  int res1 = 0, res2 = 0;
+  unsigned res1 = 0, res2 = 0;
 
   const char *fmt = "%o";
   int ret1 = s21_sscanf(str, fmt, &res1);
@@ -1738,7 +1757,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_o_max) {
   const char str[] = "37777777777";
-  int res1 = 0, res2 = 0;
+  unsigned res1 = 0, res2 = 0;
 
   const char *fmt = "%o";
   int ret1 = s21_sscanf(str, fmt, &res1);
@@ -1751,7 +1770,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_o_overflow) {
   const char str[] = "37777777778";
-  int res1 = 0, res2 = 0;
+  unsigned res1 = 0, res2 = 0;
 
   const char *fmt = "%o";
   int ret1 = s21_sscanf(str, fmt, &res1);
@@ -1764,7 +1783,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_o_negative) {
   const char str[] = "-12345";
-  int res1 = 0, res2 = 0;
+  unsigned res1 = 0, res2 = 0;
 
   const char *fmt = "%o";
   int ret1 = s21_sscanf(str, fmt, &res1);
@@ -1777,7 +1796,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_o_width) {
   const char str[] = "12345";
-  int res1 = 0, res2 = 0;
+  unsigned res1 = 0, res2 = 0;
 
   const char *fmt = "%5o";
   int ret1 = s21_sscanf(str, fmt, &res1);
@@ -1790,7 +1809,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_o_width_zero) {
   const char str[] = "0";
-  int res1 = 0, res2 = 0;
+  unsigned res1 = 0, res2 = 0;
 
   const char *fmt = "%5o";
   int ret1 = s21_sscanf(str, fmt, &res1);
@@ -1803,7 +1822,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_o_width_max) {
   const char str[] = "37777777777";
-  int res1 = 0, res2 = 0;
+  unsigned res1 = 0, res2 = 0;
 
   const char *fmt = "%5o";
   int ret1 = s21_sscanf(str, fmt, &res1);
@@ -1816,7 +1835,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_o_width_overflow) {
   const char str[] = "37777777778";
-  int res1 = 0, res2 = 0;
+  unsigned res1 = 0, res2 = 0;
 
   const char *fmt = "%5o";
   int ret1 = s21_sscanf(str, fmt, &res1);
@@ -1829,7 +1848,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_o_width_negative) {
   const char str[] = "-12345";
-  unsigned long res4 = 111 , res_s21 = 111;
+  unsigned res4 = 111, res_s21 = 111;
 
   const char *fmt = "%5o";
   int ret_s21 = s21_sscanf(str, fmt, &res_s21);
@@ -1842,72 +1861,57 @@ END_TEST
 
 START_TEST(test_s21_sscanf_o_width_star) {
   const char str[] = "12345";
-  int res1 = 0, res2 = 0;
 
-  const char *fmt = "%*5o";
-  int ret1 = s21_sscanf(str, fmt, &res1);
-  int ret2 = sscanf(str, fmt, &res2);
+  int ret1 = s21_sscanf(str, "%*5o");
+  int ret2 = sscanf(str, "%*5o");
 
-  ck_assert_int_eq(res1, res2);
   ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_o_width_star_zero) {
   const char str[] = "0";
-  int res1 = 0, res2 = 0;
 
-  const char *fmt = "%*5o";
-  int ret1 = s21_sscanf(str, fmt, &res1);
-  int ret2 = sscanf(str, fmt, &res2);
+  int ret1 = s21_sscanf(str, "%*5o");
+  int ret2 = sscanf(str, "%*5o");
 
-  ck_assert_int_eq(res1, res2);
   ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_o_width_star_max) {
   const char str[] = "37777777777";
-  int res1 = 0, res2 = 0;
 
-  const char *fmt = "%*5o";
-  int ret1 = s21_sscanf(str, fmt, &res1);
-  int ret2 = sscanf(str, fmt, &res2);
+  int ret1 = s21_sscanf(str, "%*5o");
+  int ret2 = sscanf(str, "%*5o");
 
-  ck_assert_int_eq(res1, res2);
   ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_o_width_star_overflow) {
   const char str[] = "37777777778";
-  int res1 = 0, res2 = 0;
 
-  const char *fmt = "%*5o";
-  int ret1 = s21_sscanf(str, fmt, &res1);
-  int ret2 = sscanf(str, fmt, &res2);
+  int ret1 = s21_sscanf(str, "%*5o");
+  int ret2 = sscanf(str, "%*5o");
 
-  ck_assert_int_eq(res1, res2);
   ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_o_width_star_negative) {
   const char str[] = "-12345";
-  int res1 = 0, res2 = 0;
 
-  const char *fmt = "%*5o";
-  int ret1 = s21_sscanf(str, fmt, &res1);
-  int ret2 = sscanf(str, fmt, &res2);
+  int ret1 = s21_sscanf(str, "%*5o");
+  int ret2 = sscanf(str, "%*5o");
 
-  ck_assert_int_eq(res1, res2);
   ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_x) {
   const char str[] = "12345";
-  int res1 = 0, res2 = 0;
+  unsigned res1 = 0, res2 = 0;
 
   const char *fmt = "%x";
   int ret1 = s21_sscanf(str, fmt, &res1);
@@ -1920,7 +1924,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_x_zero) {
   const char str[] = "0";
-  int res1 = 0, res2 = 0;
+  unsigned res1 = 0, res2 = 0;
 
   const char *fmt = "%x";
   int ret1 = s21_sscanf(str, fmt, &res1);
@@ -1933,7 +1937,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_x_max) {
   const char str[] = "ffffffff";
-  int res1 = 0, res2 = 0;
+  unsigned res1 = 0, res2 = 0;
 
   const char *fmt = "%x";
   int ret1 = s21_sscanf(str, fmt, &res1);
@@ -1959,7 +1963,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_x_negative) {
   const char str[] = "-12345";
-  int res = 111, res_s21 = 111;
+  unsigned res = 111, res_s21 = 111;
 
   const char *fmt = "%x";
   int ret_s21 = s21_sscanf(str, fmt, &res_s21);
@@ -1972,7 +1976,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_x_width) {
   const char str[] = "12345";
-  int res1 = 0, res2 = 0;
+  unsigned res1 = 0, res2 = 0;
 
   const char *fmt = "%5x";
   int ret1 = s21_sscanf(str, fmt, &res1);
@@ -1985,7 +1989,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_x_width_zero) {
   const char str[] = "0";
-  int res1 = 0, res2 = 0;
+  unsigned res1 = 0, res2 = 0;
 
   const char *fmt = "%5x";
   int ret1 = s21_sscanf(str, fmt, &res1);
@@ -1998,7 +2002,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_x_width_max) {
   const char str[] = "ffffffff";
-  int res1 = 0, res2 = 0;
+  unsigned res1 = 0, res2 = 0;
 
   const char *fmt = "%5x";
   int ret1 = s21_sscanf(str, fmt, &res1);
@@ -2011,7 +2015,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_x_width_overflow) {
   const char str[] = "100000000";
-  int res1 = 0, res2 = 0;
+  unsigned res1 = 0, res2 = 0;
 
   const char *fmt = "%5x";
   int ret1 = s21_sscanf(str, fmt, &res1);
@@ -2024,7 +2028,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_x_width_negative) {
   const char str[] = "-12345";
-  int res = 111, res_s21 = 111;
+  unsigned res = 111, res_s21 = 111;
 
   const char *fmt = "%5x";
   int ret = sscanf(str, fmt, &res);
@@ -2037,72 +2041,57 @@ END_TEST
 
 START_TEST(test_s21_sscanf_x_width_star) {
   const char str[] = "12345";
-  int res1 = 0, res2 = 0;
 
-  const char *fmt = "%*5x";
-  int ret1 = s21_sscanf(str, fmt, &res1);
-  int ret2 = sscanf(str, fmt, &res2);
+  int ret1 = s21_sscanf(str, "%*5x");
+  int ret2 = sscanf(str, "%*5x");
 
-  ck_assert_int_eq(res1, res2);
   ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_x_width_star_zero) {
   const char str[] = "0";
-  int res1 = 0, res2 = 0;
 
-  const char *fmt = "%*5x";
-  int ret1 = s21_sscanf(str, fmt, &res1);
-  int ret2 = sscanf(str, fmt, &res2);
+  int ret1 = s21_sscanf(str, "%*5x");
+  int ret2 = sscanf(str, "%*5x");
 
-  ck_assert_int_eq(res1, res2);
   ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_x_width_star_max) {
   const char str[] = "ffffffff";
-  int res1 = 0, res2 = 0;
 
-  const char *fmt = "%*5x";
-  int ret1 = s21_sscanf(str, fmt, &res1);
-  int ret2 = sscanf(str, fmt, &res2);
+  int ret1 = s21_sscanf(str, "%*5x");
+  int ret2 = sscanf(str, "%*5x");
 
-  ck_assert_int_eq(res1, res2);
   ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_x_width_star_overflow) {
   const char str[] = "100000000";
-  int res1 = 0, res2 = 0;
 
-  const char *fmt = "%*5x";
-  int ret1 = s21_sscanf(str, fmt, &res1);
-  int ret2 = sscanf(str, fmt, &res2);
+  int ret1 = s21_sscanf(str, "%*5x");
+  int ret2 = sscanf(str, "%*5x");
 
-  ck_assert_int_eq(res1, res2);
   ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_x_width_star_negative) {
   const char str[] = "-12345";
-  int res1 = 0, res2 = 0;
 
-  const char *fmt = "%*5x";
-  int ret1 = s21_sscanf(str, fmt, &res1);
-  int ret2 = sscanf(str, fmt, &res2);
+  int ret1 = s21_sscanf(str, "%*5x");
+  int ret2 = sscanf(str, "%*5x");
 
-  ck_assert_int_eq(res1, res2);
   ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_X) {
   const char str[] = "12345";
-  int res1 = 0, res2 = 0;
+  unsigned res1 = 0, res2 = 0;
 
   const char *fmt = "%X";
   int ret1 = s21_sscanf(str, fmt, &res1);
@@ -2115,7 +2104,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_X_zero) {
   const char str[] = "0";
-  int res1 = 0, res2 = 0;
+  unsigned res1 = 0, res2 = 0;
 
   const char *fmt = "%X";
   int ret1 = s21_sscanf(str, fmt, &res1);
@@ -2128,7 +2117,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_X_max) {
   const char str[] = "ffffffff";
-  int res1 = 0, res2 = 0;
+  unsigned res1 = 0, res2 = 0;
 
   const char *fmt = "%X";
   int ret1 = s21_sscanf(str, fmt, &res1);
@@ -2154,7 +2143,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_X_negative) {
   const char str[] = "-12345";
-  int res = 0, res_s21 = 0;
+  unsigned res = 0, res_s21 = 0;
 
   const char *fmt = "%X";
   int ret_s21 = s21_sscanf(str, fmt, &res_s21);
@@ -2167,7 +2156,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_X_width) {
   const char str[] = "12345";
-  int res1 = 0, res2 = 0;
+  unsigned res1 = 0, res2 = 0;
 
   const char *fmt = "%5X";
   int ret1 = s21_sscanf(str, fmt, &res1);
@@ -2180,7 +2169,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_X_width_zero) {
   const char str[] = "0";
-  int res1 = 0, res2 = 0;
+  unsigned res1 = 0, res2 = 0;
 
   const char *fmt = "%5X";
   int ret1 = s21_sscanf(str, fmt, &res1);
@@ -2193,7 +2182,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_X_width_max) {
   const char str[] = "ffffffff";
-  int res1 = 0, res2 = 0;
+  unsigned res1 = 0, res2 = 0;
 
   const char *fmt = "%5X";
   int ret1 = s21_sscanf(str, fmt, &res1);
@@ -2206,7 +2195,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_X_width_overflow) {
   const char str[] = "100000000";
-  int res1 = 0, res2 = 0;
+  unsigned res1 = 0, res2 = 0;
 
   const char *fmt = "%5X";
   int ret1 = s21_sscanf(str, fmt, &res1);
@@ -2219,7 +2208,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_X_width_negative) {
   const char str[] = "-12345";
-  int res1 = 0, res2 = 0;
+  unsigned res1 = 0, res2 = 0;
 
   const char *fmt = "%5X";
   int ret1 = s21_sscanf(str, fmt, &res1);
@@ -2232,65 +2221,50 @@ END_TEST
 
 START_TEST(test_s21_sscanf_X_width_star) {
   const char str[] = "12345";
-  int res1 = 0, res2 = 0;
 
-  const char *fmt = "%*5X";
-  int ret1 = s21_sscanf(str, fmt, &res1);
-  int ret2 = sscanf(str, fmt, &res2);
+  int ret1 = s21_sscanf(str,  "%*5X");
+  int ret2 = sscanf(str,  "%*5X");
 
-  ck_assert_int_eq(res1, res2);
   ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_X_width_star_zero) {
   const char str[] = "0";
-  int res1 = 0, res2 = 0;
 
-  const char *fmt = "%*5X";
-  int ret1 = s21_sscanf(str, fmt, &res1);
-  int ret2 = sscanf(str, fmt, &res2);
+  int ret1 = s21_sscanf(str,  "%*5X");
+  int ret2 = sscanf(str,  "%*5X");
 
-  ck_assert_int_eq(res1, res2);
   ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_X_width_star_max) {
   const char str[] = "ffffffff";
-  int res1 = 0, res2 = 0;
 
-  const char *fmt = "%*5X";
-  int ret1 = s21_sscanf(str, fmt, &res1);
-  int ret2 = sscanf(str, fmt, &res2);
+  int ret1 = s21_sscanf(str,  "%*5X");
+  int ret2 = sscanf(str,  "%*5X");
 
-  ck_assert_int_eq(res1, res2);
   ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_X_width_star_overflow) {
   const char str[] = "100000000";
-  int res1 = 0, res2 = 0;
 
-  const char *fmt = "%*5X";
-  int ret1 = s21_sscanf(str, fmt, &res1);
-  int ret2 = sscanf(str, fmt, &res2);
+  int ret1 = s21_sscanf(str,  "%*5X");
+  int ret2 = sscanf(str,  "%*5X");
 
-  ck_assert_int_eq(res1, res2);
   ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_X_width_star_negative) {
   const char str[] = "-12345";
-  int res1 = 0, res2 = 0;
 
-  const char *fmt = "%*5X";
-  int ret1 = s21_sscanf(str, fmt, &res1);
-  int ret2 = sscanf(str, fmt, &res2);
+  int ret1 = s21_sscanf(str,  "%*5X");
+  int ret2 = sscanf(str,  "%*5X");
 
-  ck_assert_int_eq(res1, res2);
   ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
@@ -2313,8 +2287,8 @@ START_TEST(test_s21_sscanf_p_simple) {
 
   sprintf(ptr_address, "%p", ptr);
   sprintf(ptr_address_s21, "%p", ptr);
-  printf("Pointer: %s\n", ptr_address);
-  printf("Pointer s21: %s\n", ptr_address_s21);
+  DEBUG_PRINT("Pointer: %s\n", ptr_address);
+  DEBUG_PRINT("Pointer s21: %s\n", ptr_address_s21);
   void *read_prt = NULL, *read_prt_s21 = NULL;
   int ret = sscanf(ptr_address, "%p", &read_prt);
   int ret_s21 = s21_sscanf(ptr_address_s21, "%p", &read_prt_s21);
@@ -2376,7 +2350,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_g) {
   const char str[] = "12345";
-  double res1 = 0, res2 = 0;
+  float res1 = 0, res2 = 0;
 
   const char *fmt = "%g";
   int ret1 = s21_sscanf(str, fmt, &res1);
@@ -2389,7 +2363,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_g_zero) {
   const char str[] = "0";
-  double res1 = 0, res2 = 0;
+  float res1 = 0, res2 = 0;
 
   const char *fmt = "%g";
   int ret1 = s21_sscanf(str, fmt, &res1);
@@ -2402,10 +2376,10 @@ END_TEST
 
 START_TEST(test_s21_sscanf_g_max) {
   const char str1[] = "1.7976931348623157E+308";
-  double res_s21 = 0, res = 0;
+  long double res_s21 = 0, res = 0;
   int ret = 123, ret_s21 = 123;
 
-  const char *fmt1 = "%g";
+  const char *fmt1 = "%Lg";
   ret_s21 = s21_sscanf(str1, fmt1, &res_s21);
   ret = sscanf(str1, fmt1, &res);
 
@@ -2426,7 +2400,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_g_overflow) {
   const char str[] = "1.7976931348623158E+308";
-  long double res = 0, res_s21 = 0;
+  float res = 0, res_s21 = 0;
 
   const char *fmt = "%g";
   int ret1 = s21_sscanf(str, fmt, &res_s21);
@@ -2439,7 +2413,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_g_negative) {
   const char str[] = "-12345";
-  double res1 = 0, res2 = 0;
+  float res1 = 0, res2 = 0;
 
   const char *fmt = "%g";
   int ret1 = s21_sscanf(str, fmt, &res1);
@@ -2452,7 +2426,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_g_width) {
   const char str[] = "12345";
-  double res1 = 0, res2 = 0;
+  float res1 = 0, res2 = 0;
 
   const char *fmt = "%5g";
   int ret1 = s21_sscanf(str, fmt, &res1);
@@ -2465,7 +2439,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_g_width_zero) {
   const char str[] = "0";
-  double res1 = 0, res2 = 0;
+  float res1 = 0, res2 = 0;
 
   const char *fmt = "%5g";
   int ret1 = s21_sscanf(str, fmt, &res1);
@@ -2478,7 +2452,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_g_width_max) {
   const char str[] = "1.7976931348623157E+308";
-  double res1 = 0, res2 = 0;
+  float res1 = 0, res2 = 0;
 
   const char *fmt = "%5g";
   int ret1 = s21_sscanf(str, fmt, &res1);
@@ -2491,7 +2465,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_g_width_overflow) {
   const char str[] = "1.7976931348623158E+308";
-  double res1 = 0, res2 = 0;
+  float res1 = 0, res2 = 0;
 
   const char *fmt = "%5g";
   int ret1 = s21_sscanf(str, fmt, &res1);
@@ -2504,7 +2478,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_g_width_negative) {
   const char str[] = "-12345";
-  double res1 = 0, res2 = 0;
+  float res1 = 0, res2 = 0;
 
   const char *fmt = "%5g";
   int ret1 = s21_sscanf(str, fmt, &res1);
@@ -2517,65 +2491,50 @@ END_TEST
 
 START_TEST(test_s21_sscanf_g_width_star) {
   const char str[] = "12345";
-  double res1 = 0, res2 = 0;
 
-  const char *fmt = "%*5g";
-  int ret1 = s21_sscanf(str, fmt, &res1);
-  int ret2 = sscanf(str, fmt, &res2);
+  int ret1 = s21_sscanf(str, "%*5g");
+  int ret2 = sscanf(str, "%*5g");
 
-  ck_assert_double_eq(res1, res2);
   ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_g_width_star_zero) {
   const char str[] = "0";
-  double res1 = 0, res2 = 0;
 
-  const char *fmt = "%*5g";
-  int ret1 = s21_sscanf(str, fmt, &res1);
-  int ret2 = sscanf(str, fmt, &res2);
+  int ret1 = s21_sscanf(str, "%*5g");
+  int ret2 = sscanf(str, "%*5g");
 
-  ck_assert_double_eq(res1, res2);
   ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_g_width_star_max) {
   const char str[] = "1.7976931348623157E+308";
-  double res1 = 0, res2 = 0;
 
-  const char *fmt = "%*5g";
-  int ret1 = s21_sscanf(str, fmt, &res1);
-  int ret2 = sscanf(str, fmt, &res2);
+  int ret1 = s21_sscanf(str, "%*5g");
+  int ret2 = sscanf(str, "%*5g");
 
-  ck_assert_double_eq(res1, res2);
   ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_g_width_star_overflow) {
   const char str[] = "1.7976931348623158E+308";
-  double res1 = 0, res2 = 0;
 
-  const char *fmt = "%*5g";
-  int ret1 = s21_sscanf(str, fmt, &res1);
-  int ret2 = sscanf(str, fmt, &res2);
+  int ret1 = s21_sscanf(str, "%*5g");
+  int ret2 = sscanf(str, "%*5g");
 
-  ck_assert_double_eq(res1, res2);
   ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_g_width_star_negative) {
   const char str[] = "-12345";
-  double res1 = 0, res2 = 0;
 
-  const char *fmt = "%*5g";
-  int ret1 = s21_sscanf(str, fmt, &res1);
-  int ret2 = sscanf(str, fmt, &res2);
+  int ret1 = s21_sscanf(str, "%*5g");
+  int ret2 = sscanf(str, "%*5g");
 
-  ck_assert_double_eq(res1, res2);
   ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
@@ -2712,52 +2671,40 @@ END_TEST
 
 START_TEST(test_s21_sscanf_f_width_star) {
   const char str[] = "12345";
-  float res1 = 0, res2 = 0;
 
-  const char *fmt = "%*5f";
-  int ret1 = s21_sscanf(str, fmt, &res1);
-  int ret2 = sscanf(str, fmt, &res2);
+  int ret1 = s21_sscanf(str, "%*5f");
+  int ret2 = sscanf(str, "%*5f");
 
-  ck_assert_float_eq(res1, res2);
   ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_f_width_star_zero) {
   const char str[] = "0";
-  float res1 = 0, res2 = 0;
 
-  const char *fmt = "%*5f";
-  int ret1 = s21_sscanf(str, fmt, &res1);
-  int ret2 = sscanf(str, fmt, &res2);
+  int ret1 = s21_sscanf(str, "%*5f");
+  int ret2 = sscanf(str, "%*5f");
 
-  ck_assert_float_eq(res1, res2);
   ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_f_width_star_max) {
   const char str[] = "3.402823466E+38";
-  float res1 = 0, res2 = 0;
 
-  const char *fmt = "%*5f";
-  int ret1 = s21_sscanf(str, fmt, &res1);
-  int ret2 = sscanf(str, fmt, &res2);
+  int ret1 = s21_sscanf(str, "%*5f");
+  int ret2 = sscanf(str, "%*5f");
 
-  ck_assert_float_eq(res1, res2);
   ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_f_width_star_overflow) {
   const char str[] = "3.402823467E+38";
-  float res1 = 0, res2 = 0;
 
-  const char *fmt = "%*5f";
-  int ret1 = s21_sscanf(str, fmt, &res1);
-  int ret2 = sscanf(str, fmt, &res2);
+  int ret1 = s21_sscanf(str, "%*5f");
+  int ret2 = sscanf(str, "%*5f");
 
-  ck_assert_float_eq(res1, res2);
   ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
@@ -2766,7 +2713,7 @@ START_TEST(test_s21_sscanf_f_width_star_negative) {
   const char str[] = "-12345";
   float res1 = 0, res2 = 0;
 
-  const char *fmt = "%*5f";
+  const char *fmt = "%5f";
   int ret1 = s21_sscanf(str, fmt, &res1);
   int ret2 = sscanf(str, fmt, &res2);
 
@@ -2776,261 +2723,275 @@ START_TEST(test_s21_sscanf_f_width_star_negative) {
 END_TEST
 
 START_TEST(test_s21_sscanf_cmpx_007) {
-  const char *input="1.2E51.2E5\n1.2E5%%";
-  float var1=1.123,var1_s21=1.123;
-  long double var2=1.123,var2_s21=1.123;
-  long double var3=1.123,var3_s21=1.123;
-  const char *fmt="%1G%Lf\n%15Lg%%";
+  const char *input = "1.2E51.2E5\n1.2E5%%";
+  float var1 = 1.123, var1_s21 = 1.123;
+  long double var2 = 1.123, var2_s21 = 1.123;
+  long double var3 = 1.123, var3_s21 = 1.123;
+  const char *fmt = "%1G%Lf\n%15Lg%%";
 
-  int ret = sscanf(input,fmt,&var1,&var2,&var3);
-  int ret_s21 = s21_sscanf(input,fmt ,&var1_s21,&var2_s21,&var3_s21);
+  int ret = sscanf(input, fmt, &var1, &var2, &var3);
+  int ret_s21 = s21_sscanf(input, fmt, &var1_s21, &var2_s21, &var3_s21);
 
-  printf("ret=%d,ret_s21=%d\n",ret,ret_s21);
-  ck_assert_double_eq_tol(var1, var1_s21,10-6);
-  ck_assert_double_eq_tol(var2, var2_s21,10-6);
-  ck_assert_double_eq_tol(var3, var3_s21,10-6);
-printf("Test test_s21_sscanf_cmpx_0023 is passed.\n");
+  DEBUG_PRINT("ret=%d,ret_s21=%d\n", ret, ret_s21);
+  ck_assert_double_eq_tol(var1, var1_s21, 10 - 6);
+  ck_assert_double_eq_tol(var2, var2_s21, 10 - 6);
+  ck_assert_double_eq_tol(var3, var3_s21, 10 - 6);
+  ck_assert_int_eq(ret, ret_s21);
+  DEBUG_PRINT("Test test_s21_sscanf_cmpx_0023 is passed.\n");
 }
-END_TEST 
+END_TEST
 
 START_TEST(test_s21_sscanf_cmpx_008) {
-  const char *input="1.23E4  456789   2.71828  ";
-  float var1=1.123,var1_s21=1.123;
-  float var2=1.123,var2_s21=1.123;
-  int var3=555,var3_s21=555;
-  const char *fmt="%2f  %7G   %10d  ";
+  const char *input = "1.23E4  456789   2.71828  ";
+  float var1 = 1.123, var1_s21 = 1.123;
+  float var2 = 1.123, var2_s21 = 1.123;
+  int var3 = 555, var3_s21 = 555;
+  const char *fmt = "%2f  %7G   %10d  ";
 
-  int ret = sscanf(input,fmt,&var1,&var2,&var3);
-  int ret_s21 = s21_sscanf(input,fmt ,&var1_s21,&var2_s21,&var3_s21);
+  int ret = sscanf(input, fmt, &var1, &var2, &var3);
+  int ret_s21 = s21_sscanf(input, fmt, &var1_s21, &var2_s21, &var3_s21);
 
-  printf("ret=%d,ret_s21=%d\n",ret,ret_s21);
-  ck_assert_double_eq_tol(var1, var1_s21,10-6);
-  ck_assert_double_eq_tol(var2, var2_s21,10-6);
+  DEBUG_PRINT("ret=%d,ret_s21=%d\n", ret, ret_s21);
+  ck_assert_double_eq_tol(var1, var1_s21, 10 - 6);
+  ck_assert_double_eq_tol(var2, var2_s21, 10 - 6);
   ck_assert_int_eq(var3, var3_s21);
-printf("Test test_s21_sscanf_cmpx_0463 is passed.\n");
-
+  ck_assert_int_eq(ret, ret_s21);
+  DEBUG_PRINT("Test test_s21_sscanf_cmpx_0463 is passed.\n");
 }
 
-END_TEST 
+END_TEST
 
 START_TEST(test_s21_sscanf_cmpx_0320) {
-  const char *input="12.345.-128.1.2A";
-  int var1=-123,var1_s21=-123;
-  long double var2=1.123,var2_s21=1.123;
-  unsigned int var3=123,var3_s21=123;
-  const char *fmt="%10i.%9Lf.%2xA";
+  const char *input = "12.345.-128.1.2A";
+  int var1 = -123, var1_s21 = -123;
+  long double var2 = 1.123, var2_s21 = 1.123;
+  unsigned int var3 = 123, var3_s21 = 123;
+  const char *fmt = "%10i.%9Lf.%2xA";
 
-  int ret = sscanf(input,fmt,&var1,&var2,&var3);
-  int ret_s21 = s21_sscanf(input,fmt ,&var1_s21,&var2_s21,&var3_s21);
+  int ret = sscanf(input, fmt, &var1, &var2, &var3);
+  int ret_s21 = s21_sscanf(input, fmt, &var1_s21, &var2_s21, &var3_s21);
 
-  printf("ret=%d,ret_s21=%d\n",ret,ret_s21);
+  DEBUG_PRINT("ret=%d,ret_s21=%d\n", ret, ret_s21);
   ck_assert_int_eq(var1, var1_s21);
-  ck_assert_double_eq_tol(var2, var2_s21,10-6);
+  ck_assert_double_eq_tol(var2, var2_s21, 10 - 6);
   ck_assert_int_eq(var3, var3_s21);
-printf("Test test_s21_sscanf_cmpx_0320 is passed.\n");
+  ck_assert_int_eq(ret, ret_s21);
+  DEBUG_PRINT("Test test_s21_sscanf_cmpx_0320 is passed.\n");
 }
-END_TEST 
+END_TEST
 
 START_TEST(test_s21_sscanf_cmpx_0495) {
-  const char *input="4.723e6  255   3.14159:";
-  long double var1=1.123,var1_s21=1.123;
-  float var2=1.123,var2_s21=1.123;
-  float var3=1.123,var3_s21=1.123;
-  const char *fmt="%5LE  %e   %2E:";
+  const char *input = "4.723e6  255   3.14159:";
+  long double var1 = 1.123, var1_s21 = 1.123;
+  float var2 = 1.123, var2_s21 = 1.123;
+  float var3 = 1.123, var3_s21 = 1.123;
+  const char *fmt = "%5LE  %e   %2E:";
 
-  int ret = sscanf(input,fmt,&var1,&var2,&var3);
-  int ret_s21 = s21_sscanf(input,fmt ,&var1_s21,&var2_s21,&var3_s21);
+  int ret = sscanf(input, fmt, &var1, &var2, &var3);
+  int ret_s21 = s21_sscanf(input, fmt, &var1_s21, &var2_s21, &var3_s21);
 
-  printf("ret=%d,ret_s21=%d\n",ret,ret_s21);
-  ck_assert_double_eq_tol(var1, var1_s21,10-6);
-  ck_assert_double_eq_tol(var2, var2_s21,10-6);
-  ck_assert_double_eq_tol(var3, var3_s21,10-6);
-printf("Test test_s21_sscanf_cmpx_0495 is passed.\n");
+  DEBUG_PRINT("ret=%d,ret_s21=%d\n", ret, ret_s21);
+  ck_assert_double_eq_tol(var1, var1_s21, 10 - 6);
+  ck_assert_double_eq_tol(var2, var2_s21, 10 - 6);
+  ck_assert_double_eq_tol(var3, var3_s21, 10 - 6);
+  ck_assert_int_eq(ret, ret_s21);
+  DEBUG_PRINT("Test test_s21_sscanf_cmpx_0495 is passed.\n");
 }
-END_TEST 
+END_TEST
 
 START_TEST(test_s21_sscanf_cmpx_0045) {
-  const char *input="4.723.-128A255 ";
-  unsigned int var1=123,var1_s21=123;
-  float var2=1.123,var2_s21=1.123;
-  float var3=1.123,var3_s21=1.123;
-  const char *fmt="%20o.%15gA%f ";
+  const char *input = "4.723.-128A255 ";
+  unsigned int var1 = 123, var1_s21 = 123;
+  float var2 = 1.123, var2_s21 = 1.123;
+  float var3 = 1.123, var3_s21 = 1.123;
+  const char *fmt = "%20o.%15gA%f ";
 
-  int ret = sscanf(input,fmt,&var1,&var2,&var3);
-  int ret_s21 = s21_sscanf(input,fmt ,&var1_s21,&var2_s21,&var3_s21);
+  int ret = sscanf(input, fmt, &var1, &var2, &var3);
+  int ret_s21 = s21_sscanf(input, fmt, &var1_s21, &var2_s21, &var3_s21);
 
-  printf("ret=%d,ret_s21=%d\n",ret,ret_s21);
+  DEBUG_PRINT("ret=%d,ret_s21=%d\n", ret, ret_s21);
   ck_assert_int_eq(var1, var1_s21);
-  ck_assert_double_eq_tol(var2, var2_s21,10-6);
-  ck_assert_double_eq_tol(var3, var3_s21,10-6);
-printf("Test test_s21_sscanf_cmpx_0045 is passed.\n");
+  ck_assert_double_eq_tol(var2, var2_s21, 10 - 6);
+  ck_assert_double_eq_tol(var3, var3_s21, 10 - 6);
+  ck_assert_int_eq(ret, ret_s21);
+  DEBUG_PRINT("Test test_s21_sscanf_cmpx_0045 is passed.\n");
 }
-END_TEST 
+END_TEST
 
 START_TEST(test_s21_sscanf_cmpx_0041) {
-  const char *input="1.2E5 4.723e6   1A2BA";
-  wchar_t var1[1024]=L"ABC",var1_s21[1024]=L"ABC";
-  long double var2=1.123,var2_s21=1.123;
-  char var3[1024]="A",var3_s21[1024]="A";
-  const char *fmt="%3ls %9Lg   %cA";
+  const char *input = "1.2E5 4.723e6   1A2BA";
+  wchar_t var1[1024] = L"ABC", var1_s21[1024] = L"ABC";
+  long double var2 = 1.123, var2_s21 = 1.123;
+  char var3[1024] = "A", var3_s21[1024] = "A";
+  const char *fmt = "%3ls %9Lg   %cA";
 
-  int ret = sscanf(input,fmt, var1,&var2, var3);
-  int ret_s21 = s21_sscanf(input,fmt , var1_s21,&var2_s21, var3_s21);
+  int ret = sscanf(input, fmt, var1, &var2, var3);
+  int ret_s21 = s21_sscanf(input, fmt, var1_s21, &var2_s21, var3_s21);
 
-  printf("ret=%d,ret_s21=%d\n",ret,ret_s21);
+  DEBUG_PRINT("ret=%d,ret_s21=%d\n", ret, ret_s21);
   ck_assert(compare_wstrings(var1, var1_s21));
-  ck_assert_double_eq_tol(var2, var2_s21,10-6);
+  ck_assert_double_eq_tol(var2, var2_s21, 10 - 6);
   ck_assert_str_eq(var3, var3_s21);
-printf("Test test_s21_sscanf_cmpx_0041 is passed.\n");
+  ck_assert_int_eq(ret, ret_s21);
+  DEBUG_PRINT("Test test_s21_sscanf_cmpx_0041 is passed.\n");
 }
 
 START_TEST(test_s21_sscanf_cmpx_0213) {
-  const char *input="1.234 0.00001\n1.2E5!";
-  unsigned int var1=123,var1_s21=123;
-  long double var2=1.123,var2_s21=1.123;
-  char var3[1024]="A",var3_s21[1024]="A";
-  const char *fmt="%x %6Lg\n%c!";
+  const char *input = "1.234 0.00001\n1.2E5!";
+  unsigned int var1 = 123, var1_s21 = 123;
+  long double var2 = 1.123, var2_s21 = 1.123;
+  char var3[1024] = "A", var3_s21[1024] = "A";
+  const char *fmt = "%x %6Lg\n%c!";
 
-  int ret = sscanf(input,fmt,&var1,&var2, var3);
-  int ret_s21 = s21_sscanf(input,fmt ,&var1_s21,&var2_s21, var3_s21);
+  int ret = sscanf(input, fmt, &var1, &var2, var3);
+  int ret_s21 = s21_sscanf(input, fmt, &var1_s21, &var2_s21, var3_s21);
 
-  printf("ret=%d,ret_s21=%d\n",ret,ret_s21);
+  DEBUG_PRINT("ret=%d,ret_s21=%d\n", ret, ret_s21);
   ck_assert_int_eq(var1, var1_s21);
-  ck_assert_double_eq_tol(var2, var2_s21,10-6);
+  ck_assert_double_eq_tol(var2, var2_s21, 10 - 6);
   ck_assert_str_eq(var3, var3_s21);
-printf("Test test_s21_sscanf_cmpx_0213 is passed.\n");
+  ck_assert_int_eq(ret, ret_s21);
+  DEBUG_PRINT("Test test_s21_sscanf_cmpx_0213 is passed.\n");
 }
-END_TEST 
+END_TEST
 
 START_TEST(test_s21_sscanf_cmpx_0420) {
-  const char *input="255 0123abc\n3.14159,";
-  char var2[1024]="ABC",var2_s21[1024]="ABC";
-  long double var3=1.123,var3_s21=1.123;
-  const char *fmt="%s\n%LG,";
+  const char *input = "255 0123abc\n3.14159,";
+  char var2[1024] = "ABC", var2_s21[1024] = "ABC";
+  long double var3 = 1.123, var3_s21 = 1.123;
+  const char *fmt = "%s\n%LG,";
 
-  int ret = sscanf(input,fmt, var2,&var3);
-  int ret_s21 = s21_sscanf(input,fmt , var2_s21,&var3_s21);
+  int ret = sscanf(input, fmt, var2, &var3);
+  int ret_s21 = s21_sscanf(input, fmt, var2_s21, &var3_s21);
 
-  printf("ret=%d,ret_s21=%d\n",ret,ret_s21);
+  DEBUG_PRINT("ret=%d,ret_s21=%d\n", ret, ret_s21);
   ck_assert_str_eq(var2, var2_s21);
-  ck_assert_double_eq_tol(var3, var3_s21,10-6);
-printf("Test test_s21_sscanf_cmpx_0420 is passed.\n");
+  ck_assert_double_eq_tol(var3, var3_s21, 10 - 6);
+  ck_assert_int_eq(ret, ret_s21);
+  DEBUG_PRINT("Test test_s21_sscanf_cmpx_0420 is passed.\n");
 }
-END_TEST 
+END_TEST
 
 START_TEST(test_s21_sscanf_cmpx_0850) {
-  const char *input="3.14159\t 023abc\t123";
-  int var1=-123,var1_s21=-123;
-  char var2[1024]="ABC",var2_s21[1024]="ABC";
-  float var3=1.123,var3_s21=1.123;
-  const char *fmt="%7i\t%6s\t%20E";
+  const char *input = "3.14159\t 023abc\t123";
+  int var1 = -123, var1_s21 = -123;
+  char var2[1024] = "ABC", var2_s21[1024] = "ABC";
+  float var3 = 1.123, var3_s21 = 1.123;
+  const char *fmt = "%7i\t%6s\t%20E";
 
-  int ret = sscanf(input,fmt,&var1, var2,&var3);
-  int ret_s21 = s21_sscanf(input,fmt ,&var1_s21, var2_s21,&var3_s21);
+  int ret = sscanf(input, fmt, &var1, var2, &var3);
+  int ret_s21 = s21_sscanf(input, fmt, &var1_s21, var2_s21, &var3_s21);
 
-  printf("ret=%d,ret_s21=%d\n",ret,ret_s21);
+  DEBUG_PRINT("ret=%d,ret_s21=%d\n", ret, ret_s21);
   ck_assert_int_eq(var1, var1_s21);
   ck_assert_str_eq(var2, var2_s21);
-  ck_assert_double_eq_tol(var3, var3_s21,10-6);
-printf("Test test_s21_sscanf_cmpx_0850 is passed.\n");
-// Assertion 'fabsl(var3_s21 - var3) < 10-6' failed: var3 == 1.19468e+06, var3_s21 == 0, 10-6 == 4
+  ck_assert_double_eq_tol(var3, var3_s21, 10 - 6);
+  ck_assert_int_eq(ret, ret_s21);
+  DEBUG_PRINT("Test test_s21_sscanf_cmpx_0850 is passed.\n");
+  // Assertion 'fabsl(var3_s21 - var3) < 10-6' failed: var3 == 1.19468e+06,
+  // var3_s21 == 0, 10-6 == 4
 }
-END_TEST 
+END_TEST
 
 START_TEST(test_s21_sscanf_cmpx_2214) {
-  const char *input="3.14\n4.723e6  12.34 ";
-  int var1=-123,var1_s21=-123;
-  float var2=1.123,var2_s21=1.123;
-  char var3[1024]="A",var3_s21[1024]="A";
-  const char *fmt="%8i\n%50g  %0c ";
+  const char *input = "3.14\n4.723e6  12.34 ";
+  int var1 = -123, var1_s21 = -123;
+  float var2 = 1.123, var2_s21 = 1.123;
+  char var3[1024] = "A", var3_s21[1024] = "A";
+  const char *fmt = "%8i\n%50g  %0c ";
 
-  int ret = sscanf(input,fmt,&var1,&var2, var3);
-  int ret_s21 = s21_sscanf(input,fmt ,&var1_s21,&var2_s21, var3_s21);
+  int ret = sscanf(input, fmt, &var1, &var2, var3);
+  int ret_s21 = s21_sscanf(input, fmt, &var1_s21, &var2_s21, var3_s21);
 
-  printf("ret=%d,ret_s21=%d\n",ret,ret_s21);
+  DEBUG_PRINT("ret=%d,ret_s21=%d\n", ret, ret_s21);
   ck_assert_int_eq(var1, var1_s21);
-  ck_assert_double_eq_tol(var2, var2_s21,10-6);
+  ck_assert_double_eq_tol(var2, var2_s21, 10 - 6);
   ck_assert_str_eq(var3, var3_s21);
-printf("Test test_s21_sscanf_cmpx_2214 is passed.\n");
+  ck_assert_int_eq(ret, ret_s21);
+  DEBUG_PRINT("Test test_s21_sscanf_cmpx_2214 is passed.\n");
 }
-END_TEST 
+END_TEST
 
 START_TEST(test_s21_sscanf_cmpx_2388) {
-  const char *input="2554294967295A456789   ";
-  unsigned int var1=123,var1_s21=123;
-  wchar_t var2[1024]=L"A",var2_s21[1024]=L"A";
-  long double var3=1.123,var3_s21=1.123;
-  const char *fmt="%0x%lcA%8Le   ";
+  const char *input = "2554294967295A456789   ";
+  unsigned var1 = 123, var1_s21 = 123;
+  wchar_t var2[1024] = L"A", var2_s21[1024] = L"A";
+  long double var3 = 1.123, var3_s21 = 1.123;
+  const char *fmt = "%0x%lcA%8Le   ";
 
-  int ret = sscanf(input,fmt,&var1, var2,&var3);
-  int ret_s21 = s21_sscanf(input,fmt ,&var1_s21, var2_s21,&var3_s21);
+  int ret = sscanf(input, fmt, &var1, var2, &var3);
+  int ret_s21 = s21_sscanf(input, fmt, &var1_s21, var2_s21, &var3_s21);
 
-  printf("ret=%d,ret_s21=%d\n",ret,ret_s21);
+  DEBUG_PRINT("ret=%d,ret_s21=%d\n", ret, ret_s21);
   ck_assert_int_eq(var1, var1_s21);
   ck_assert(compare_wstrings(var2, var2_s21));
-  ck_assert_double_eq_tol(var3, var3_s21,10-6);
-printf("Test test_s21_sscanf_cmpx_2388 is passed.\n");
+  ck_assert_double_eq_tol(var3, var3_s21, 10 - 6);
+  ck_assert_int_eq(ret, ret_s21);
+  DEBUG_PRINT("Test test_s21_sscanf_cmpx_2388 is passed.\n");
 }
-END_TEST 
+END_TEST
 
 START_TEST(test_s21_sscanf_cmpx_2506) {
-  const char *input="3.14159  0.00001\n-128_";
-  unsigned int var1=123,var1_s21=123;
-  float var2=1.123,var2_s21=1.123;
-  char var3[1024]="A",var3_s21[1024]="A";
-  const char *fmt="%8X  %15e\n%15c_";
+  const char *input = "3.14159  0.00001\n-128_";
+  unsigned int var1 = 123, var1_s21 = 123;
+  float var2 = 1.123, var2_s21 = 1.123;
+  char var3[1024] = "A", var3_s21[1024] = "A";
+  const char *fmt = "%8X  %15e\n%15c_";
 
-  int ret = sscanf(input,fmt,&var1,&var2, var3);
-  int ret_s21 = s21_sscanf(input,fmt ,&var1_s21,&var2_s21, var3_s21);
+  int ret = sscanf(input, fmt, &var1, &var2, var3);
+  int ret_s21 = s21_sscanf(input, fmt, &var1_s21, &var2_s21, var3_s21);
 
-  printf("ret=%d,ret_s21=%d\n",ret,ret_s21);
+  DEBUG_PRINT("ret=%d,ret_s21=%d\n", ret, ret_s21);
   ck_assert_int_eq(var1, var1_s21);
-  ck_assert_double_eq_tol(var2, var2_s21,10-6);
+  ck_assert_double_eq_tol(var2, var2_s21, 10 - 6);
   ck_assert_str_eq(var3, var3_s21);
-printf("Test test_s21_sscanf_cmpx_2506 is passed.\n");
+  ck_assert_int_eq(ret, ret_s21);
+  DEBUG_PRINT("Test test_s21_sscanf_cmpx_2506 is passed.\n");
 }
-END_TEST 
+END_TEST
 
 START_TEST(test_s21_sscanf_cmpx_2733) {
-  const char *input="1.23E4255:0x123abc  ";
-  long double var1=1.123,var1_s21=1.123;
-  float var2=1.123,var2_s21=1.123;
-  char var3[1024]="A",var3_s21[1024]="A";
-  const char *fmt="%4Le%G:%4c  ";
+  const char *input = "1.23E4255:0x123abc  ";
+  long double var1 = 1.123, var1_s21 = 1.123;
+  float var2 = 1.123, var2_s21 = 1.123;
+  char var3[1024] = "A", var3_s21[1024] = "A";
+  const char *fmt = "%4Le%G:%4c  ";
 
-  int ret = sscanf(input,fmt,&var1,&var2, var3);
-  int ret_s21 = s21_sscanf(input,fmt ,&var1_s21,&var2_s21, var3_s21);
+  int ret = sscanf(input, fmt, &var1, &var2, var3);
+  int ret_s21 = s21_sscanf(input, fmt, &var1_s21, &var2_s21, var3_s21);
 
-  printf("ret=%d,ret_s21=%d\n",ret,ret_s21);
-  ck_assert_double_eq_tol(var1, var1_s21,10-6);
-  ck_assert_double_eq_tol(var2, var2_s21,10-6);
+  DEBUG_PRINT("ret=%d,ret_s21=%d\n", ret, ret_s21);
+  ck_assert_double_eq_tol(var1, var1_s21, 10 - 6);
+  ck_assert_double_eq_tol(var2, var2_s21, 10 - 6);
   ck_assert_str_eq(var3, var3_s21);
-printf("Test test_s21_sscanf_cmpx_2733 is passed.\n");
+  ck_assert_int_eq(ret, ret_s21);
+  DEBUG_PRINT("Test test_s21_sscanf_cmpx_2733 is passed.\n");
 }
-END_TEST 
+END_TEST
 
 START_TEST(test_s21_sscanf_cmpx_3234) {
-  const char *input="255\n1.23E4 longword!";
-  long double var2=1.123,var2_s21=1.123;
-  char var3[1024]="A",var3_s21[1024]="A";
-  const char *fmt="%LG %7c!";
+  const char *input = "255\n1.23E4 longword!";
+  long double var2 = 1.123, var2_s21 = 1.123;
+  char var3[1024] = "A", var3_s21[1024] = "A";
+  const char *fmt = "%LG %7c!";
 
-  int ret = sscanf(input,fmt,&var2, var3);
-  int ret_s21 = s21_sscanf(input,fmt ,&var2_s21, var3_s21);
+  int ret = sscanf(input, fmt, &var2, var3);
+  int ret_s21 = s21_sscanf(input, fmt, &var2_s21, var3_s21);
 
-  printf("ret=%d,ret_s21=%d\n",ret,ret_s21);
-  ck_assert_double_eq_tol(var2, var2_s21,10-6);
+  DEBUG_PRINT("ret=%d,ret_s21=%d\n", ret, ret_s21);
+  ck_assert_double_eq_tol(var2, var2_s21, 10 - 6);
   ck_assert_str_eq(var3, var3_s21);
-printf("Test test_s21_sscanf_cmpx_3234 is passed.\n");
+  ck_assert_int_eq(ret, ret_s21);
+  DEBUG_PRINT("Test test_s21_sscanf_cmpx_3234 is passed.\n");
 }
-END_TEST 
+END_TEST
 
 START_TEST(test_s21_sscanf_cmpx_4106) {
-  const char *input="314\t4294,967295 1A2B  ";
-  float var1=1.123,var1_s21=1.123;
-  float var2=1.123,var2_s21=1.123;
-  char var3[1024]="A",var3_s21[1024]="A";
-  const char *fmt="%1E\t%e %3c  ";
+  const char *input = "314\t4294,967295 1A2B  ";
+  float var1 = 1.123, var1_s21 = 1.123;
+  float var2 = 1.123, var2_s21 = 1.123;
+  char var3[1024] = "A", var3_s21[1024] = "A";
+  const char *fmt = "%1E\t%e %3c  ";
 
   /*
     const char *input="255  456789 3.14159A";
@@ -3039,181 +3000,235 @@ START_TEST(test_s21_sscanf_cmpx_4106) {
   const char *fmt="%3x%6cA";
 */
 
-  int ret = sscanf(input,fmt,&var1,&var2, var3);
-  int ret_s21 = s21_sscanf(input,fmt ,&var1_s21,&var2_s21, var3_s21);
+  int ret = sscanf(input, fmt, &var1, &var2, var3);
+  int ret_s21 = s21_sscanf(input, fmt, &var1_s21, &var2_s21, var3_s21);
 
-  printf("ret=%d,ret_s21=%d\n",ret,ret_s21);
-  ck_assert_double_eq_tol(var1, var1_s21,10-6);
-  ck_assert_double_eq_tol(var2, var2_s21,10-6);
+  DEBUG_PRINT("ret=%d,ret_s21=%d\n", ret, ret_s21);
+  ck_assert_double_eq_tol(var1, var1_s21, 10 - 6);
+  ck_assert_double_eq_tol(var2, var2_s21, 10 - 6);
   ck_assert_str_eq(var3, var3_s21);
-printf("Test test_s21_sscanf_cmpx_4106 is passed.\n");
-//test_s21_sscanf.c:3034:F:Debug:test_s21_sscanf_cmpx_4106:0: Assertion 'var3 == var3_s21' failed: var3 == "429", var3_s21 == "   42"
+  ck_assert_int_eq(ret, ret_s21);
+  DEBUG_PRINT("Test test_s21_sscanf_cmpx_4106 is passed.\n");
+  // test_s21_sscanf.c:3034:F:Debug:test_s21_sscanf_cmpx_4106:0: Assertion 'var3
+  // == var3_s21' failed: var3 == "429", var3_s21 == "   42"
 }
-END_TEST 
+END_TEST
 
 START_TEST(test_s21_sscanf_cmpx_6148) {
-  const char *input="9.8e-3\t3.14159_98$";
-  long double var1=1.123,var1_s21=1.123;
-  unsigned int var2=123,var2_s21=123;
-  const char *fmt="%5LE\t%x_";
+  const char *input = "9.8e-3\t3.14159_98$";
+  long double var1 = 1.123, var1_s21 = 1.123;
+  unsigned int var2 = 123, var2_s21 = 123;
+  const char *fmt = "%5LE\t%x_";
 
-  int ret = sscanf(input,fmt,&var1,&var2);
-  int ret_s21 = s21_sscanf(input,fmt ,&var1_s21,&var2_s21);
+  int ret = sscanf(input, fmt, &var1, &var2);
+  int ret_s21 = s21_sscanf(input, fmt, &var1_s21, &var2_s21);
 
-  printf("ret=%d,ret_s21=%d\n",ret,ret_s21);
-  ck_assert_double_eq_tol(var1, var1_s21,10-6);
+  DEBUG_PRINT("ret=%d,ret_s21=%d\n", ret, ret_s21);
+  ck_assert_double_eq_tol(var1, var1_s21, 10 - 6);
   ck_assert_int_eq(var2, var2_s21);
-printf("Test test_s21_sscanf_cmpx_6148 is passed.\n");
+  ck_assert_int_eq(ret, ret_s21);
+  DEBUG_PRINT("Test test_s21_sscanf_cmpx_6148 is passed.\n");
 }
-END_TEST 
+END_TEST
 
 START_TEST(test_s21_sscanf_cmpx_6203) {
-  const char *input="1.2E5\n4294967295   0.00001$";
-  long double var1=1.123,var1_s21=1.123;
-  long double var2=1.123,var2_s21=1.123;
-  unsigned int var3=123,var3_s21=123;
-  const char *fmt="%3Lg\n%Le   %5u$";
+  const char *input = "1.2E5\n4294967295   0.00001$";
+  long double var1 = 1.123, var1_s21 = 1.123;
+  long double var2 = 1.123, var2_s21 = 1.123;
+  unsigned int var3 = 123, var3_s21 = 123;
+  const char *fmt = "%3Lg\n%Le   %5u$";
 
-  int ret = sscanf(input,fmt,&var1,&var2,&var3);
-  int ret_s21 = s21_sscanf(input,fmt ,&var1_s21,&var2_s21,&var3_s21);
+  int ret = sscanf(input, fmt, &var1, &var2, &var3);
+  int ret_s21 = s21_sscanf(input, fmt, &var1_s21, &var2_s21, &var3_s21);
 
-  printf("ret=%d,ret_s21=%d\n",ret,ret_s21);
-  ck_assert_double_eq_tol(var1, var1_s21,10-6);
-  ck_assert_double_eq_tol(var2, var2_s21,10-6);
+  DEBUG_PRINT("ret=%d,ret_s21=%d\n", ret, ret_s21);
+  ck_assert_double_eq_tol(var1, var1_s21, 10 - 6);
+  ck_assert_double_eq_tol(var2, var2_s21, 10 - 6);
   ck_assert_int_eq(var3, var3_s21);
-printf("Test test_s21_sscanf_cmpx_6203 is passed.\n");
+  ck_assert_int_eq(ret, ret_s21);
+  DEBUG_PRINT("Test test_s21_sscanf_cmpx_6203 is passed.\n");
 }
-END_TEST 
+END_TEST
 
 START_TEST(test_s21_sscanf_cmpx_6523) {
   // const char *input="98  4294967295A4294967295";
-  const char *input="98  11111295A4294967295";
-  unsigned int var1=123,var1_s21=123;
-  unsigned int var2=123,var2_s21=123;
-  float var3=1.123,var3_s21=1.123;
-  const char *fmt="%5u  %50xA%f";
+  const char *input = "98  11111295A4294967295";
+  unsigned  var1 = 123, var1_s21 = 123;
+  unsigned  var2 = 123, var2_s21 = 123;
+  float var3 = 1.123, var3_s21 = 1.123;
+  const char *fmt = "%5u  %50xA%f";
 
-  int ret = sscanf(input,fmt,&var1,&var2,&var3);
-  int ret_s21 = s21_sscanf(input,fmt ,&var1_s21,&var2_s21,&var3_s21);
+  int ret = sscanf(input, fmt, &var1, &var2, &var3);
+  int ret_s21 = s21_sscanf(input, fmt, &var1_s21, &var2_s21, &var3_s21);
 
-  printf("ret=%d,ret_s21=%d\n",ret,ret_s21);
+  DEBUG_PRINT("ret=%d,ret_s21=%d\n", ret, ret_s21);
   ck_assert_int_eq(var1, var1_s21);
   ck_assert_int_eq(var2, var2_s21);
-  ck_assert_double_eq_tol(var3, var3_s21,10-6);
-printf("Test test_s21_sscanf_cmpx_6523 is passed.\n");
+  ck_assert_double_eq_tol(var3, var3_s21, 10 - 6);
+  ck_assert_int_eq(ret, ret_s21);
+  DEBUG_PRINT("Test test_s21_sscanf_cmpx_6523 is passed.\n");
 }
-END_TEST 
+END_TEST
 
 START_TEST(test_s21_sscanf_cmpx_7092) {
-  const char *input="255  456789 3.14159A";
-  unsigned int var2=123,var2_s21=123;
-  char var3[1024]="A",var3_s21[1024]="A";
-  const char *fmt="%3x%6cA";
+  const char *input = "255  456789 3.14159A";
+  unsigned int var2 = 123, var2_s21 = 123;
+  char var3[1024] = "A", var3_s21[1024] = "A";
+  const char *fmt = "%3x%6cA";
 
-  int ret = sscanf(input,fmt,&var2, var3);
-  int ret_s21 = s21_sscanf(input,fmt ,&var2_s21, var3_s21);
+  int ret = sscanf(input, fmt, &var2, var3);
+  int ret_s21 = s21_sscanf(input, fmt, &var2_s21, var3_s21);
 
-  printf("ret=%d,ret_s21=%d\n",ret,ret_s21);
+  DEBUG_PRINT("ret=%d,ret_s21=%d\n", ret, ret_s21);
   ck_assert_int_eq(var2, var2_s21);
   ck_assert_str_eq(var3, var3_s21);
-printf("Test test_s21_sscanf_cmpx_7092 is passed.\n");
+  ck_assert_int_eq(ret, ret_s21);
+  DEBUG_PRINT("Test test_s21_sscanf_cmpx_7092 is passed.\n");
 }
-END_TEST 
+END_TEST
 
 START_TEST(test_s21_sscanf_cmpx_7445) {
-  const char *input="1.2E5 40.723e6  456789 ";
-  float var1=1.123,var1_s21=1.123;
-  float var2=9.123,var2_s21=9.123;
-  int var3=-123,var3_s21=-123;
-  const char *fmt="%3f %E  %2i ";
+  const char *input = "1.2E5 40.723e6  456789 ";
+  float var1 = 1.123, var1_s21 = 1.123;
+  float var2 = 9.123, var2_s21 = 9.123;
+  int var3 = -123, var3_s21 = -123;
+  const char *fmt = "%3f %E  %2i ";
 
-  int ret = sscanf(input,fmt,&var1,&var2,&var3);
-  int ret_s21 = s21_sscanf(input,fmt ,&var1_s21,&var2_s21,&var3_s21);
+  int ret = sscanf(input, fmt, &var1, &var2, &var3);
+  int ret_s21 = s21_sscanf(input, fmt, &var1_s21, &var2_s21, &var3_s21);
 
-  printf("ret=%d,ret_s21=%d\n",ret,ret_s21);
-  ck_assert_double_eq_tol(var1, var1_s21,10-6);
-  ck_assert_double_eq_tol(var2, var2_s21,10-6);
+  DEBUG_PRINT("ret=%d,ret_s21=%d\n", ret, ret_s21);
+  ck_assert_double_eq_tol(var1, var1_s21, 10 - 6);
+  ck_assert_double_eq_tol(var2, var2_s21, 10 - 6);
   ck_assert_int_eq(var3, var3_s21);
-printf("Test test_s21_sscanf_cmpx_7445 is passed.\n");
-//test_s21_sscanf.c:3120:F:Debug:test_s21_sscanf_cmpx_7445:0: Assertion 'var3 == var3_s21' failed: var3 == -123, var3_s21 == 4
+  ck_assert_int_eq(ret, ret_s21);
+  DEBUG_PRINT("Test test_s21_sscanf_cmpx_7445 is passed.\n");
+  // test_s21_sscanf.c:3120:F:Debug:test_s21_sscanf_cmpx_7445:0: Assertion 'var3
+  // == var3_s21' failed: var3 == -123, var3_s21 == 4
 }
-END_TEST 
+END_TEST
 
 START_TEST(test_s21_sscanf_cmpx_9707) {
-  const char *input="4294967295\n1A2B:4294967295 ";
-  wchar_t var1[1024]=L"A",var1_s21[1024]=L"A";
-  char var2[1024]="A",var2_s21[1024]="A";
-  float var3=1.123,var3_s21=1.123;
-  const char *fmt="%50lc\n%5c:%4G ";
+  const char *input = "4294967295\n1A2B:4294967295 ";
+  wchar_t var1[1024] = L"A", var1_s21[1024] = L"A";
+  char var2[1024] = "A", var2_s21[1024] = "A";
+  float var3 = 1.123, var3_s21 = 1.123;
+  const char *fmt = "%50lc\n%5c:%4G ";
 
-  int ret = sscanf(input,fmt, var1, var2,&var3);
-  int ret_s21 = s21_sscanf(input,fmt , var1_s21, var2_s21,&var3_s21);
+  int ret = sscanf(input, fmt, var1, var2, &var3);
+  int ret_s21 = s21_sscanf(input, fmt, var1_s21, var2_s21, &var3_s21);
 
-  printf("ret=%d,ret_s21=%d\n",ret,ret_s21);
-  printf("var1=|%ls|,\nvar_s21=|%ls|\n",var1,var1_s21);
+  DEBUG_PRINT("ret=%d,ret_s21=%d\n", ret, ret_s21);
+  DEBUG_PRINT("var1=|%ls|,\nvar_s21=|%ls|\n", var1, var1_s21);
   ck_assert(compare_wstrings(var1, var1_s21));
   ck_assert_str_eq(var2, var2_s21);
-  ck_assert_double_eq_tol(var3, var3_s21,10-6);
-printf("Test test_s21_sscanf_cmpx_9707 is passed.\n");
-//test_s21_sscanf.c:3138:F:Debug:test_s21_sscanf_cmpx_9707:0: Assertion 'var2 == var2_s21' failed: var2 == "A", var2_s21 == ""
+  ck_assert_double_eq_tol(var3, var3_s21, 10 - 6);
+  ck_assert_int_eq(ret, ret_s21);
+  DEBUG_PRINT("Test test_s21_sscanf_cmpx_9707 is passed.\n");
+  // test_s21_sscanf.c:3138:F:Debug:test_s21_sscanf_cmpx_9707:0: Assertion 'var2
+  // == var2_s21' failed: var2 == "A", var2_s21 == ""
 }
-END_TEST 
+END_TEST
 
 START_TEST(test_s21_sscanf_cmpx_9721) {
-  const char *input="9.8e-3  1.2\n255\t";
-  long double var1=1.123,var1_s21=1.123;
-  int var3=555,var3_s21=555;
-  const char *fmt="%5Lf  %15d\t";
+  const char *input = "9.8e-3  1.2\n255\t";
+  long double var1 = 1.123, var1_s21 = 1.123;
+  int var3 = 555, var3_s21 = 555;
+  const char *fmt = "%5Lf  %15d\t";
 
-  int ret = sscanf(input,fmt,&var1,&var3);
-  int ret_s21 = s21_sscanf(input,fmt ,&var1_s21,&var3_s21);
+  int ret = sscanf(input, fmt, &var1, &var3);
+  int ret_s21 = s21_sscanf(input, fmt, &var1_s21, &var3_s21);
 
-  printf("ret=%d,ret_s21=%d\n",ret,ret_s21);
-  ck_assert_double_eq_tol(var1, var1_s21,10-6);
+  DEBUG_PRINT("ret=%d,ret_s21=%d\n", ret, ret_s21);
+  ck_assert_double_eq_tol(var1, var1_s21, 10 - 6);
   ck_assert_int_eq(var3, var3_s21);
-printf("Test test_s21_sscanf_cmpx_9721 is passed.\n");
-//test_s21_sscanf.c:3154:F:Debug:test_s21_sscanf_cmpx_9721:0: Assertion 'var3 == var3_s21' failed: var3 == 3, var3_s21 == -3
+  ck_assert_int_eq(ret, ret_s21);
+  DEBUG_PRINT("Test test_s21_sscanf_cmpx_9721 is passed.\n");
+  // test_s21_sscanf.c:3154:F:Debug:test_s21_sscanf_cmpx_9721:0: Assertion 'var3
+  // == var3_s21' failed: var3 == 3, var3_s21 == -3
 }
-END_TEST 
+END_TEST
 
 START_TEST(test_s21_sscanf_cmpx_0032) {
   // const char *input="4294967295 3.14_1.23A";
   // unsigned int var1=123,var1_s21=123;
   // int var3=-123,var3_s21=-123;
   // const char *fmt="%X %9iA";
-  const char *input = "0xFFFFFFFF 123A";  
-unsigned long var1 = 123, var1_s21 = 123;  
-unsigned long var3 = 123, var3_s21 = 123;  
-const char *fmt = "%X %9iA";  
+  const char *input = "0xFFFFFFFF 556A";
+  unsigned var1 = 123, var1_s21 = 123;
+  int var3 = 123, var3_s21 = 123;
+  const char *fmt = "%X %9iA";
 
-  int ret = sscanf(input,fmt,&var1,&var3);
-  int ret_s21 = s21_sscanf(input,fmt ,&var1_s21,&var3_s21);
+  int ret = sscanf(input, fmt, &var1, &var3);
+  int ret_s21 = s21_sscanf(input, fmt, &var1_s21, &var3_s21);
 
-  printf("ret=%d,ret_s21=%d\n",ret,ret_s21);
+  DEBUG_PRINT("ret=%i,ret_s21=%i\n", ret, ret_s21);
   ck_assert_int_eq(var1, var1_s21);
   ck_assert_int_eq(var3, var3_s21);
-printf("Test test_s21_sscanf_cmpx_0032 is passed.\n");
+  ck_assert_int_eq(ret, ret_s21);
+  DEBUG_PRINT("Test test_s21_sscanf_cmpx_0032 is passed.\n");
 }
-END_TEST 
+END_TEST
 
 START_TEST(test_s21_sscanf_cmpx_0252) {
-  const char *input="9.8e-3\n4294967295 4294967295\n";
-  float var1=1.123,var1_s21=1.123;
-  float var2=1.123,var2_s21=1.123;
-  long unsigned var3=123,var3_s21=123;
-  const char *fmt="%f\n%f %lx\n";
+  const char *input = "9.8e-3\n4294967295 4294967295\n";
+  float var1 = 1.123, var1_s21 = 1.123;
+  float var2 = 1.123, var2_s21 = 1.123;
+  long unsigned var3 = 123, var3_s21 = 123;
+  const char *fmt = "%f\n%f %lx\n";
 
-  int ret = sscanf(input,fmt,&var1,&var2,&var3);
-  int ret_s21 = s21_sscanf(input,fmt ,&var1_s21,&var2_s21,&var3_s21);
+  int ret = sscanf(input, fmt, &var1, &var2, &var3);
+  int ret_s21 = s21_sscanf(input, fmt, &var1_s21, &var2_s21, &var3_s21);
 
-  printf("ret=%d,ret_s21=%d\n",ret,ret_s21);
-  ck_assert_double_eq_tol(var1, var1_s21,10-6);
-  ck_assert_double_eq_tol(var2, var2_s21,10-6);
+  DEBUG_PRINT("ret=%d,ret_s21=%d\n", ret, ret_s21);
+  ck_assert_double_eq_tol(var1, var1_s21, 10 - 6);
+  ck_assert_double_eq_tol(var2, var2_s21, 10 - 6);
   ck_assert_int_eq(var3, var3_s21);
-printf("Test test_s21_sscanf_cmpx_0252 is passed.\n");
+  ck_assert_int_eq(ret, ret_s21);
+  DEBUG_PRINT("Test test_s21_sscanf_cmpx_0252 is passed.\n");
 }
-END_TEST 
+END_TEST
 
+START_TEST(test_s21_sscanf_cmpx_2446) {
+  const char *input = "4294967295 % 12.345 ";
+  unsigned long var1 = 123, var1_s21 = 123;
+  char var2[1024] = "ABC", var2_s21[1024] = "ABC";
+  unsigned var3 = 123, var3_s21 = 123;
+  const char *fmt = "%lx %s\n%1x ";
+
+  int ret = sscanf(input, fmt, &var1, var2, &var3);
+  int ret_s21 = s21_sscanf(input, fmt, &var1_s21, var2_s21, &var3_s21);
+
+  DEBUG_PRINT("ret=%d,ret_s21=%d\n", ret, ret_s21);
+  ck_assert_int_eq(var1, var1_s21);
+  ck_assert_str_eq(var2, var2_s21);
+  ck_assert_int_eq(var3, var3_s21);
+  ck_assert_int_eq(ret, ret_s21);
+  DEBUG_PRINT("Test test_s21_sscanf_cmpx_2446 is passed.\n");
+  // test_gen_s21_sscanf.c:42072:F:Core:test_s21_sscanf_cmpx_2446:0: Assertion
+  // 'var1 == var1_s21' failed: var1 == 2492887701, var1_s21 == 4294967295
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_cmpx_8369) {
+  const char *input = "314   FF  00x4294967295$";
+  unsigned int var1 = 123, var1_s21 = 123;
+  wchar_t var2[1024] = L"ABC", var2_s21[1024] = L"ABC";
+  unsigned int var3 = 123, var3_s21 = 123;
+  const char *fmt = "%4o   %7ls  %X$";
+
+  int ret = sscanf(input, fmt, &var1, var2, &var3);
+  int ret_s21 = s21_sscanf(input, fmt, &var1_s21, var2_s21, &var3_s21);
+
+  DEBUG_PRINT("ret=%d,ret_s21=%d\n", ret, ret_s21);
+  ck_assert_int_eq(var1, var1_s21);
+  // ck_assert_int_eq(var2, fmt[6]);
+  ck_assert(compare_wstrings(var2, var2_s21));
+  ck_assert_int_eq(var3, var3_s21);
+  ck_assert_int_eq(ret, ret_s21);
+  DEBUG_PRINT("Test test_s21_sscanf_cmpx_8369 is passed.\n");
+}
+END_TEST
 
 Suite *s21_sscanf_suite(void) {
   Suite *suite;
@@ -3463,8 +3478,6 @@ Suite *s21_sscanf_suite(void) {
   tcase_add_test(tc_core_f, test_s21_sscanf_cmpx_0320);
   tcase_add_test(tc_core_f, test_s21_sscanf_cmpx_0495);
 
-
-
   //[ ] Uncomment additional test case
   suite_add_tcase(suite, tc_core_c);
   suite_add_tcase(suite, tc_core_d);
@@ -3500,10 +3513,13 @@ Suite *s21_sscanf_suite(void) {
   tcase_add_test(tc_core_f, test_s21_sscanf_cmpx_7445);
   tcase_add_test(tc_core_c, test_s21_sscanf_cmpx_9707);
   tcase_add_test(tc_core_f, test_s21_sscanf_cmpx_9721);
-  
-  tcase_add_test(tc_debug, test_s21_sscanf_cmpx_0032);
-  tcase_add_test(tc_debug, test_s21_sscanf_cmpx_0252);
+  tcase_add_test(tc_core_x, test_s21_sscanf_cmpx_0252);
+  tcase_add_test(tc_core_x, test_s21_sscanf_cmpx_2446);
+  tcase_add_test(tc_debug, test_s21_sscanf_cmpx_8369);
 
+  tcase_add_test(tc_debug, test_s21_sscanf_cmpx_0032);
+  tcase_add_test(tc_debug, test_s21_sscanf_cmpx_2388);
+  tcase_add_test(tc_debug, test_s21_sscanf_d_max);
 
   suite_add_tcase(suite, tc_debug);
   return suite;

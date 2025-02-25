@@ -1,5 +1,6 @@
 #include "s21_string.h"
 #include "s21_utils.c"
+#include <limits.h>
 
 long double s21_pow(int x, int y);
 int get_number(const char *p, long int *res);
@@ -272,6 +273,7 @@ int get_number(const char *p, long int *res) {
   return i;
 }
 
+
 int str_to_int(const char *p, long int *res, int base) {
   *res = 0;
   int i = 0;
@@ -293,13 +295,17 @@ int str_to_int(const char *p, long int *res, int base) {
     }
     p = s21_to_upper(p);
     while (is_hex(*p)) {
-      if (is_digit(*p)) {
-        *res = *res * base + (*p - '0');
-      } else
+        if (is_digit(*p)) {
+          *res = *res * base + (*p - '0');
+        } else
         *res = *res * base + (*p - '0' - 7);
-      p++;
-      i++;
+        p++;
+        i++;
+
     }
+
+
+
   } else {
 
     while (is_digit(*p)) {
@@ -309,6 +315,39 @@ int str_to_int(const char *p, long int *res, int base) {
     }
   }
   *res *= znak;
+  return i;
+}
+
+
+int str_to_uint(const char *p, long unsigned int *res, int base) {
+  *res = 0;
+  int i = 0;
+  if (base == 8) {
+    while (is_octa(*p)) {
+      *res = *res * base + (*p - '0');
+      p++;
+      i++;
+    }
+  } else if (base == 16) {
+    if (*p == '0' && (*(p + 1) == 'x' || *(p + 1) == 'X')) {
+      p += 2;
+    }
+    p = s21_to_upper(p);
+    while (is_hex(*p)) {
+      if (is_digit(*p)) {
+        *res = *res * base + (*p - '0');
+      } else
+        *res = *res * base + (*p - '0' - 7);
+      p++;
+      i++;
+    }
+  } else {
+    while (is_digit(*p)) {
+      *res = *res * base + (*p - '0');
+      p++;
+      i++;
+    }
+  }
   return i;
 }
 
@@ -730,16 +769,15 @@ int proc_spec_x(const char *str, va_list args, const Specifiers st_spec) {
   DEBUG_PRINT(" String arg_str=|%s|\n", arg_str);
   DEBUG_PRINT(" String copy with Width=%s\n", p);
   DEBUG_PRINT(" Input string for convert to hex=|%s|\n", p);
-  // int t1 = (int)'A' - '0';
-  // int t2 = (int)'a' - '0';
-  // DEBUG_PRINT("Code fo A=%d, code for a=%d\n", t1, t2);
+
   int step = 0;
   step = str_to_int(p, &result, 16);
   p += step;
+
   DEBUG_PRINT(" Width=%d result=%ld step=%d.\n", width, result, step);
   // i++;
   DEBUG_PRINT("Accept result into int=|%ld|\n", result);
-  if (step > 0) {
+  if (p-arg_str > 0) {
     if (st_spec.flag != '*') {
       if (st_spec.length == 'h') {
         short unsigned int *ch = va_arg(args, short unsigned int *);
@@ -749,9 +787,11 @@ int proc_spec_x(const char *str, va_list args, const Specifiers st_spec) {
         *ch = result;
       } else {
         unsigned int *ch = va_arg(args, unsigned int *);
-        if (result>=4294967295)
-          result= 4294967295;
-        *ch = (unsigned int)result;
+        // unsigned int t = (unsigned int)result;
+        if (result > UINT_MAX )
+        *ch = UINT_MAX;
+        else
+        *ch = (unsigned)result;
       }
     }
     res = p - arg_str;

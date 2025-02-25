@@ -1829,14 +1829,14 @@ END_TEST
 
 START_TEST(test_s21_sscanf_o_width_negative) {
   const char str[] = "-12345";
-  int res1 = 0, res2 = 0;
+  unsigned long res4 = 111 , res_s21 = 111;
 
   const char *fmt = "%5o";
-  int ret1 = s21_sscanf(str, fmt, &res1);
-  int ret2 = sscanf(str, fmt, &res2);
+  int ret_s21 = s21_sscanf(str, fmt, &res_s21);
+  int ret = sscanf(str, fmt, &res4);
 
-  ck_assert_int_eq(res1, res2);
-  ck_assert_int_eq(ret1, ret2);
+  ck_assert_int_eq(res4, res_s21);
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
@@ -1959,14 +1959,14 @@ END_TEST
 
 START_TEST(test_s21_sscanf_x_negative) {
   const char str[] = "-12345";
-  int res1 = 0, res2 = 0;
+  int res = 111, res_s21 = 111;
 
   const char *fmt = "%x";
-  int ret1 = s21_sscanf(str, fmt, &res1);
-  int ret2 = sscanf(str, fmt, &res2);
+  int ret_s21 = s21_sscanf(str, fmt, &res_s21);
+  int ret = sscanf(str, fmt, &res);
 
-  ck_assert_int_eq(res1, res2);
-  ck_assert_int_eq(ret1, ret2);
+  ck_assert_int_eq(res, res_s21);
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
@@ -2024,14 +2024,14 @@ END_TEST
 
 START_TEST(test_s21_sscanf_x_width_negative) {
   const char str[] = "-12345";
-  int res1 = 0, res2 = 0;
+  int res = 111, res_s21 = 111;
 
   const char *fmt = "%5x";
-  int ret1 = s21_sscanf(str, fmt, &res1);
-  int ret2 = sscanf(str, fmt, &res2);
+  int ret = sscanf(str, fmt, &res);
+  int ret_s21 = s21_sscanf(str, fmt, &res_s21);
 
-  ck_assert_int_eq(res1, res2);
-  ck_assert_int_eq(ret1, ret2);
+  ck_assert_int_eq(res, res_s21);
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
@@ -2154,14 +2154,14 @@ END_TEST
 
 START_TEST(test_s21_sscanf_X_negative) {
   const char str[] = "-12345";
-  int res1 = 0, res2 = 0;
+  int res = 0, res_s21 = 0;
 
   const char *fmt = "%X";
-  int ret1 = s21_sscanf(str, fmt, &res1);
-  int ret2 = sscanf(str, fmt, &res2);
+  int ret_s21 = s21_sscanf(str, fmt, &res_s21);
+  int ret = sscanf(str, fmt, &res);
 
-  ck_assert_int_eq(res1, res2);
-  ck_assert_int_eq(ret1, ret2);
+  ck_assert_int_eq(res, res_s21);
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
@@ -3176,6 +3176,43 @@ printf("Test test_s21_sscanf_cmpx_9721 is passed.\n");
 }
 END_TEST 
 
+START_TEST(test_s21_sscanf_cmpx_0032) {
+  // const char *input="4294967295 3.14_1.23A";
+  // unsigned int var1=123,var1_s21=123;
+  // int var3=-123,var3_s21=-123;
+  // const char *fmt="%X %9iA";
+  const char *input = "0xFFFFFFFF 123A";  
+unsigned long var1 = 123, var1_s21 = 123;  
+unsigned long var3 = 123, var3_s21 = 123;  
+const char *fmt = "%X %9iA";  
+
+  int ret = sscanf(input,fmt,&var1,&var3);
+  int ret_s21 = s21_sscanf(input,fmt ,&var1_s21,&var3_s21);
+
+  printf("ret=%d,ret_s21=%d\n",ret,ret_s21);
+  ck_assert_int_eq(var1, var1_s21);
+  ck_assert_int_eq(var3, var3_s21);
+printf("Test test_s21_sscanf_cmpx_0032 is passed.\n");
+}
+END_TEST 
+
+START_TEST(test_s21_sscanf_cmpx_0252) {
+  const char *input="9.8e-3\n4294967295 4294967295\n";
+  float var1=1.123,var1_s21=1.123;
+  float var2=1.123,var2_s21=1.123;
+  long unsigned var3=123,var3_s21=123;
+  const char *fmt="%f\n%f %lx\n";
+
+  int ret = sscanf(input,fmt,&var1,&var2,&var3);
+  int ret_s21 = s21_sscanf(input,fmt ,&var1_s21,&var2_s21,&var3_s21);
+
+  printf("ret=%d,ret_s21=%d\n",ret,ret_s21);
+  ck_assert_double_eq_tol(var1, var1_s21,10-6);
+  ck_assert_double_eq_tol(var2, var2_s21,10-6);
+  ck_assert_int_eq(var3, var3_s21);
+printf("Test test_s21_sscanf_cmpx_0252 is passed.\n");
+}
+END_TEST 
 
 
 Suite *s21_sscanf_suite(void) {
@@ -3464,7 +3501,8 @@ Suite *s21_sscanf_suite(void) {
   tcase_add_test(tc_core_c, test_s21_sscanf_cmpx_9707);
   tcase_add_test(tc_core_f, test_s21_sscanf_cmpx_9721);
   
-  tcase_add_test(tc_debug, test_s21_sscanf_x_overflow);
+  tcase_add_test(tc_debug, test_s21_sscanf_cmpx_0032);
+  tcase_add_test(tc_debug, test_s21_sscanf_cmpx_0252);
 
 
   suite_add_tcase(suite, tc_debug);

@@ -431,39 +431,39 @@ void *s21_insert(const char *src, const char *str, s21_size_t start_index) {
   В случае какой-либо ошибки следует вернуть значение S21_NULL.
   */
 
+  void *result = S21_NULL; // Инициализируем результат значением по умолчанию
+
   // Проверяем, что переданные массивы не равны NULL
-  if (src == S21_NULL || str == S21_NULL) {
-    return S21_NULL;
-  }
+  if (src != S21_NULL && str != S21_NULL) {
+    s21_size_t src_length = s21_strlen(src);
+    s21_size_t str_length = s21_strlen(str);
 
-  s21_size_t src_length = s21_strlen(src);
-  s21_size_t str_length = s21_strlen(str);
+    // Корректируем условие проверки индекса:
+    // Разрешаем вставку в начало (start_index == 0) и в конец (start_index == src_length)
+    if (start_index <= src_length) {
+      s21_size_t result_length = src_length + str_length;
+      char *buffer = (char *)malloc(result_length + 1); // Выделяем память под новый массив
 
-  // Корректируем условие проверки индекса:
-  // Разрешаем вставку в начало (start_index == 0) и в конец (start_index == src_length)
-  if (start_index <= src_length) {
-    s21_size_t result_length = src_length + str_length;
-    char *result = (char *)malloc(result_length + 1); // Выделяем память под новый массив
-    if (result == S21_NULL) {
-      return S21_NULL; // Если память не выделена, возвращаем NULL
+      // Проверяем, что память успешно выделена
+      if (buffer != S21_NULL) {
+        // Копируем часть строки до start_index
+        s21_memcpy(buffer, src, start_index);
+
+        // Копируем строку str после start_index
+        s21_memcpy(buffer + start_index, str, str_length);
+
+        // Копируем оставшуюся часть исходной строки
+        s21_memcpy(buffer + start_index + str_length, src + start_index,
+                   src_length - start_index);
+
+        buffer[result_length] = '\0'; // Добавляем завершающий ноль
+
+        result = (void *)buffer; // Устанавливаем результат
+      }
     }
-
-    // Копируем часть строки до start_index
-    s21_memcpy(result, src, start_index);
-
-    // Копируем строку str после start_index
-    s21_memcpy(result + start_index, str, str_length);
-
-    // Копируем оставшуюся часть исходной строки
-    s21_memcpy(result + start_index + str_length, src + start_index,
-               src_length - start_index);
-
-    result[result_length] = '\0'; // Добавляем завершающий ноль
-
-    return (void *)result;
-  } else {
-    return S21_NULL; // Некорректный индекс
   }
+
+  return result; // Единственный выход из функции
 }
 
 void *s21_trim(const char *src, const char *trim_chars) {

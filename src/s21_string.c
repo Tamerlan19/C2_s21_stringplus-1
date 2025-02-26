@@ -426,45 +426,44 @@ void *s21_to_lower(const char *str) {
 };
 
 void *s21_insert(const char *src, const char *str, s21_size_t start_index) {
-  /*Возвращает новую строку, в которой указанная строка (str) вставлена
+  /* Возвращает новую строку, в которой указанная строка (str) вставлена
   в указанную позицию (start_index) в данной строке (src).
   В случае какой-либо ошибки следует вернуть значение S21_NULL.
   */
-  char *result = S21_NULL;
-  if (src == S21_NULL ||
-      str == S21_NULL) { // проверяю, что переданныеы массивы не равны нулю
+
+  // Проверяем, что переданные массивы не равны NULL
+  if (src == S21_NULL || str == S21_NULL) {
     return S21_NULL;
   }
 
   s21_size_t src_length = s21_strlen(src);
   s21_size_t str_length = s21_strlen(str);
 
-  if (start_index > 0 &&
-      start_index < src_length) { // проверяю, что длина вставки не больше длины
-                                  // самого массива и индекс не отрицательный
-    s21_size_t result_lenght = src_length + str_length;
-    char *rslt =
-        (char *)malloc(result_lenght + 1); // выделяем, память под новый массив
-    if (rslt == S21_NULL) {
-      return S21_NULL;
+  // Корректируем условие проверки индекса:
+  // Разрешаем вставку в начало (start_index == 0) и в конец (start_index == src_length)
+  if (start_index <= src_length) {
+    s21_size_t result_length = src_length + str_length;
+    char *result = (char *)malloc(result_length + 1); // Выделяем память под новый массив
+    if (result == S21_NULL) {
+      return S21_NULL; // Если память не выделена, возвращаем NULL
     }
 
-    s21_memcpy(rslt, src,
-               start_index); // копирую src в result на start_index байтов
-    s21_memcpy(rslt + start_index, str,
-               str_length); // копирует массив str в result начиная с
-                            // start_index и вплоть до str_lenght
-    s21_memcpy(rslt + start_index + str_length, src + start_index,
-               src_length - start_index); // копирует оставшуюся часть массива
+    // Копируем часть строки до start_index
+    s21_memcpy(result, src, start_index);
 
-               rslt[result_lenght] = '\0';
+    // Копируем строку str после start_index
+    s21_memcpy(result + start_index, str, str_length);
 
+    // Копируем оставшуюся часть исходной строки
+    s21_memcpy(result + start_index + str_length, src + start_index,
+               src_length - start_index);
+
+    result[result_length] = '\0'; // Добавляем завершающий ноль
+
+    return (void *)result;
   } else {
-
-    return S21_NULL;
+    return S21_NULL; // Некорректный индекс
   }
-
-  return (void *)result;
 }
 
 void *s21_trim(const char *src, const char *trim_chars) {

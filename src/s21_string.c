@@ -194,13 +194,15 @@ S21_Error error_list[] = {
 #endif
 
 void *s21_memchr(const void *str, int c, s21_size_t n) {
+  void *res = S21_NULL;
   unsigned char *ptr = (unsigned char *)str;
-  for (s21_size_t i = 0; i < n; i++) {
+  for (s21_size_t i = 0; i < n && !res; i++) {
     if (ptr[i] == (unsigned char)c) {
-      return (void *)(ptr + i);
+      // return (void *)(ptr + i);
+      res = (void *)(ptr + i);
     }
   }
-  return S21_NULL;
+  return res;
 }
 
 int s21_memcmp(const void *str1, const void *str2, size_t n) {
@@ -340,17 +342,17 @@ s21_size_t s21_strlen(const char *str) {
 }
 
 char *s21_strpbrk(const char *str1, const char *str2) {
-  for (s21_size_t i = 0; str1[i] != '\0'; i++) {
-    for (s21_size_t j = 0; str2[j] != '\0'; j++) {
+  char *res = S21_NULL;
+  for (s21_size_t i = 0; str1[i] != '\0' && !res; i++) {
+    for (s21_size_t j = 0; str2[j] != '\0' && !res; j++) {
       if (str1[i] == str2[j]) {
-        return (char *)&str1[i];
+        res = (char *)&str1[i];
       }
     }
   }
-  return S21_NULL;
+  return res;
 }
 
-// [ ] Необходимо проверить корректность работы функции
 /**
  * @brief Find the last occurrence of a character in a string.
  *
@@ -378,127 +380,147 @@ char *s21_strrchr(const char *str, int c) {
   return (char *)rtn;
 }
 
-void *s21_to_upper(const char *str) {
-
-  if (str == S21_NULL) {
-    return S21_NULL;
-  }
-
-  s21_size_t length = s21_strlen(str);
-  char *result = (char *)malloc(length + 1);
-  if (result == S21_NULL) {
-    return S21_NULL;
-  }
-
-  for (s21_size_t i = 0; i < length; i++) {
-    if (str[i] >= 'a' && str[i] <= 'z') {
-      result[i] = str[i] - 32;
-    } else {
-      result[i] = str[i];
+char *s21_strstr(const char *haystack, const char *needle) {
+  char *res = S21_NULL;
+  if (haystack != S21_NULL && needle != S21_NULL) {
+    while (*haystack && !res) {
+      if (s21_strncmp(haystack, needle, s21_strlen(needle)) == 0) {
+        res = (char *)haystack;
+      }
+      haystack++;
     }
   }
+  if (haystack ==
+      needle) { // 2025-02-27 01:22:26 @morrigem:add from check empty test
+    res = (char *)haystack;
+  }
+  return res;
+}
 
-  result[length] = '\0';
-  return (void *)result;
+char *s21_strtok(char *str, const char *delim) {
+  char *res = S21_NULL;
+  static const char *pos = S21_NULL;
+  char *t = S21_NULL;
+  if (str != S21_NULL && delim != S21_NULL) {
+    if (*str != '\0') {
+      res = str;
+      t = s21_strpbrk(str, delim);
+      if (t - str == 0) { // delimiter in the begin of string
+        t = s21_strpbrk(++str, delim);
+      }
+      if (t - str > 0) {
+        *(t) = '\0';
+        res = t;
+        res -= (t - str);
+        pos = t + 1;
+      }
+    }
+  } else if (str == S21_NULL) {
+    t = s21_strstr(pos, delim);
+    if (t) {
+      res = t;
+      *res = '\0';
+      res -= (t - pos);
+      pos = t + 1;
+    }
+  }
+  // pos = t + 1;
+  return res;
+}
+
+void *s21_to_upper(const char *str) {
+  void *res = S21_NULL;
+  if (str != S21_NULL) {
+    s21_size_t length = s21_strlen(str);
+    char *result = (char *)malloc(length + 1);
+    if (result != S21_NULL) {
+
+      for (s21_size_t i = 0; i < length; i++) {
+        if (str[i] >= 'a' && str[i] <= 'z') {
+          result[i] = str[i] - 32;
+        } else {
+          result[i] = str[i];
+        }
+      }
+      result[length] = '\0';
+      res = (void *)result;
+    }
+  }
+  return (void *)res;
 };
 
 void *s21_to_lower(const char *str) {
-  if (str == S21_NULL) {
-    return S21_NULL;
-  }
+  void *res = S21_NULL;
+  if (str != S21_NULL) {
 
-  size_t length = s21_strlen(str);
-  char *result = (char *)malloc(length + 1);
-  if (result == S21_NULL) {
-    return S21_NULL;
-  }
+    size_t length = s21_strlen(str);
+    char *result = (char *)malloc(length + 1);
+    if (result != S21_NULL) {
 
-  for (s21_size_t i = 0; i < length; i++) {
-    if (str[i] >= 'A' && str[i] <= 'Z') {
-      result[i] = str[i] + 32;
-    } else {
-      result[i] = str[i];
+      for (s21_size_t i = 0; i < length; i++) {
+        if (str[i] >= 'A' && str[i] <= 'Z') {
+          result[i] = str[i] + 32;
+        } else {
+          result[i] = str[i];
+        }
+      }
+      result[length] = '\0';
+      res = (void *)result;
     }
   }
-
-  result[length] = '\0';
-  return (void *)result;
+  return res;
 };
 
 void *s21_insert(const char *src, const char *str, s21_size_t start_index) {
-  /*Возвращает новую строку, в которой указанная строка (str) вставлена
-  в указанную позицию (start_index) в данной строке (src).
-  В случае какой-либо ошибки следует вернуть значение S21_NULL.
-  */
-  char *result = S21_NULL;
-  if (src == S21_NULL ||
-      str == S21_NULL) { // проверяю, что переданныеы массивы не равны нулю
-    return S21_NULL;
-  }
+  void *result = S21_NULL;
 
-  s21_size_t src_length = s21_strlen(src);
-  s21_size_t str_length = s21_strlen(str);
+  if (src != S21_NULL && str != S21_NULL) {
+    s21_size_t src_length = s21_strlen(src);
+    s21_size_t str_length = s21_strlen(str);
 
-  if (start_index > 0 &&
-      start_index < src_length) { // проверяю, что длина вставки не больше длины
-                                  // самого массива и индекс не отрицательный
-    s21_size_t result_lenght = src_length + str_length;
-    char *rslt =
-        (char *)malloc(result_lenght + 1); // выделяем, память под новый массив
-    if (rslt == S21_NULL) {
-      return S21_NULL;
+    if (start_index <= src_length) {
+      s21_size_t result_length = src_length + str_length;
+      char *buffer = (char *)malloc(result_length + 1);
+      if (buffer != S21_NULL) {
+        s21_memcpy(buffer, src, start_index);
+        s21_memcpy(buffer + start_index, str, str_length);
+        s21_memcpy(buffer + start_index + str_length, src + start_index,
+                   src_length - start_index);
+        buffer[result_length] = '\0';
+        result = (void *)buffer;
+      }
     }
-
-    s21_memcpy(rslt, src,
-               start_index); // копирую src в result на start_index байтов
-    s21_memcpy(rslt + start_index, str,
-               str_length); // копирует массив str в result начиная с
-                            // start_index и вплоть до str_lenght
-    s21_memcpy(rslt + start_index + str_length, src + start_index,
-               src_length - start_index); // копирует оставшуюся часть массива
-
-               rslt[result_lenght] = '\0';
-
-  } else {
-
-    return S21_NULL;
   }
-
-  return (void *)result;
+  return result;
 }
 
 void *s21_trim(const char *src, const char *trim_chars) {
-  if (src == S21_NULL ||
-      trim_chars == S21_NULL) // проверяю на корректность переданной строки
-  {
-    return S21_NULL;
+  void *res = S21_NULL;
+
+  if (src != S21_NULL && trim_chars != S21_NULL) {
+    s21_size_t src_length = s21_strlen(src);
+    s21_size_t trim_length = s21_strlen(trim_chars);
+
+    if (trim_length == 0) {
+      trim_chars = " \t\n\r";
+    }
+
+    s21_size_t start = 0;
+    while (start < src_length &&
+           s21_strchr(trim_chars, src[start]) != S21_NULL) {
+      start++;
+    }
+
+    s21_size_t end = src_length;
+    while (end > start && s21_strchr(trim_chars, src[end - 1]) != S21_NULL) {
+      end--;
+    }
+
+    s21_size_t result_length = end - start;
+    char *result = (char *)malloc(result_length + 1);
+    s21_memcpy(result, src + start, result_length);
+    result[result_length] = '\0';
+    res = (void *)res;
   }
-  s21_size_t src_length = s21_strlen(src);
-  s21_size_t trim_length = s21_strlen(trim_chars); // длины строк
-
-  if (trim_length == 0) {
-    trim_chars = " \t\n\r";
-    // trim_length = s21_strlen(trim_chars);
-  }
-
-  s21_size_t start = 0; // определяю начало
-  while (start < src_length && s21_strchr(trim_chars, src[start]) != S21_NULL) {
-    start++;
-  }
-
-  s21_size_t end = src_length; // определяю конец, пропускаю символы из trim
-  while (end > start && s21_strchr(trim_chars, src[end - 1]) != S21_NULL) {
-    end--;
-  }
-
-  s21_size_t result_length = end - start; // память под строку
-  char *result = (char *)malloc(result_length + 1);
-  if (result == S21_NULL) {
-    return S21_NULL;
-  }
-
-  s21_memcpy(result, src + start, result_length);
-  result[result_length] = '\0';
-
-  return (void *)result;
+  return (void *)res;
 };

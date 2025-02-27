@@ -320,7 +320,8 @@ void handle_unsigned(char **buffer, Specifiers flags, unsigned int u) {
     s21_memset(*buffer, ' ', padding);
     *buffer += padding;
   } else { // Правое выравнивание
-    // char fill_char = (flags.flag == '0') && !(flags.flag == '-') ? '0' : ' '; // 2025-02-26 02:29:22 @morrigem: fix style
+    // char fill_char = (flags.flag == '0') && !(flags.flag == '-') ? '0' : ' ';
+    // // 2025-02-26 02:29:22 @morrigem: fix style
     char fill_char = (flags.flag == '0') ? '0' : ' ';
     s21_memset(*buffer, fill_char, padding);
     *buffer += padding;

@@ -52,9 +52,9 @@ gcov_report: clean
 	$(CC) $(CFLAGS)  -fprofile-arcs -ftest-coverage  -o test.exe test.c test_s21_string.c test_s21_sscanf.c test_s21_sprintf.c -L. -l:s21_string.a $(TESTFLAGS)
 	./test.exe
 	gcov s21_string.c
-	lcov --exclude "test*.c" --exclude "s21_utils.c"  --capture --directory ./ --output-file flt-coverage.info
+	lcov --exclude "test*.c"   --capture --directory ./ --output-file flt-coverage.info
 	genhtml flt-coverage.info --output-directory gcov_report
-
+#--exclude "s21_utils.c"
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 

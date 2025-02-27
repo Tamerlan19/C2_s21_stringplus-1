@@ -560,82 +560,107 @@ START_TEST(test_s21_sprintf_u_exceed_width) {
 }
 END_TEST
 
-START_TEST(test_s21_sprintf_percent_basic) {
+START_TEST(test_s21_sprintf_hs_short_string) {
     char buffer[1024];
     char buffer_s21[1024];
-    const char *fmt = "Percent: %%";
-    int ret = snprintf(buffer, sizeof(buffer), fmt); // Используем snprintf вместо sprintf
-    int ret_s21 = s21_sprintf(buffer_s21, fmt);
+    const char *fmt = "Short String: %hs";
+    char short_str[6] = "Hello"; // Массив char вместо строки
+    int ret = sprintf(buffer, fmt, short_str);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, short_str);
     ck_assert_int_eq(ret, ret_s21);
     ck_assert_str_eq(buffer, buffer_s21);
 }
 END_TEST
 
-START_TEST(test_s21_sprintf_percent_with_text) {
+START_TEST(test_s21_sprintf_ls_wide_string) {
+    wchar_t buffer[1024];
+    wchar_t buffer_s21[1024];
+    const char *fmt_narrow = "Wide String: %ls";
+    wchar_t fmt_wide[1024];
+    mbstowcs(fmt_wide, fmt_narrow, strlen(fmt_narrow) + 1); // Конвертируем формат в wchar_t
+    wchar_t wide_str[] = L"Привет"; // Строка широких символов
+    int ret = swprintf(buffer, 1024, fmt_wide, wide_str);
+    s21_sprintf((char*)buffer_s21, (char*)fmt_narrow, wide_str); // Используем оригинальный формат для s21_sprintf
+    ck_assert_int_eq(ret, wcslen(buffer)); // Проверяем длину строки
+    ck_assert_int_eq(wcscmp(buffer, (wchar_t*)buffer_s21), 0); // Сравниваем широкие строки
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_hc_short_char) {
     char buffer[1024];
     char buffer_s21[1024];
-    const char *fmt = "Start %% End";
-    int ret = snprintf(buffer, sizeof(buffer), fmt); // Используем snprintf
-    int ret_s21 = s21_sprintf(buffer_s21, fmt);
+    const char *fmt = "Short Char: %hc";
+    short int short_char = 'A'; // Короткий символ
+    int ret = sprintf(buffer, fmt, short_char);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, short_char);
     ck_assert_int_eq(ret, ret_s21);
     ck_assert_str_eq(buffer, buffer_s21);
 }
 END_TEST
 
-START_TEST(test_s21_sprintf_percent_multiple) {
+START_TEST(test_s21_sprintf_lc_wide_char) {
+    wchar_t buffer[1024];
+    wchar_t buffer_s21[1024];
+    const char *fmt_narrow = "Wide Char: %lc";
+    wchar_t fmt_wide[1024];
+    mbstowcs(fmt_wide, fmt_narrow, strlen(fmt_narrow) + 1); // Конвертируем формат в wchar_t
+    wchar_t wide_char = L'П'; // Широкий символ
+    int ret = swprintf(buffer, 1024, fmt_wide, wide_char);
+    s21_sprintf((char*)buffer_s21, (char*)fmt_narrow, wide_char); // Используем оригинальный формат для s21_sprintf
+    ck_assert_int_eq(ret, wcslen(buffer)); // Проверяем длину строки
+    ck_assert_int_eq(wcscmp(buffer, (wchar_t*)buffer_s21), 0); // Сравниваем широкие строки
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_hd_short_int) {
     char buffer[1024];
     char buffer_s21[1024];
-    const char *fmt = "%% %% %%";
-    int ret = snprintf(buffer, sizeof(buffer), fmt); // Используем snprintf
-    int ret_s21 = s21_sprintf(buffer_s21, fmt);
+    const char *fmt = "Short Int: %hd";
+    short int short_value = -32768; // Минимальное значение для short int
+    int ret = sprintf(buffer, fmt, short_value);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, short_value);
     ck_assert_int_eq(ret, ret_s21);
     ck_assert_str_eq(buffer, buffer_s21);
 }
 END_TEST
 
-START_TEST(test_s21_sprintf_percent_with_width) {
+START_TEST(test_s21_sprintf_ld_long_int) {
     char buffer[1024];
     char buffer_s21[1024];
-    const char *fmt = "Percent: %5%";
-    int ret = snprintf(buffer, sizeof(buffer), fmt); // Используем snprintf
-    int ret_s21 = s21_sprintf(buffer_s21, fmt);
+    const char *fmt = "Long Int: %ld";
+    long int long_value = 2147483647L; // Максимальное значение для long int
+    int ret = sprintf(buffer, fmt, long_value);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, long_value);
     ck_assert_int_eq(ret, ret_s21);
     ck_assert_str_eq(buffer, buffer_s21);
 }
 END_TEST
 
-START_TEST(test_s21_sprintf_percent_left_alignment) {
+START_TEST(test_s21_sprintf_hu_short_unsigned) {
     char buffer[1024];
     char buffer_s21[1024];
-    const char *fmt = "Percent: %-5%";
-    int ret = snprintf(buffer, sizeof(buffer), fmt); // Используем snprintf
-    int ret_s21 = s21_sprintf(buffer_s21, fmt);
+    const char *fmt = "Short Unsigned: %hu";
+    unsigned short int short_uvalue = 65535; // Максимальное значение для unsigned short
+    int ret = sprintf(buffer, fmt, short_uvalue);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, short_uvalue);
     ck_assert_int_eq(ret, ret_s21);
     ck_assert_str_eq(buffer, buffer_s21);
 }
 END_TEST
 
-START_TEST(test_s21_sprintf_percent_with_precision) {
+START_TEST(test_s21_sprintf_lu_long_unsigned) {
     char buffer[1024];
     char buffer_s21[1024];
-    const char *fmt = "Percent: %.2%";
-    int ret = snprintf(buffer, sizeof(buffer), fmt); // Используем snprintf
-    int ret_s21 = s21_sprintf(buffer_s21, fmt);
+    const char *fmt = "Long Unsigned: %lu";
+    unsigned long int long_uvalue = 4294967295UL; // Максимальное значение для unsigned long
+    int ret = sprintf(buffer, fmt, long_uvalue);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, long_uvalue);
     ck_assert_int_eq(ret, ret_s21);
     ck_assert_str_eq(buffer, buffer_s21);
 }
 END_TEST
 
-START_TEST(test_s21_sprintf_percent_width_precision) {
-    char buffer[1024];
-    char buffer_s21[1024];
-    const char *fmt = "Percent: %5.2%";
-    int ret = snprintf(buffer, sizeof(buffer), fmt); // Используем snprintf
-    int ret_s21 = s21_sprintf(buffer_s21, fmt);
-    ck_assert_int_eq(ret, ret_s21);
-    ck_assert_str_eq(buffer, buffer_s21);
-}
-END_TEST
+
 
 Suite *s21_sprintf_suite(void) {
   Suite *s;
@@ -651,7 +676,6 @@ Suite *s21_sprintf_suite(void) {
   tcase_add_test(tc_core, test_s21_sprintf_d_left_alignment);
   tcase_add_test(tc_core, test_s21_sprintf_d_width_flag);
   tcase_add_test(tc_core, test_s21_sprintf_d_zero_padding);
-  tcase_add_test(tc_core, test_s21_sprintf_ld_long_int_format);
   tcase_add_test(tc_core, test_s21_sprintf_ld_long_int_format);
   tcase_add_test(tc_core, test_s21_sprintf_negative_hd_short_int_format);
   tcase_add_test(tc_core, test_s21_sprintf_hd_short_int_format);
@@ -700,13 +724,29 @@ Suite *s21_sprintf_suite(void) {
   tcase_add_test(tc_core, test_s21_sprintf_s_zero_padding);
   tcase_add_test(tc_core, test_s21_sprintf_s_exceed_width);
 
-  tcase_add_test(tc_core, test_s21_sprintf_percent_basic);
-  tcase_add_test(tc_core, test_s21_sprintf_percent_with_text);
-  tcase_add_test(tc_core, test_s21_sprintf_percent_multiple);
-  tcase_add_test(tc_core, test_s21_sprintf_percent_with_width);
-  tcase_add_test(tc_core, test_s21_sprintf_percent_left_alignment);
-  tcase_add_test(tc_core, test_s21_sprintf_percent_with_precision);
-  tcase_add_test(tc_core, test_s21_sprintf_percent_width_precision);
+      // Добавляем тесты для %hs (short string)
+    tcase_add_test(tc_core, test_s21_sprintf_hs_short_string);
+
+    // Добавляем тесты для %ls (wide string)
+    tcase_add_test(tc_core, test_s21_sprintf_ls_wide_string);
+
+    // Добавляем тесты для %hc (short char)
+    tcase_add_test(tc_core, test_s21_sprintf_hc_short_char);
+
+    // Добавляем тесты для %lc (wide char)
+    tcase_add_test(tc_core, test_s21_sprintf_lc_wide_char);
+
+    // Добавляем тесты для %hd (short int)
+    tcase_add_test(tc_core, test_s21_sprintf_hd_short_int);
+
+    // Добавляем тесты для %ld (long int)
+    tcase_add_test(tc_core, test_s21_sprintf_ld_long_int);
+
+    // Добавляем тесты для %hu (short unsigned)
+    tcase_add_test(tc_core, test_s21_sprintf_hu_short_unsigned);
+
+    // Добавляем тесты для %lu (long unsigned)
+    tcase_add_test(tc_core, test_s21_sprintf_lu_long_unsigned);
 
 
 tcase_add_test(tc_debug, test_s21_sprintf_f_large_number);

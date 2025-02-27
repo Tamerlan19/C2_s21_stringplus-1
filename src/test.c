@@ -20,7 +20,8 @@ int main(void) {
   checks += srunner_ntests_run(sr);
   srunner_free(sr);
   if (number_failed != 0) {
-    printf("Suite \"s21_string_suite\" failed: %d tests.\n\n", number_failed);
+    printf("Suite \"s21_string_suite\" failed: %d tests.\n\n",
+    number_failed);
   } else {
     printf("Suite \"s21_string_suite\" passed!\n\n");
   }
@@ -54,7 +55,6 @@ int main(void) {
   }
   failed_sum += number_failed;
 
-  
   if (failed_sum != 0) {
     printf("FAIL! Checks:%d, Failures:%d tests is failed.\n", checks,
            failed_sum);

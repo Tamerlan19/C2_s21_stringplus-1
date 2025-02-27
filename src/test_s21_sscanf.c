@@ -3296,6 +3296,9 @@ Suite *s21_sscanf_suite(void) {
   tcase_add_test(tc_core_c, s21_test_sscanf_c_ignore_flag);
   tcase_add_test(tc_core_c, s21_test_sscanf_c_four_chars);
   tcase_add_test(tc_core_c, test_s21_sscanf_c_edge);
+  tcase_add_test(tc_core_c, test_s21_sscanf_cmpx_7092);
+  tcase_add_test(tc_core_c, test_s21_sscanf_cmpx_4106);
+  tcase_add_test(tc_core_c, test_s21_sscanf_cmpx_9707);
 
   tcase_add_test(tc_core_s, test_s21_sscanf_s_separators_comp);
   tcase_add_test(tc_core_s, test_s21_sscanf_s_simple);
@@ -3436,6 +3439,12 @@ Suite *s21_sscanf_suite(void) {
   tcase_add_test(tc_core_x, test_s21_sscanf_X_max);
   tcase_add_test(tc_core_x, test_s21_sscanf_X_zero);
   tcase_add_test(tc_core_x, test_s21_sscanf_X);
+  tcase_add_test(tc_core_x, test_s21_sscanf_cmpx_0252);
+  tcase_add_test(tc_core_x, test_s21_sscanf_cmpx_6523);
+  tcase_add_test(tc_core_x, test_s21_sscanf_cmpx_2446);
+  tcase_add_test(tc_core_x, test_s21_sscanf_cmpx_8369);
+  tcase_add_test(tc_core_x, test_s21_sscanf_cmpx_0032);
+  tcase_add_test(tc_core_x, test_s21_sscanf_cmpx_2388);
 
   tcase_add_test(tc_core_p, test_s21_sscanf_p_simple);
   tcase_add_test(tc_core_p, test_s21_sscanf_p);
@@ -3475,6 +3484,22 @@ Suite *s21_sscanf_suite(void) {
   tcase_add_test(tc_core_f, test_s21_sscanf_f);
   tcase_add_test(tc_core_f, test_s21_sscanf_cmpx_0320);
   tcase_add_test(tc_core_f, test_s21_sscanf_cmpx_0495);
+  tcase_add_test(tc_core_f, test_s21_sscanf_cmpx_007);
+  tcase_add_test(tc_core_f, test_s21_sscanf_cmpx_008);
+  tcase_add_test(tc_core_f, test_s21_sscanf_cmpx_0041);
+  tcase_add_test(tc_core_f, test_s21_sscanf_cmpx_0045);
+  tcase_add_test(tc_core_f, test_s21_sscanf_cmpx_0213);
+  tcase_add_test(tc_core_f, test_s21_sscanf_cmpx_0420);
+  tcase_add_test(tc_core_f, test_s21_sscanf_cmpx_0850);
+  tcase_add_test(tc_core_f, test_s21_sscanf_cmpx_2214);
+  tcase_add_test(tc_core_f, test_s21_sscanf_cmpx_2388);
+  tcase_add_test(tc_core_f, test_s21_sscanf_cmpx_2506);
+  tcase_add_test(tc_core_f, test_s21_sscanf_cmpx_2733);
+  tcase_add_test(tc_core_f, test_s21_sscanf_cmpx_3234);
+  tcase_add_test(tc_core_f, test_s21_sscanf_cmpx_6148);
+  tcase_add_test(tc_core_f, test_s21_sscanf_cmpx_6203);
+  tcase_add_test(tc_core_f, test_s21_sscanf_cmpx_7445);
+  tcase_add_test(tc_core_f, test_s21_sscanf_cmpx_9721);
 
   //[ ] Uncomment additional test case
   suite_add_tcase(suite, tc_core_c);
@@ -3491,34 +3516,8 @@ Suite *s21_sscanf_suite(void) {
   suite_add_tcase(suite, tc_core_pcnt);
 
   //[ ] Delete debug suite
-  tcase_add_test(tc_core_f, test_s21_sscanf_cmpx_007);
-  tcase_add_test(tc_core_f, test_s21_sscanf_cmpx_008);
-  tcase_add_test(tc_core_f, test_s21_sscanf_cmpx_0041);
-  tcase_add_test(tc_core_f, test_s21_sscanf_cmpx_0045);
-  tcase_add_test(tc_core_f, test_s21_sscanf_cmpx_0213);
-  tcase_add_test(tc_core_f, test_s21_sscanf_cmpx_0420);
-  tcase_add_test(tc_core_f, test_s21_sscanf_cmpx_0850);
-  tcase_add_test(tc_core_f, test_s21_sscanf_cmpx_2214);
-  tcase_add_test(tc_core_f, test_s21_sscanf_cmpx_2388);
-  tcase_add_test(tc_core_f, test_s21_sscanf_cmpx_2506);
-  tcase_add_test(tc_core_f, test_s21_sscanf_cmpx_2733);
-  tcase_add_test(tc_core_f, test_s21_sscanf_cmpx_3234);
-  tcase_add_test(tc_core_c, test_s21_sscanf_cmpx_4106);
-  tcase_add_test(tc_core_f, test_s21_sscanf_cmpx_6148);
-  tcase_add_test(tc_core_f, test_s21_sscanf_cmpx_6203);
-  tcase_add_test(tc_core_x, test_s21_sscanf_cmpx_6523);
-  tcase_add_test(tc_core_c, test_s21_sscanf_cmpx_7092);
-  tcase_add_test(tc_core_f, test_s21_sscanf_cmpx_7445);
-  tcase_add_test(tc_core_c, test_s21_sscanf_cmpx_9707);
-  tcase_add_test(tc_core_f, test_s21_sscanf_cmpx_9721);
-  tcase_add_test(tc_core_x, test_s21_sscanf_cmpx_0252);
-  tcase_add_test(tc_core_x, test_s21_sscanf_cmpx_2446);
-  tcase_add_test(tc_debug, test_s21_sscanf_cmpx_8369);
-
-  tcase_add_test(tc_debug, test_s21_sscanf_cmpx_0032);
-  tcase_add_test(tc_debug, test_s21_sscanf_cmpx_2388);
-  tcase_add_test(tc_debug, test_s21_sscanf_d_max);
-
+  tcase_add_test(tc_debug, test_s21_sscanf_s_simple);
   suite_add_tcase(suite, tc_debug);
+
   return suite;
 }

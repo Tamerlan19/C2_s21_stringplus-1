@@ -15,9 +15,7 @@ int proc_spec_i(const char *str, va_list args, const Specifiers st_spec);
 int proc_spec_o(const char *str, va_list args, const Specifiers st_spec);
 int proc_spec_x(const char *str, va_list args, const Specifiers st_spec);
 int proc_spec_p(const char *str, va_list args, const Specifiers st_spec);
-int is_alpha(char c);
-int is_digit(char c);
-int is_space(char c);
+
 
 int str_to_int(const char *p, long int *res, int base);
 
@@ -264,6 +262,15 @@ int get_number(const char *p, long int *res) {
   return i;
 }
 
+char *get_arg_width(const char *str, int width) {
+  char *arg_str = malloc(sizeof(char) * width + 1);
+  if (*str != '\0') {
+    s21_strncpy(arg_str, str, width);
+    arg_str[width] = '\0';
+  }
+  return arg_str;
+}
+
 int str_to_int(const char *p, long int *res, int base) {
   *res = 0;
   int i = 0;
@@ -284,19 +291,15 @@ int str_to_int(const char *p, long int *res, int base) {
       digit = (*p - 'A' + 10); // A-Z -> 10-35
 
     if (digit < 0 || digit >= base)
-      break; // Ошибка: символ не принадлежит текущему основанию
+      break; 
 
-    // Проверка переполнения
     if (temp > (LONG_MAX - digit) / base) {
       *res = (znak == 1) ? LONG_MAX : LONG_MIN;
-      // return -1; // Код ошибки переполнения
     }
-
     temp = (temp * base + digit);
     p++;
     i++;
   }
-
   *res = temp * znak;
   return i;
 }
@@ -316,10 +319,7 @@ int proc_spec_c(const char *str, va_list args, const Specifiers st_spec) {
             break;
         }
       } else {
-        // p += width > 0 ? width : 1; // 2025-02-25 19:03:17 @morrigem: fix
-        // style: style: Condition 'width>0' is always true
         p += width; // 2025-02-25 19:03:17 @morrigem: fix style: style:
-                    // Condition 'width>0' is always true
       }
     } else {
       if ((st_spec.length == 'l')) {
@@ -350,21 +350,35 @@ int proc_spec_c(const char *str, va_list args, const Specifiers st_spec) {
   return p - str - error;
 }
 
+int proc_spec_wchar(const char **p, wchar_t *ch) {
+  int res = 0;
+  DEBUG_PRINT("Start procesing and noop wide String\n");
+  // wchar_t ch[10];
+  while (**p && !is_space(**p)) {
+    s21_size_t mbr_res = mbrtowc(ch, *p, MB_CUR_MAX, NULL);
+    if (mbr_res == (size_t)-1 || mbr_res == (size_t)-2) {
+      DEBUG_PRINT("Error: Invalid multibyte sequence.\n");
+      break; // Прерываем цикл при ошибке
+    }
+    DEBUG_PRINT("mbr_res=%lu, char=|%lc| \n", (unsigned long)mbr_res, *(ch));
+    *p += mbr_res; // Перемещаем указатель на следующий символ
+    ch++; // Перемещаем указатель на следующий широкий символ
+    res += mbr_res; // Увеличиваем счётчик прочитанных символов
+  }
+  *ch = L'\0';
+  DEBUG_PRINT("End procesing wide String. number chars=%d\n", res);
+  return res;
+}
+
 int proc_spec_f(const char *str, va_list args, const Specifiers st_spec) {
   int r = 0;
-  char arg_str[s21_strlen(str) + 1];
-  // int width = st_spec.width > 0 ? st_spec.width : (int)s21_strlen(str);
   int width = get_width(str, st_spec);
-  if (width >= 0) {
-    s21_memcpy(arg_str, str, width);
-    arg_str[width] = '\0';
-  } else {
-    s21_memcpy(arg_str, str, width);
-  }
-  const char *p = arg_str; // Указатель на входную строку
+  char *arg_str = get_arg_width(str, width);
+  const char *p = arg_str;
+  noop_space(&p);
+
   DEBUG_PRINT(" String=%s\n", p);
   long int res = 0;
-  // int i = 10;
   int init = 0;
   long double result = 0.0;
   if (get_number(p, &res) > 0) {
@@ -374,10 +388,8 @@ int proc_spec_f(const char *str, va_list args, const Specifiers st_spec) {
   result += res;
   DEBUG_PRINT(" RES_CELOE=%Lf\n", result);
   if (*p == '.' && is_digit(*(p + 1)) && *(p + 1) != '\0') {
-    // if ( *p == '.' && p-arg_str>0) {
     long int div = 0;
     p++;
-    // i++;
     int ost_div = get_number(p, &div);
     if (result < 0) {
       div = div * -1;
@@ -410,8 +422,6 @@ int proc_spec_f(const char *str, va_list args, const Specifiers st_spec) {
       float *ch = va_arg(args, float *);
       *ch = (float)result;
     }
-    // p++;
-    // i++;
     DEBUG_PRINT(" Float=%Lf\n", result);
     r = p - arg_str;
   } else if (st_spec.flag == '*') {
@@ -420,110 +430,156 @@ int proc_spec_f(const char *str, va_list args, const Specifiers st_spec) {
     r = -1;
   }
 
-  // DEBUG_PRINT(" value Length=%ld\n", arg_str - p);
-  // return p - arg_str; 2025-02-24 20:26
+  free(arg_str);
   return r;
 }
 int proc_spec_s(const char *str, va_list args, const Specifiers st_spec) {
   DEBUG_PRINT("Call proc_spec_s()\n");
+  int res = 0, i=0;
   int width = get_width(str, st_spec);
-  DEBUG_PRINT("width=%d\n", width);
-  const char *p = str;
-  int res = 0;
-  int i = 0;
+  char *arg_str = get_arg_width(str, width);
+  const char *p = arg_str;
+  noop_space(&p);
   DEBUG_PRINT("proc_spec_s(): String length=%lu\n",
               (unsigned long)s21_strlen(p));
-  noop_space(&p);
   if (*p) {
     if (st_spec.flag == '*') {
       if ((st_spec.length == 'l')) {
         DEBUG_PRINT("Start procesing and noop wide String\n");
-        wchar_t ch[10];
-        while (*p && !is_space(*p) && i < width) {
-          s21_size_t mbr_res = mbrtowc(ch, p, MB_CUR_MAX, NULL);
-          if (mbr_res == (size_t)-1 || mbr_res == (size_t)-2) {
-            DEBUG_PRINT("Error: Invalid multibyte sequence.\n");
-            break; // Прерываем цикл при ошибке
-          }
-          DEBUG_PRINT("mbr_res=%lu\n", (unsigned long)mbr_res);
-          p += mbr_res; // Перемещаем указатель на следующий символ
-          // ch++;         // Перемещаем указатель на следующий широкий символ
-          i++; // Увеличиваем счётчик прочитанных символов
-        }
+        wchar_t ch[sizeof(char) * s21_strlen(p)];
+        i += proc_spec_wchar(&p, ch);
+
       } else {
-        for (; !(is_space(*p)) && i < width; i++, p++)
+        for (; *p && !(is_space(*p)); i++, p++)
           ;
       }
       res = 0;
     } else {
       if ((st_spec.length == 'l')) {
-        DEBUG_PRINT("Start procesing wide String\n");
         wchar_t *ch = va_arg(args, wchar_t *);
-        // wchar_t *start = ch;
-        while (*p && !is_space(*p) && i < width) {
-          s21_size_t mbr_res = mbrtowc(ch, p, MB_CUR_MAX, NULL);
-          if (mbr_res == (s21_size_t)-1 || mbr_res == (s21_size_t)-2) {
-            DEBUG_PRINT("Error: Invalid multibyte sequence.\n");
-            break; // Прерываем цикл при ошибке
-          }
-          p += mbr_res;
-          ch++;
-          i++;
+        if (ch != S21_NULL) {
+          i += proc_spec_wchar(&p, ch);
         }
-        *ch = L'\0';
-        if (i > 0) {
-          res++; // Увеличиваем счётчик успешных преобразований
-          // DEBUG_PRINT("Wide string=%ls\n", start); // Выводим строку с начала
-        } else {
-          DEBUG_PRINT("Warning: No valid characters read.\n");
-        }
-        res++;
       } else {
-        DEBUG_PRINT("proc_spec_s(process string)\n");
         char *ch = va_arg(args, char *);
         if (ch != NULL) {
           DEBUG_PRINT("String write to args=|%s|, strlen=%lu, width=%d\n", p,
                       (unsigned long)s21_strlen(p), width);
-          while (*p && !is_space(*p) && i < width) {
+          for (; *p && !(is_space(*p)); i++) {
             *ch++ = *p++;
-            DEBUG_PRINT("i=%d, symbol=%c\n", i, *(ch - 1)); // Отладочный вывод
-            i++;
           }
           *ch = '\0';
-
-          if (i > 0) {
-            res++;
-          } else {
-            DEBUG_PRINT("Warning: No valid characters read.\n");
-          }
-        } else
-          DEBUG_PRINT("ERRRRRROOR");
-        DEBUG_PRINT("proc_spec_s()=%d\n", res);
-        DEBUG_PRINT("String=%s\n", ch - i);
+        }
+      }
+      if (i > 0) {
+        res++;
       }
     }
   }
   if (i == 0 && res == 0) {
     res = -1;
   } else
-    res = p - str;
-  DEBUG_PRINT(" value Step=%td\n", p - str);
+    res = p - arg_str;
+  DEBUG_PRINT(" value Step=%td\n", p - arg_str);
+  DEBUG_PRINT("proc_spec_s() result=|%d|, String = |%s|\n", res, ch - i);
+  free(arg_str);
   return res;
 }
+
+// int proc_spec_s_old_work(const char *str, va_list args, const Specifiers
+// st_spec) {
+//   DEBUG_PRINT("Call proc_spec_s()\n");
+//   int width = get_width(str, st_spec);
+//   DEBUG_PRINT("width=%d\n", width);
+//   const char *p = str;
+//   int res = 0;
+//   int i = 0;
+//   DEBUG_PRINT("proc_spec_s(): String length=%lu\n",
+//               (unsigned long)s21_strlen(p));
+//   noop_space(&p);
+//   if (*p) {
+//     if (st_spec.flag == '*') {
+//       if ((st_spec.length == 'l')) {
+//         DEBUG_PRINT("Start procesing and noop wide String\n");
+//         wchar_t ch[10];
+//         while (*p && !is_space(*p) && i < width) {
+//           s21_size_t mbr_res = mbrtowc(ch, p, MB_CUR_MAX, NULL);
+//           if (mbr_res == (size_t)-1 || mbr_res == (size_t)-2) {
+//             DEBUG_PRINT("Error: Invalid multibyte sequence.\n");
+//             break; // Прерываем цикл при ошибке
+//           }
+//           DEBUG_PRINT("mbr_res=%lu\n", (unsigned long)mbr_res);
+//           p += mbr_res; // Перемещаем указатель на следующий символ
+//           // ch++;         // Перемещаем указатель на следующий широкий
+//           символ i++; // Увеличиваем счётчик прочитанных символов
+//         }
+//       } else {
+//         for (; !(is_space(*p)) && i < width; i++, p++)
+//           ;
+//       }
+//       res = 0;
+//     } else {
+//       if ((st_spec.length == 'l')) {
+//         DEBUG_PRINT("Start procesing wide String\n");
+//         wchar_t *ch = va_arg(args, wchar_t *);
+//         // wchar_t *start = ch;
+//         while (*p && !is_space(*p) && i < width) {
+//           s21_size_t mbr_res = mbrtowc(ch, p, MB_CUR_MAX, NULL);
+//           if (mbr_res == (s21_size_t)-1 || mbr_res == (s21_size_t)-2) {
+//             DEBUG_PRINT("Error: Invalid multibyte sequence.\n");
+//             break; // Прерываем цикл при ошибке
+//           }
+//           p += mbr_res;
+//           ch++;
+//           i++;
+//         }
+//         *ch = L'\0';
+//         if (i > 0) {
+//           res++; // Увеличиваем счётчик успешных преобразований
+//           // DEBUG_PRINT("Wide string=%ls\n", start); // Выводим строку с
+//           начала
+//         } else {
+//           DEBUG_PRINT("Warning: No valid characters read.\n");
+//         }
+//         res++;
+//       } else {
+//         DEBUG_PRINT("proc_spec_s(process string)\n");
+//         char *ch = va_arg(args, char *);
+//         if (ch != NULL) {
+//           DEBUG_PRINT("String write to args=|%s|, strlen=%lu, width=%d\n", p,
+//                       (unsigned long)s21_strlen(p), width);
+//           while (*p && !is_space(*p) && i < width) {
+//             *ch++ = *p++;
+//             DEBUG_PRINT("i=%d, symbol=%c\n", i, *(ch - 1)); // Отладочный
+//             вывод i++;
+//           }
+//           *ch = '\0';
+
+//           if (i > 0) {
+//             res++;
+//           } else {
+//             DEBUG_PRINT("Warning: No valid characters read.\n");
+//           }
+//         } else
+//           DEBUG_PRINT("ERRRRRROOR");
+//         DEBUG_PRINT("proc_spec_s()=%d\n", res);
+//         DEBUG_PRINT("String=%s\n", ch - i);
+//       }
+//     }
+//   }
+//   if (i == 0 && res == 0) {
+//     res = -1;
+//   } else
+//     res = p - str;
+//   DEBUG_PRINT(" value Step=%td\n", p - str);
+//   return res;
+// }
 
 int proc_spec_d(const char *str, va_list args, const Specifiers st_spec) {
   int res = 0;
   int width = get_width(str, st_spec);
   long int result = 0;
-  char arg_str[width + 1];
-  // if (st_spec.width > 0) {
-  //   s21_memcpy(arg_str, str, width);
-  //   arg_str[width] = '\0';
-  // } else {
-  //   s21_memcpy(arg_str, str, s21_strlen(str));
-  //   arg_str[width+1] = '\0';
-  // }
-  s21_memcpy(arg_str, str, width);
+  char *arg_str = get_arg_width(str, width);
   const char *p = arg_str;
   noop_space(&p);
   DEBUG_PRINT(" String str=|%s|\n", str);
@@ -564,6 +620,7 @@ int proc_spec_d(const char *str, va_list args, const Specifiers st_spec) {
 
     va_arg(args, short int *);
   }
+  free(arg_str);
   return res;
 }
 
@@ -571,16 +628,8 @@ int proc_spec_u(const char *str, va_list args, const Specifiers st_spec) {
   int res = 0;
   int width = get_width(str, st_spec);
   long int result = 0;
-  char arg_str[s21_strlen(str) + 1];
-  // if (width > 0) {
-  //   s21_memcpy(arg_str, str, width);
-  //   arg_str[width] = '\0';
-  // } else {
-  //   s21_memcpy(arg_str, str, s21_strlen(str));
-  // }
-  s21_memcpy(arg_str, str, width);
-  arg_str[s21_strlen(str)] = '\0';
-  const char *p = arg_str; // Указатель на входную строку
+  char *arg_str = get_arg_width(str, width);
+  const char *p = arg_str;
   noop_space(&p);
   DEBUG_PRINT(" Input string for convert to int=|%s|\n", p);
   int step = 0;
@@ -606,6 +655,7 @@ int proc_spec_u(const char *str, va_list args, const Specifiers st_spec) {
   } else if (st_spec.flag != '*') {
     res = -1;
   }
+  free(arg_str);
   return res;
 }
 
@@ -653,15 +703,7 @@ int proc_spec_o(const char *str, va_list args, const Specifiers st_spec) {
   int res = 0;
   int width = get_width(str, st_spec);
   long int result = 0;
-  char arg_str[s21_strlen(str) + 1];
-  // if (st_spec.width > 0) {
-  //   s21_memcpy(arg_str, str, width);
-  //   arg_str[width] = '\0';
-  // } else {
-  //   s21_memcpy(arg_str, str, s21_strlen(str));
-  // }
-  s21_memcpy(arg_str, str, width);
-  arg_str[s21_strlen(str)] = '\0';
+  char *arg_str = get_arg_width(str, width);
   const char *p = arg_str;
   noop_space(&p);
   DEBUG_PRINT(" String str=|%s|\n", str);
@@ -697,7 +739,7 @@ int proc_spec_o(const char *str, va_list args, const Specifiers st_spec) {
     res = 0;
     va_arg(args, short int *);
   }
-
+  free(arg_str);
   return res;
 }
 
@@ -705,15 +747,7 @@ int proc_spec_x(const char *str, va_list args, const Specifiers st_spec) {
   int res = 0;
   int width = get_width(str, st_spec);
   long int result = 0;
-  char arg_str[s21_strlen(str) + 1];
-  // if (st_spec.width > 0) {
-  //   s21_memcpy(arg_str, str, width);
-  //   arg_str[width] = '\0';
-  // } else {
-  //   s21_memcpy(arg_str, str, s21_strlen(str));
-  // }
-  s21_memcpy(arg_str, str, width);
-  arg_str[s21_strlen(str)] = '\0';
+  char *arg_str = get_arg_width(str, width);
   const char *p = arg_str;
   noop_space(&p);
   DEBUG_PRINT(" String str=|%s|\n", str);
@@ -759,7 +793,7 @@ int proc_spec_x(const char *str, va_list args, const Specifiers st_spec) {
     res = 0;
     va_arg(args, short int *);
   }
-
+  free(arg_str);
   return res;
 }
 

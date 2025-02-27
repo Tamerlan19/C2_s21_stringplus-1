@@ -49,7 +49,9 @@ int is_digit(char c);
 int is_alpha(char c);
 int is_space(char c);
 long double s21_pow(int x, int y);
-
+int is_alpha(char c);
+int is_digit(char c);
+int is_space(char c);
 void int_to_str(int num, char *str, int base);
 
 #endif

@@ -459,7 +459,6 @@ START_TEST(test_s21_strncat_n_zero) {
 }
 END_TEST
 
-
 START_TEST(test_s21_strncat) {
   char dest1[100] = "Hello, ";
   char dest2[100] = "Hello, ";
@@ -1084,7 +1083,7 @@ START_TEST(test_s21_strtok_large_string) {
       "This,is,a,very,large,string,with,many,tokens,to,test,the,function";
   char str_s21[] =
       "This,is,a,very,large,string,with,many,tokens,to,test,the,function";
-      const char delim[] = ",";
+  const char delim[] = ",";
   char *result = s21_strtok(str_s21, delim);
   char *expected = strtok(str, delim);
   ck_assert_str_eq(result, expected);

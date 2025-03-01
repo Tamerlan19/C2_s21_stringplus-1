@@ -25,40 +25,27 @@ void proc_str(const char **p, int step, Specifiers st_spec, int *res,
     if (st_spec.flag != '*') {
       *res = *res + 1;
     }
-    // } else if (step < 0 && *res == 0) { //2025-02-22 02:50
   } else if (step == -1) {
     *stop = 1;
     if (*res == 0 && **p == '\0') {
       *res = -1;
     }
-    // *res = 0;
   } else if (step < -1) {
     *stop = 1;
     *res = -1;
-    // } else if ((st_spec.specifier != 'n' && st_spec.specifier != '%') && step
-    // == 0) { // add 2025-02-024 21:33
   } else if ((st_spec.specifier != 'n' &&
               st_spec.specifier !=
-                  '%')) { // 2025-02-25 18:58:46 @morrigem: fix style
+                  '%')) { 
     DEBUG_PRINT("Specifiers.flag=%c\n", st_spec.flag);
     *stop = 1;
   }
-  // if (s21_strlen(*p)){
-  //   *stop=1;
-  // }
-
-  DEBUG_PRINT("next_val(): step=%d, res =%d, string=|%s|, str_len=%lu \n", step,
-              *res, *p, (unsigned long)s21_strlen(*p));
 }
 
 int s21_sscanf(const char *str, const char *format, ...) {
   va_list args;
   va_start(args, format);
-  // Specifiers st_spec = {'*', -10, -1, '*', '*'};
-  const char *p = str; // Указатель на входную строку
-  const char *fmt = format; // Указатель на строку формата
-  //%[*/ширина][длина]спецификатор.
-  // int s=0;
+  const char *p = str; 
+  const char *fmt = format; 
   int res = 0;
   int stop = 0;
   if (p != S21_NULL && fmt != S21_NULL) {
@@ -71,7 +58,7 @@ int s21_sscanf(const char *str, const char *format, ...) {
           fmt += parse_specifiers(fmt, &st_spec);
           DEBUG_PRINT("format after parse =|%s|\n", fmt);
           int step = 0;
-          if (!(st_spec.specifier == 'c')) { // switch off for pass tests c->z
+          if (!(st_spec.specifier == 'c')) {
             noop_space(&p);
           }
           if (st_spec.specifier == 'c') {

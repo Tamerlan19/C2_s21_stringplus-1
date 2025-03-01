@@ -861,7 +861,7 @@ START_TEST(test_s21_to_upper_all_uppercase) {
                    "HELLO WORLD"); // Сравниваем с ожидаемым результатом
   free(result); // Освобождаем выделенную память
 }
-END_TEST
+END_TEST 
 
 // Тест 3: Смешанные регистры
 START_TEST(test_s21_to_upper_mixed_case) {
@@ -986,6 +986,209 @@ START_TEST(test_s21_strrchr_large_string) {
 }
 END_TEST
 
+// Тест 1: Обычная строка с большими буквами
+START_TEST(test_s21_to_lower_normal_string) {
+  const char *input = "HELLO WORLD";
+  void *result = s21_to_lower(input);
+  ck_assert_ptr_nonnull(result); // Проверяем, что результат не NULL
+  ck_assert_str_eq((char *)result,
+                   "hello world"); // Сравниваем с ожидаемым результатом
+  free(result); // Освобождаем выделенную память
+}
+END_TEST
+
+// Тест 2: Строка с уже маленькими буквами
+START_TEST(test_s21_to_lower_all_lowercase) {
+  const char *input = "hello world";
+  void *result = s21_to_lower(input);
+  ck_assert_ptr_nonnull(result); // Проверяем, что результат не NULL
+  ck_assert_str_eq((char *)result,
+                   "hello world"); // Сравниваем с ожидаемым результатом
+  free(result); // Освобождаем выделенную память
+}
+END_TEST
+
+// Тест 3: Смешанные регистры
+START_TEST(test_s21_to_lower_mixed_case) {
+  const char *input = "HeLLo WoRld";
+  void *result = s21_to_lower(input);
+  ck_assert_ptr_nonnull(result); // Проверяем, что результат не NULL
+  ck_assert_str_eq((char *)result,
+                   "hello world"); // Сравниваем с ожидаемым результатом
+  free(result); // Освобождаем выделенную память
+}
+END_TEST
+
+// Тест 4: Пустая строка
+START_TEST(test_s21_to_lower_empty_string) {
+  const char *input = "";
+  void *result = s21_to_lower(input);
+  ck_assert_ptr_nonnull(result); // Проверяем, что результат не NULL
+  ck_assert_str_eq((char *)result, ""); // Сравниваем с ожидаемым результатом
+  free(result); // Освобождаем выделенную память
+}
+END_TEST
+
+// Тест 5: Входной параметр NULL
+START_TEST(test_s21_to_lower_null_input) {
+  const char *input = NULL;
+  void *result = s21_to_lower(input);
+  ck_assert_ptr_null(result); // Проверяем, что результат равен NULL
+}
+END_TEST
+
+// Тест 6: Строка с символами, которые не являются буквами
+START_TEST(test_s21_to_lower_non_alpha_characters) {
+  const char *input = "123!@#ABC";
+  void *result = s21_to_lower(input);
+  ck_assert_ptr_nonnull(result); // Проверяем, что результат не NULL
+  ck_assert_str_eq((char *)result,
+                   "123!@#abc"); // Сравниваем с ожидаемым результатом
+  free(result); // Освобождаем выделенную память
+}
+END_TEST
+
+// Тест 1: Вставка строки в середину другой строки
+START_TEST(test_s21_insert_middle) {
+  const char *src = "abcdef";
+  const char *str = "XYZ";
+  s21_size_t start_index = 3;
+  void *result = s21_insert(src, str, start_index);
+  ck_assert_ptr_nonnull(result); // Проверяем, что результат не NULL
+  ck_assert_str_eq((char *)result, "abcXYZdef"); // Сравниваем с ожидаемым результатом
+  free(result); // Освобождаем выделенную память
+}
+END_TEST
+
+// Тест 2: Вставка строки в начало другой строки
+START_TEST(test_s21_insert_start) {
+  const char *src = "abcdef";
+  const char *str = "XYZ";
+  s21_size_t start_index = 0;
+  void *result = s21_insert(src, str, start_index);
+  ck_assert_ptr_nonnull(result); // Проверяем, что результат не NULL
+  ck_assert_str_eq((char *)result, "XYZabcdef"); // Сравниваем с ожидаемым результатом
+  free(result); // Освобождаем выделенную память
+}
+END_TEST
+
+// Тест 3: Вставка строки в конец другой строки
+START_TEST(test_s21_insert_end) {
+  const char *src = "abcdef";
+  const char *str = "XYZ";
+  s21_size_t start_index = 6;
+  void *result = s21_insert(src, str, start_index);
+  ck_assert_ptr_nonnull(result); // Проверяем, что результат не NULL
+  ck_assert_str_eq((char *)result, "abcdefXYZ"); // Сравниваем с ожидаемым результатом
+  free(result); // Освобождаем выделенную память
+}
+END_TEST
+
+// Тест 4: Вставка пустой строки
+START_TEST(test_s21_insert_empty_str) {
+  const char *src = "abcdef";
+  const char *str = "";
+  s21_size_t start_index = 3;
+  void *result = s21_insert(src, str, start_index);
+  ck_assert_ptr_nonnull(result); // Проверяем, что результат не NULL
+  ck_assert_str_eq((char *)result, "abcdef"); // Сравниваем с ожидаемым результатом
+  free(result); // Освобождаем выделенную память
+}
+END_TEST
+
+// Тест 5: Исходная строка пустая
+START_TEST(test_s21_insert_empty_src) {
+  const char *src = "";
+  const char *str = "XYZ";
+  s21_size_t start_index = 0;
+  void *result = s21_insert(src, str, start_index);
+  ck_assert_ptr_nonnull(result); // Проверяем, что результат не NULL
+  ck_assert_str_eq((char *)result, "XYZ"); // Сравниваем с ожидаемым результатом
+  free(result); // Освобождаем выделенную память
+}
+END_TEST
+
+// Тест 1: Обычная строка с пробелами в начале и конце
+START_TEST(test_s21_trim_whitespace) {
+  const char *src = "   hello world   ";
+  const char *trim_chars = " \t\n\r";
+  void *result = s21_trim(src, trim_chars);
+  ck_assert_ptr_nonnull(result); // Проверяем, что результат не NULL
+  ck_assert_str_eq((char *)result,
+                   "hello world"); // Сравниваем с ожидаемым результатом
+  free(result); // Освобождаем выделенную память
+}
+END_TEST
+
+// Тест 2: Строка без лишних пробелов
+START_TEST(test_s21_trim_no_extra_spaces) {
+  const char *src = "hello world";
+  const char *trim_chars = " \t\n\r";
+  void *result = s21_trim(src, trim_chars);
+  ck_assert_ptr_nonnull(result); // Проверяем, что результат не NULL
+  ck_assert_str_eq((char *)result,
+                   "hello world"); // Сравниваем с ожидаемым результатом
+  free(result); // Освобождаем выделенную память
+}
+END_TEST
+
+// Тест 3: Строка с символами для обрезки
+START_TEST(test_s21_trim_custom_chars) {
+  const char *src = "!!!hello world...";
+  const char *trim_chars = "!.";
+  void *result = s21_trim(src, trim_chars);
+  ck_assert_ptr_nonnull(result); // Проверяем, что результат не NULL
+  ck_assert_str_eq((char *)result,
+                   "hello world"); // Сравниваем с ожидаемым результатом
+  free(result); // Освобождаем выделенную память
+}
+END_TEST
+
+// Тест 4: Строка полностью состоит из символов для обрезки
+START_TEST(test_s21_trim_all_trim_chars) {
+  const char *src = "!!!...";
+  const char *trim_chars = "!.";
+  void *result = s21_trim(src, trim_chars);
+  ck_assert_ptr_nonnull(result); // Проверяем, что результат не NULL
+  ck_assert_str_eq((char *)result,
+                   ""); // Сравниваем с ожидаемым результатом
+  free(result); // Освобождаем выделенную память
+}
+END_TEST
+
+// Тест 5: Входной параметр src равен NULL
+START_TEST(test_s21_trim_src_null) {
+  const char *src = NULL;
+  const char *trim_chars = " \t\n\r";
+  void *result = s21_trim(src, trim_chars);
+  ck_assert_ptr_null(result); // Проверяем, что результат равен NULL
+}
+END_TEST
+
+// Тест 7: Пустая строка
+START_TEST(test_s21_trim_empty_string) {
+  const char *src = "";
+  const char *trim_chars = " \t\n\r";
+  void *result = s21_trim(src, trim_chars);
+  ck_assert_ptr_nonnull(result); // Проверяем, что результат не NULL
+  ck_assert_str_eq((char *)result,
+                   ""); // Сравниваем с ожидаемым результатом
+  free(result); // Освобождаем выделенную память
+}
+END_TEST
+
+// Тест 8: Строка с символами табуляции и перевода строки
+START_TEST(test_s21_trim_tabs_and_newlines) {
+  const char *src = "\n\t  hello world  \t\n";
+  const char *trim_chars = " \t\n\r";
+  void *result = s21_trim(src, trim_chars);
+  ck_assert_ptr_nonnull(result); // Проверяем, что результат не NULL
+  ck_assert_str_eq((char *)result,
+                   "hello world"); // Сравниваем с ожидаемым результатом
+  free(result); // Освобождаем выделенную память
+}
+END_TEST
+
 START_TEST(test_s21_sterror_all) {
   for (int i = -50; i < 200; i++) {
     char *res = strerror(i);
@@ -1089,9 +1292,32 @@ Suite *s21_string_suite(void) {
   tcase_add_test(tc_core, test_s21_strrchr_first_char);
   tcase_add_test(tc_core, test_s21_strrchr_large_string);
 
-  tcase_add_test(tc_core, test_s21_sterror_all);
+  tcase_add_test(tc_core,test_s21_sterror_all);
 
-  suite_add_tcase(s, tc_core);
+  tcase_add_test(tc_core, test_s21_to_lower_normal_string);
+  tcase_add_test(tc_core, test_s21_to_lower_all_lowercase);
+  tcase_add_test(tc_core, test_s21_to_lower_mixed_case);
+  tcase_add_test(tc_core, test_s21_to_lower_empty_string);
+  tcase_add_test(tc_core, test_s21_to_lower_null_input);
+  tcase_add_test(tc_core, test_s21_to_lower_non_alpha_characters);
+
+  tcase_add_test(tc_core, test_s21_insert_middle);
+  tcase_add_test(tc_core, test_s21_insert_start);
+  tcase_add_test(tc_core, test_s21_insert_end);
+  tcase_add_test(tc_core, test_s21_insert_empty_str);
+  tcase_add_test(tc_core, test_s21_insert_empty_src);
+
+  tcase_add_test(tc_core, test_s21_trim_whitespace);
+  tcase_add_test(tc_core, test_s21_trim_no_extra_spaces);
+  tcase_add_test(tc_core, test_s21_trim_custom_chars);
+  tcase_add_test(tc_core, test_s21_trim_all_trim_chars);
+  tcase_add_test(tc_core, test_s21_trim_src_null);
+  tcase_add_test(tc_core, test_s21_trim_empty_string);
+  tcase_add_test(tc_core, test_s21_trim_tabs_and_newlines);
+
+
+ 
+suite_add_tcase(s, tc_core);
 
   return s;
 }

@@ -4,12 +4,17 @@
 #include <string.h>
 
 START_TEST(test_s21_sprintf_basic_string) {
-  char buffer[1024];
-  s21_sprintf(buffer, "Hello, World!");
-  ck_assert_str_eq(buffer, "Hello, World!");
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Hello, World!";
+
+    int ret = sprintf(buffer, "%s", fmt);
+    int ret_s21 = s21_sprintf(buffer_s21, "%s", fmt);
+
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
 }
 END_TEST
-
 START_TEST(test_s21_sprintf_d_int_format) {
   char buffer[1024] = {0};
   char original_buffer[1024] = {0};
@@ -64,9 +69,15 @@ START_TEST(test_s21_sprintf_negative_ld_long_int_format) {
 }
 END_TEST
 START_TEST(test_s21_sprintf_d_width_flag) {
-  char buffer[1024];
-  s21_sprintf(buffer, "Number: %5d", 42);
-  ck_assert_str_eq(buffer, "Number:    42");
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Number: %5d";  
+
+    int ret = sprintf(buffer, fmt, 42);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, 42);
+
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
 }
 END_TEST
 
@@ -83,143 +94,134 @@ START_TEST(test_s21_sprintf_f_precision_flag) {
 END_TEST
 
 START_TEST(test_s21_sprintf_d_zero_padding) {
-  char buffer[1024];
-  s21_sprintf(buffer, "Number: %05d", 42);
-  ck_assert_str_eq(buffer, "Number: 00042");
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Number: %05d";
+
+    int ret = sprintf(buffer, fmt, 42);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, 42);
+
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sprintf_d_left_alignment) {
-  char buffer[1024];
-  s21_sprintf(buffer, "Number: %-5d", 42);
-  ck_assert_str_eq(buffer, "Number: 42   ");
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Number: %-5d";
+
+    int ret = sprintf(buffer, fmt, 42);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, 42);
+
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
 }
+END_TEST
+
 START_TEST(test_s21_sprintf_c_simple_char) {
-  char buffer[256] = {0};
-  s21_sprintf(buffer, "%c", 'A'); // Передаем буфер явно
-  ck_assert_str_eq(buffer, "A");
+    char buffer[256];
+    char buffer_s21[256];
+    const char *fmt = "%c";
+
+    int ret = sprintf(buffer, fmt, 'A');
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, 'A');
+
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
 }
 END_TEST
 
-// Тест 2: Ширина больше одного символа
 START_TEST(test_s21_sprintf_c_width) {
-  char buffer[256] = {0};
-  s21_sprintf(buffer, "%5c", 'B'); // Передаем буфер явно
-  ck_assert_str_eq(buffer, "    B");
+    char buffer[256];
+    char buffer_s21[256];
+    const char *fmt = "%5c";
+
+    int ret = sprintf(buffer, fmt, 'B');
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, 'B');
+
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
 }
 END_TEST
 
-// Тест 3: Левое выравнивание
 START_TEST(test_s21_sprintf_c_left_align) {
-  char buffer[256] = {0};
-  s21_sprintf(buffer, "%-5c", 'C'); // Передаем буфер явно
-  ck_assert_str_eq(buffer, "C    ");
+    char buffer[256];
+    char buffer_s21[256];
+    const char *fmt = "%-5c";
+
+    int ret = sprintf(buffer, fmt, 'C');
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, 'C');
+
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
 }
 END_TEST
 
-// Тест 4: Заполнение нулями
 START_TEST(test_s21_sprintf_c_zero_padding) {
-  char buffer[256] = {0};
-  s21_sprintf(buffer, "%05c", 'D'); // Передаем буфер явно
-  ck_assert_str_eq(buffer, "0000D");
+    char buffer[256];
+    char buffer_s21[256];
+    const char *fmt = "%5c";
+    int ret = sprintf(buffer, fmt, 'D');
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, 'D');
+
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
 }
 END_TEST
 
-// Тест 5: Минимальная ширина равна единице
 START_TEST(test_s21_sprintf_c_min_width_one) {
-  char buffer[256] = {0};
-  s21_sprintf(buffer, "%1c", 'E'); // Передаем буфер явно
-  ck_assert_str_eq(buffer, "E");
+    char buffer[256];
+    char buffer_s21[256];
+    const char *fmt = "%1c";
+
+    int ret = sprintf(buffer, fmt, 'E');
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, 'E');
+
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
 }
 END_TEST
 
-// Тест 6: Отрицательная ширина (должна игнорироваться)
 START_TEST(test_s21_sprintf_c_negative_width) {
-  char buffer[256] = {0};
-  s21_sprintf(buffer, "%-5c", 'F'); // Передаем буфер явно
-  ck_assert_str_eq(buffer, "F    ");
-}
-END_TEST
+    char buffer[256];
+    char buffer_s21[256];
+    const char *fmt = "%-5c";
 
-START_TEST(test_s21_sprintf_s_basic) {
-  char buffer[100];
-  s21_sprintf(buffer, "Hello, %s!", "world");
-  ck_assert_str_eq(buffer, "Hello, world!");
+    int ret = sprintf(buffer, fmt, 'F');
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, 'F');
+
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sprintf_d_int) {
-  char buffer[100];
-  s21_sprintf(buffer, "Number: %d", 42);
-  ck_assert_str_eq(buffer, "Number: 42");
+    char buffer[100];
+    char buffer_s21[100];
+    const char *fmt = "Number: %d";
+
+    int ret = sprintf(buffer, fmt, 42);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, 42);
+
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sprintf_f_float) {
-  char buffer[100];
-  s21_sprintf(buffer, "Float: %.2f", 3.14159);
-  ck_assert_str_eq(buffer, "Float: 3.14");
+    char buffer[100];
+    char buffer_s21[100];
+    const char *fmt = "Float: %.2f";
+
+    int ret = sprintf(buffer, fmt, 3.14159);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, 3.14159);
+
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
 }
 END_TEST
 
-START_TEST(test_s21_sprintf_s_precision) {
-  char buffer[100];
-  s21_sprintf(buffer, "%.3s", "testing");
-  ck_assert_str_eq(buffer, "tes");
-}
-END_TEST
-
-// Тестовый кейс 1: Простое число без дополнительных форматов
-START_TEST(test_s21_sprintf_u_simple_number) {
-  char buffer[1024];
-  s21_sprintf(buffer, "Number: %u", 123);
-  ck_assert_str_eq(buffer, "Number: 123");
-}
-END_TEST
-
-// Тестовый кейс 2: Число с шириной поля
-START_TEST(test_s21_sprintf_u_with_width) {
-  char buffer[1024];
-  s21_sprintf(buffer, "Number: %5u", 45);
-  ck_assert_str_eq(buffer, "Number:    45");
-}
-END_TEST
-
-START_TEST(test_s21_sprintf_u_with_precision) {
-  char buffer[1024];
-  s21_sprintf(buffer, "Number: %.5u", 678);
-  ck_assert_str_eq(buffer, "Number: 00678");
-}
-END_TEST
-
-START_TEST(test_s21_sprintf_u_left_alignment) {
-  char buffer[1024];
-  s21_sprintf(buffer, "Number: %-5u", 45);
-  ck_assert_str_eq(buffer, "Number: 45   ");
-}
-END_TEST
-
-START_TEST(test_s21_sprintf_u_zero_padding) {
-  char buffer[1024];
-  s21_sprintf(buffer, "Number: %05u", 45);
-  ck_assert_str_eq(buffer, "Number: 00045");
-}
-END_TEST
-
-START_TEST(test_s21_sprintf_u_zero_with_zero_precision) {
-  char buffer[1024];
-  s21_sprintf(buffer, "Number: %.0u", 0);
-  ck_assert_str_eq(buffer, "Number: ");
-}
-END_TEST
-
-START_TEST(test_s21_sprintf_u_complex_case) {
-  char buffer[1024] = {0};
-  const char fmt[30] = "Number: %08u";
-  s21_sprintf(buffer, fmt, 789);
-  ck_assert_str_eq(buffer, "Number: 00000789");
-}
-END_TEST
 START_TEST(test_s21_sprintf_ld_double_format) {
   char buffer[1024] = {0};
   char original_buffer[1024] = {0};
@@ -330,6 +332,336 @@ START_TEST(test_s21_sprintf_f_large_number) {
 }
 END_TEST
 
+START_TEST(test_s21_sprintf_s_basic) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "String: %s";
+    const char *str = "Hello";
+    int ret = sprintf(buffer, fmt, str);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, str);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_s_precision) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "String: %.3s";
+    const char *str = "testing";
+    int ret = sprintf(buffer, fmt, str);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, str);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_s_width) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "String: %10s";
+    const char *str = "Hello";
+    int ret = sprintf(buffer, fmt, str);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, str);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_s_width_precision) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "String: %10.3s";
+    const char *str = "testing";
+    int ret = sprintf(buffer, fmt, str);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, str);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_s_left_alignment) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "String: %-10s";
+    const char *str = "Hello";
+    int ret = sprintf(buffer, fmt, str);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, str);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_s_empty_string) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "String: %s";
+    const char *str = "";
+    int ret = sprintf(buffer, fmt, str);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, str);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_s_null_string) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "String: %s";
+    const char *str = NULL;
+    int ret = sprintf(buffer, fmt, str);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, str);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_s_long_string) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "String: %.10s";
+    const char *str = "This is a very long string";
+    int ret = sprintf(buffer, fmt, str);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, str);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_s_zero_padding) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "String: %010s";
+    const char *str = "Hello";
+    int ret = sprintf(buffer, fmt, str);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, str);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_s_exceed_width) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "String: %5s";
+    const char *str = "LongerString";
+    int ret = sprintf(buffer, fmt, str);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, str);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_u_basic) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Unsigned: %u";
+    unsigned int value = 12345;
+    int ret = sprintf(buffer, fmt, value);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_u_width) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Unsigned: %10u";
+    unsigned int value = 789;
+    int ret = sprintf(buffer, fmt, value);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_u_precision) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Unsigned: %.5u";
+    unsigned int value = 45;
+    int ret = sprintf(buffer, fmt, value);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_u_width_precision) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Unsigned: %10.5u";
+    unsigned int value = 678;
+    int ret = sprintf(buffer, fmt, value);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_u_left_alignment) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Unsigned: %-10u";
+    unsigned int value = 123;
+    int ret = sprintf(buffer, fmt, value);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_u_zero_padding) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Unsigned: %010u";
+    unsigned int value = 456;
+    int ret = sprintf(buffer, fmt, value);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_u_zero_value) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Unsigned: %.5u";
+    unsigned int value = 0;
+    int ret = sprintf(buffer, fmt, value);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_u_large_number) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Unsigned: %u";
+    unsigned int value = 4294967295; // Максимальное значение для unsigned int
+    int ret = sprintf(buffer, fmt, value);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_u_exceed_width) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Unsigned: %5u";
+    unsigned int value = 123456789;
+    int ret = sprintf(buffer, fmt, value);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_hs_short_string) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Short String: %hs";
+    char short_str[6] = "Hello"; // Массив char вместо строки
+    int ret = sprintf(buffer, fmt, short_str);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, short_str);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_ls_wide_string) {
+    wchar_t buffer[1024];
+    wchar_t buffer_s21[1024];
+    const char *fmt_narrow = "Wide String: %ls";
+    wchar_t fmt_wide[1024];
+    mbstowcs(fmt_wide, fmt_narrow, strlen(fmt_narrow) + 1); // Конвертируем формат в wchar_t
+    wchar_t wide_str[] = L"Привет"; // Строка широких символов
+    int ret = swprintf(buffer, 1024, fmt_wide, wide_str);
+    s21_sprintf((char*)buffer_s21, (char*)fmt_narrow, wide_str); // Используем оригинальный формат для s21_sprintf
+    ck_assert_int_eq(ret, wcslen(buffer)); // Проверяем длину строки
+    ck_assert_int_eq(wcscmp(buffer, (wchar_t*)buffer_s21), 0); // Сравниваем широкие строки
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_hc_short_char) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Short Char: %hc";
+    short int short_char = 'A'; // Короткий символ
+    int ret = sprintf(buffer, fmt, short_char);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, short_char);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_lc_wide_char) {
+    wchar_t buffer[1024];
+    wchar_t buffer_s21[1024];
+    const char *fmt_narrow = "Wide Char: %lc";
+    wchar_t fmt_wide[1024];
+    mbstowcs(fmt_wide, fmt_narrow, strlen(fmt_narrow) + 1); // Конвертируем формат в wchar_t
+    wchar_t wide_char = L'П'; // Широкий символ
+    int ret = swprintf(buffer, 1024, fmt_wide, wide_char);
+    s21_sprintf((char*)buffer_s21, (char*)fmt_narrow, wide_char); // Используем оригинальный формат для s21_sprintf
+    ck_assert_int_eq(ret, wcslen(buffer)); // Проверяем длину строки
+    ck_assert_int_eq(wcscmp(buffer, (wchar_t*)buffer_s21), 0); // Сравниваем широкие строки
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_hd_short_int) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Short Int: %hd";
+    short int short_value = -32768; // Минимальное значение для short int
+    int ret = sprintf(buffer, fmt, short_value);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, short_value);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_ld_long_int) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Long Int: %ld";
+    long int long_value = 2147483647L; // Максимальное значение для long int
+    int ret = sprintf(buffer, fmt, long_value);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, long_value);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_hu_short_unsigned) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Short Unsigned: %hu";
+    unsigned short int short_uvalue = 65535; // Максимальное значение для unsigned short
+    int ret = sprintf(buffer, fmt, short_uvalue);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, short_uvalue);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_lu_long_unsigned) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Long Unsigned: %lu";
+    unsigned long int long_uvalue = 4294967295UL; // Максимальное значение для unsigned long
+    int ret = sprintf(buffer, fmt, long_uvalue);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, long_uvalue);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+
+
 Suite *s21_sprintf_suite(void) {
   Suite *s;
   TCase *tc_core, *tc_debug;
@@ -345,7 +677,6 @@ Suite *s21_sprintf_suite(void) {
   tcase_add_test(tc_core, test_s21_sprintf_d_width_flag);
   tcase_add_test(tc_core, test_s21_sprintf_d_zero_padding);
   tcase_add_test(tc_core, test_s21_sprintf_ld_long_int_format);
-  tcase_add_test(tc_core, test_s21_sprintf_ld_long_int_format);
   tcase_add_test(tc_core, test_s21_sprintf_negative_hd_short_int_format);
   tcase_add_test(tc_core, test_s21_sprintf_hd_short_int_format);
   tcase_add_test(tc_core, test_s21_sprintf_c_zero_padding);
@@ -357,7 +688,6 @@ Suite *s21_sprintf_suite(void) {
   tcase_add_test(tc_core, test_s21_sprintf_c_negative_width);
   tcase_add_test(tc_core, test_s21_sprintf_c_width);
   tcase_add_test(tc_core, test_s21_sprintf_negative_ld_long_int_format);
-  tcase_add_test(tc_core, test_s21_sprintf_f_large_number);
   tcase_add_test(tc_core, test_s21_sprintf_f_large_number);
   tcase_add_test(tc_core, test_s21_sprintf_f_small_number);
   tcase_add_test(tc_core, test_s21_sprintf_f_left_alignment);
@@ -372,18 +702,54 @@ Suite *s21_sprintf_suite(void) {
   tcase_add_test(tc_core, test_s21_sprintf_ld_double_format);
   tcase_add_test(tc_core, test_s21_sprintf_f_precision_flag);
 
-  tcase_add_test(tc_core, test_s21_sprintf_s_precision);
-  tcase_add_test(tc_core, test_s21_sprintf_s_basic);
-
-  tcase_add_test(tc_core, test_s21_sprintf_u_simple_number);
-  tcase_add_test(tc_core, test_s21_sprintf_u_with_width);
-  tcase_add_test(tc_core, test_s21_sprintf_u_with_precision);
+  tcase_add_test(tc_core, test_s21_sprintf_u_basic);
+  tcase_add_test(tc_core, test_s21_sprintf_u_width);
+  tcase_add_test(tc_core, test_s21_sprintf_u_precision);
   tcase_add_test(tc_core, test_s21_sprintf_u_left_alignment);
   tcase_add_test(tc_core, test_s21_sprintf_u_zero_padding);
-  tcase_add_test(tc_core, test_s21_sprintf_u_zero_with_zero_precision);
-  tcase_add_test(tc_core, test_s21_sprintf_u_complex_case);
+  tcase_add_test(tc_core, test_s21_sprintf_u_zero_value);
+  tcase_add_test(tc_core, test_s21_sprintf_u_large_number);
+  tcase_add_test(tc_core, test_s21_sprintf_u_exceed_width);
+  tcase_add_test(tc_core, test_s21_sprintf_u_width_precision);
 
-  tcase_add_test(tc_debug, test_s21_sprintf_f_large_number);
+
+  tcase_add_test(tc_core, test_s21_sprintf_s_basic);
+  tcase_add_test(tc_core, test_s21_sprintf_s_precision);
+  tcase_add_test(tc_core, test_s21_sprintf_s_width);
+  tcase_add_test(tc_core, test_s21_sprintf_s_width_precision);
+  tcase_add_test(tc_core, test_s21_sprintf_s_left_alignment);
+  tcase_add_test(tc_core, test_s21_sprintf_s_empty_string);
+  tcase_add_test(tc_core, test_s21_sprintf_s_null_string);
+  tcase_add_test(tc_core, test_s21_sprintf_s_long_string);
+  tcase_add_test(tc_core, test_s21_sprintf_s_zero_padding);
+  tcase_add_test(tc_core, test_s21_sprintf_s_exceed_width);
+
+      // Добавляем тесты для %hs (short string)
+    tcase_add_test(tc_core, test_s21_sprintf_hs_short_string);
+
+    // Добавляем тесты для %ls (wide string)
+    tcase_add_test(tc_core, test_s21_sprintf_ls_wide_string);
+
+    // Добавляем тесты для %hc (short char)
+    tcase_add_test(tc_core, test_s21_sprintf_hc_short_char);
+
+    // Добавляем тесты для %lc (wide char)
+    tcase_add_test(tc_core, test_s21_sprintf_lc_wide_char);
+
+    // Добавляем тесты для %hd (short int)
+    tcase_add_test(tc_core, test_s21_sprintf_hd_short_int);
+
+    // Добавляем тесты для %ld (long int)
+    tcase_add_test(tc_core, test_s21_sprintf_ld_long_int);
+
+    // Добавляем тесты для %hu (short unsigned)
+    tcase_add_test(tc_core, test_s21_sprintf_hu_short_unsigned);
+
+    // Добавляем тесты для %lu (long unsigned)
+    tcase_add_test(tc_core, test_s21_sprintf_lu_long_unsigned);
+
+
+tcase_add_test(tc_debug, test_s21_sprintf_f_large_number);
 
   suite_add_tcase(s, tc_core);
   suite_add_tcase(s, tc_debug);

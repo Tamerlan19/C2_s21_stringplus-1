@@ -840,7 +840,7 @@ START_TEST(test_s21_to_upper_all_uppercase) {
                    "HELLO WORLD"); // Сравниваем с ожидаемым результатом
   free(result); // Освобождаем выделенную память
 }
-END_TEST 
+END_TEST
 
 // Тест 3: Смешанные регистры
 START_TEST(test_s21_to_upper_mixed_case) {
@@ -1034,7 +1034,8 @@ START_TEST(test_s21_insert_middle) {
   s21_size_t start_index = 3;
   void *result = s21_insert(src, str, start_index);
   ck_assert_ptr_nonnull(result); // Проверяем, что результат не NULL
-  ck_assert_str_eq((char *)result, "abcXYZdef"); // Сравниваем с ожидаемым результатом
+  ck_assert_str_eq((char *)result,
+                   "abcXYZdef"); // Сравниваем с ожидаемым результатом
   free(result); // Освобождаем выделенную память
 }
 END_TEST
@@ -1046,7 +1047,8 @@ START_TEST(test_s21_insert_start) {
   s21_size_t start_index = 0;
   void *result = s21_insert(src, str, start_index);
   ck_assert_ptr_nonnull(result); // Проверяем, что результат не NULL
-  ck_assert_str_eq((char *)result, "XYZabcdef"); // Сравниваем с ожидаемым результатом
+  ck_assert_str_eq((char *)result,
+                   "XYZabcdef"); // Сравниваем с ожидаемым результатом
   free(result); // Освобождаем выделенную память
 }
 END_TEST
@@ -1058,7 +1060,8 @@ START_TEST(test_s21_insert_end) {
   s21_size_t start_index = 6;
   void *result = s21_insert(src, str, start_index);
   ck_assert_ptr_nonnull(result); // Проверяем, что результат не NULL
-  ck_assert_str_eq((char *)result, "abcdefXYZ"); // Сравниваем с ожидаемым результатом
+  ck_assert_str_eq((char *)result,
+                   "abcdefXYZ"); // Сравниваем с ожидаемым результатом
   free(result); // Освобождаем выделенную память
 }
 END_TEST
@@ -1070,7 +1073,8 @@ START_TEST(test_s21_insert_empty_str) {
   s21_size_t start_index = 3;
   void *result = s21_insert(src, str, start_index);
   ck_assert_ptr_nonnull(result); // Проверяем, что результат не NULL
-  ck_assert_str_eq((char *)result, "abcdef"); // Сравниваем с ожидаемым результатом
+  ck_assert_str_eq((char *)result,
+                   "abcdef"); // Сравниваем с ожидаемым результатом
   free(result); // Освобождаем выделенную память
 }
 END_TEST
@@ -1358,11 +1362,10 @@ END_TEST
 
 Suite *s21_string_suite(void) {
   Suite *s;
-  TCase *tc_core, *tc_debug;
+  TCase *tc_core;
 
   s = suite_create("s21_string");
   tc_core = tcase_create("Core");
-  tc_debug = tcase_create("Debug");
 
   tcase_add_test(tc_core, test_s21_strlen);
   tcase_add_test(tc_core, test_s21_strncmp);
@@ -1449,7 +1452,26 @@ Suite *s21_string_suite(void) {
   tcase_add_test(tc_core, test_s21_strrchr_first_char);
   tcase_add_test(tc_core, test_s21_strrchr_large_string);
 
-  tcase_add_test(tc_core,test_s21_sterror_all);
+  tcase_add_test(tc_core, test_s21_sterror_all);
+
+  tcase_add_test(tc_core, test_s21_strstr_normal_case);
+  tcase_add_test(tc_core, test_s21_strstr_empty_haystack);
+  tcase_add_test(tc_core, test_s21_strstr_empty_needle);
+  tcase_add_test(tc_core, test_s21_strstr_both_empty);
+  tcase_add_test(tc_core, test_s21_strstr_needle_not_found);
+  tcase_add_test(tc_core, test_s21_strstr_needle_at_start);
+  tcase_add_test(tc_core, test_s21_strstr_needle_at_end);
+  tcase_add_test(tc_core, test_s21_strstr_large_haystack);
+  tcase_add_test(tc_core, test_s21_strstr_special_characters);
+
+  tcase_add_test(tc_core, test_s21_strtok_normal_case);
+  tcase_add_test(tc_core, test_s21_strtok_empty_string);
+  tcase_add_test(tc_core, test_s21_strtok_large_string);
+  tcase_add_test(tc_core, test_s21_strtok_special_delimiters);
+  tcase_add_test(tc_core, test_s21_strtok_multiple_calls);
+  tcase_add_test(tc_core, test_s21_strtok_delimiters_at_edges);
+  tcase_add_test(tc_core, test_s21_strtok_no_delimiters);
+  tcase_add_test(tc_core, test_s21_strtok_multichar_delimiters);
 
   tcase_add_test(tc_core, test_s21_to_lower_normal_string);
   tcase_add_test(tc_core, test_s21_to_lower_all_lowercase);
@@ -1472,9 +1494,9 @@ Suite *s21_string_suite(void) {
   tcase_add_test(tc_core, test_s21_trim_empty_string);
   tcase_add_test(tc_core, test_s21_trim_tabs_and_newlines);
 
+  // tc_debug = tcase_create("Debug");
 
- 
-suite_add_tcase(s, tc_core);
+  suite_add_tcase(s, tc_core);
 
   return s;
 }

@@ -289,156 +289,154 @@ START_TEST(test_s21_sscanf_ld_empty) {
 END_TEST
 
 START_TEST(test_s21_sscanf_d_separator_space) {
-    const char *input = "123 456 789";
-    int x = 0, y = 0, z = 0;
-    int xr = 0, yr = 0, zr = 0;
-    const char *fmt = "%d %d %d";
-  
-    int result = s21_sscanf(input, fmt, &x, &y, &z);
-    int resultr = sscanf(input, fmt, &xr, &yr, &zr);
-  
-    ck_assert_int_eq(result, resultr);
-    ck_assert_int_eq(x, xr);
-    ck_assert_int_eq(y, yr);
-    ck_assert_int_eq(z, zr);
-  }
-  END_TEST
-  
-  START_TEST(test_s21_sscanf_d_separator_tab) {
-    const char *input = "123\t456\t789";
-    int x = 0, y = 0, z = 0;
-    int xr = 0, yr = 0, zr = 0;
-    const char *fmt = "%d%d%d";
-  
-    int result = s21_sscanf(input, fmt, &x, &y, &z);
-    int resultr = sscanf(input, fmt, &xr, &yr, &zr);
-  
-    ck_assert_int_eq(result, resultr);
-    ck_assert_int_eq(x, xr);
-    ck_assert_int_eq(y, yr);
-    ck_assert_int_eq(z, zr);
-  }
-  END_TEST
-  
-  START_TEST(test_s21_sscanf_d_separator_comma) {
-    const char *input = "123,456,789";
-    int x = 0, y = 0, z = 0;
-    int xr = 0, yr = 0, zr = 0;
-    const char *fmt = "%d,%d,%d";
-  
-    int result = s21_sscanf(input, fmt, &x, &y, &z);
-    int resultr = sscanf(input, fmt, &xr, &yr, &zr);
-  
-    ck_assert_int_eq(result, resultr);
-    ck_assert_int_eq(x, xr);
-    ck_assert_int_eq(y, yr);
-    ck_assert_int_eq(z, zr);
-  }
-  END_TEST
-  
-  START_TEST(test_s21_sscanf_d_separator_mixed) {
-    const char *input = "123, 456, 789";
-    int x = 0, y = 0, z = 0;
-    int xr = 0, yr = 0, zr = 0;
-    const char *fmt = "%d, %d, %d";
-  
-    int result = s21_sscanf(input, fmt, &x, &y, &z);
-    int resultr = sscanf(input, fmt, &xr, &yr, &zr);
-  
-    ck_assert_int_eq(result, resultr);
-    ck_assert_int_eq(x, xr);
-    ck_assert_int_eq(y, yr);
-    ck_assert_int_eq(z, zr);
-  }
-  END_TEST
-  
-  START_TEST(test_s21_sscanf_d_separator_newline) {
-    const char *input = "123\n456\n789";
-    int x = 0, y = 0, z = 0;
-    int xr = 0, yr = 0, zr = 0;
-    const char *fmt = "%d%d%d";
-  
-    int result = s21_sscanf(input, fmt, &x, &y, &z);
-    int resultr = sscanf(input, fmt, &xr, &yr, &zr);
-  
-    ck_assert_int_eq(result, resultr);
-    ck_assert_int_eq(x, xr);
-    ck_assert_int_eq(y, yr);
-    ck_assert_int_eq(z, zr);
-  }
-  END_TEST
-  
-  START_TEST(test_s21_sscanf_d_separator_semicolon) {
-    const char *input = "123;456;789";
-    int x = 0, y = 0, z = 0;
-    int xr = 0, yr = 0, zr = 0;
-    const char *fmt = "%d;%d;%d";
-  
-    int result = s21_sscanf(input, fmt, &x, &y, &z);
-    int resultr = sscanf(input, fmt, &xr, &yr, &zr);
-  
-    ck_assert_int_eq(result, resultr);
-    ck_assert_int_eq(x, xr);
-    ck_assert_int_eq(y, yr);
-    ck_assert_int_eq(z, zr);
-  }
-  END_TEST
-  
-  START_TEST(test_s21_sscanf_d_separator_skip) {
-    const char *input = "123abc456def789";
-    int x = 0, y = 0, z = 0;
-    int xr = 0, yr = 0, zr = 0;
-    const char *fmt = "%d%*c%d%*c%d";
-  
-    int result = s21_sscanf(input, fmt, &x, &y, &z);
-    int resultr = sscanf(input, fmt, &xr, &yr, &zr);
-  
-    ck_assert_int_eq(result, resultr);
-    ck_assert_int_eq(x, xr);
-    ck_assert_int_eq(y, yr);
-    ck_assert_int_eq(z, zr);
-  }
-  END_TEST
+  const char *input = "123 456 789";
+  int x = 0, y = 0, z = 0;
+  int xr = 0, yr = 0, zr = 0;
+  const char *fmt = "%d %d %d";
 
+  int result = s21_sscanf(input, fmt, &x, &y, &z);
+  int resultr = sscanf(input, fmt, &xr, &yr, &zr);
+
+  ck_assert_int_eq(result, resultr);
+  ck_assert_int_eq(x, xr);
+  ck_assert_int_eq(y, yr);
+  ck_assert_int_eq(z, zr);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_d_separator_tab) {
+  const char *input = "123\t456\t789";
+  int x = 0, y = 0, z = 0;
+  int xr = 0, yr = 0, zr = 0;
+  const char *fmt = "%d%d%d";
+
+  int result = s21_sscanf(input, fmt, &x, &y, &z);
+  int resultr = sscanf(input, fmt, &xr, &yr, &zr);
+
+  ck_assert_int_eq(result, resultr);
+  ck_assert_int_eq(x, xr);
+  ck_assert_int_eq(y, yr);
+  ck_assert_int_eq(z, zr);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_d_separator_comma) {
+  const char *input = "123,456,789";
+  int x = 0, y = 0, z = 0;
+  int xr = 0, yr = 0, zr = 0;
+  const char *fmt = "%d,%d,%d";
+
+  int result = s21_sscanf(input, fmt, &x, &y, &z);
+  int resultr = sscanf(input, fmt, &xr, &yr, &zr);
+
+  ck_assert_int_eq(result, resultr);
+  ck_assert_int_eq(x, xr);
+  ck_assert_int_eq(y, yr);
+  ck_assert_int_eq(z, zr);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_d_separator_mixed) {
+  const char *input = "123, 456, 789";
+  int x = 0, y = 0, z = 0;
+  int xr = 0, yr = 0, zr = 0;
+  const char *fmt = "%d, %d, %d";
+
+  int result = s21_sscanf(input, fmt, &x, &y, &z);
+  int resultr = sscanf(input, fmt, &xr, &yr, &zr);
+
+  ck_assert_int_eq(result, resultr);
+  ck_assert_int_eq(x, xr);
+  ck_assert_int_eq(y, yr);
+  ck_assert_int_eq(z, zr);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_d_separator_newline) {
+  const char *input = "123\n456\n789";
+  int x = 0, y = 0, z = 0;
+  int xr = 0, yr = 0, zr = 0;
+  const char *fmt = "%d%d%d";
+
+  int result = s21_sscanf(input, fmt, &x, &y, &z);
+  int resultr = sscanf(input, fmt, &xr, &yr, &zr);
+
+  ck_assert_int_eq(result, resultr);
+  ck_assert_int_eq(x, xr);
+  ck_assert_int_eq(y, yr);
+  ck_assert_int_eq(z, zr);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_d_separator_semicolon) {
+  const char *input = "123;456;789";
+  int x = 0, y = 0, z = 0;
+  int xr = 0, yr = 0, zr = 0;
+  const char *fmt = "%d;%d;%d";
+
+  int result = s21_sscanf(input, fmt, &x, &y, &z);
+  int resultr = sscanf(input, fmt, &xr, &yr, &zr);
+
+  ck_assert_int_eq(result, resultr);
+  ck_assert_int_eq(x, xr);
+  ck_assert_int_eq(y, yr);
+  ck_assert_int_eq(z, zr);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_d_separator_skip) {
+  const char *input = "123abc456def789";
+  int x = 0, y = 0, z = 0;
+  int xr = 0, yr = 0, zr = 0;
+  const char *fmt = "%d%*c%d%*c%d";
+
+  int result = s21_sscanf(input, fmt, &x, &y, &z);
+  int resultr = sscanf(input, fmt, &xr, &yr, &zr);
+
+  ck_assert_int_eq(result, resultr);
+  ck_assert_int_eq(x, xr);
+  ck_assert_int_eq(y, yr);
+  ck_assert_int_eq(z, zr);
+}
+END_TEST
 
 TCase *create_s21_sscanf_d_tests(void) {
-    TCase* tc_core_d = tcase_create("Specifier= %d");
+  TCase *tc_core_d = tcase_create("Specifier= %d");
 
+  tcase_add_test(tc_core_d, test_s21_sscanf_d_simple);
+  tcase_add_test(tc_core_d, test_s21_sscanf_d_neg);
+  tcase_add_test(tc_core_d, test_s21_sscanf_d_neg_twice);
+  tcase_add_test(tc_core_d, test_s21_sscanf_d_space_bef);
+  tcase_add_test(tc_core_d, test_s21_sscanf_d_space_aft);
+  tcase_add_test(tc_core_d, test_s21_sscanf_d_some);
+  tcase_add_test(tc_core_d, test_s21_sscanf_d_merge_string_end);
+  tcase_add_test(tc_core_d, test_s21_sscanf_d_merge_string_start);
+  tcase_add_test(tc_core_d, test_s21_sscanf_d_empty);
+  tcase_add_test(tc_core_d, test_s21_sscanf_d_max);
+  tcase_add_test(tc_core_d, test_s21_sscanf_d_min);
+  tcase_add_test(tc_core_d, test_s21_sscanf_d_max_over);
+  tcase_add_test(tc_core_d, test_s21_sscanf_d_miss);
+  tcase_add_test(tc_core_d, test_s21_sscanf_d_width);
+  tcase_add_test(tc_core_d, test_s21_sscanf_d_some_fmt_wrong);
+  tcase_add_test(tc_core_d, test_s21_sscanf_d_wrong_fmt);
+  tcase_add_test(tc_core_d, test_s21_sscanf_d_wrong_fmt_width);
+  tcase_add_test(tc_core_d, test_s21_sscanf_d_some_sep);
+  tcase_add_test(tc_core_d, test_s21_sscanf_d_zero);
+  tcase_add_test(tc_core_d, test_s21_sscanf_d_zero_start);
+  tcase_add_test(tc_core_d, test_s21_sscanf_d_skip_assignment);
+  tcase_add_test(tc_core_d, test_s21_sscanf_hd);
+  tcase_add_test(tc_core_d, test_s21_sscanf_ld);
+  tcase_add_test(tc_core_d, test_s21_sscanf_ld_skip_assignment);
+  tcase_add_test(tc_core_d, test_s21_sscanf_ld_width);
+  tcase_add_test(tc_core_d, test_s21_sscanf_ld_invalid);
+  tcase_add_test(tc_core_d, test_s21_sscanf_ld_empty);
+  tcase_add_test(tc_core_d, test_s21_sscanf_d_separator_space);
+  tcase_add_test(tc_core_d, test_s21_sscanf_d_separator_tab);
+  tcase_add_test(tc_core_d, test_s21_sscanf_d_separator_comma);
+  tcase_add_test(tc_core_d, test_s21_sscanf_d_separator_mixed);
+  tcase_add_test(tc_core_d, test_s21_sscanf_d_separator_newline);
+  tcase_add_test(tc_core_d, test_s21_sscanf_d_separator_skip);
+  tcase_add_test(tc_core_d, test_s21_sscanf_d_separator_semicolon);
 
-    tcase_add_test(tc_core_d, test_s21_sscanf_d_simple);
-    tcase_add_test(tc_core_d, test_s21_sscanf_d_neg);
-    tcase_add_test(tc_core_d, test_s21_sscanf_d_neg_twice);
-    tcase_add_test(tc_core_d, test_s21_sscanf_d_space_bef);
-    tcase_add_test(tc_core_d, test_s21_sscanf_d_space_aft);
-    tcase_add_test(tc_core_d, test_s21_sscanf_d_some);
-    tcase_add_test(tc_core_d, test_s21_sscanf_d_merge_string_end);
-    tcase_add_test(tc_core_d, test_s21_sscanf_d_merge_string_start);
-    tcase_add_test(tc_core_d, test_s21_sscanf_d_empty);
-    tcase_add_test(tc_core_d, test_s21_sscanf_d_max);
-    tcase_add_test(tc_core_d, test_s21_sscanf_d_min);
-    tcase_add_test(tc_core_d, test_s21_sscanf_d_max_over);
-    tcase_add_test(tc_core_d, test_s21_sscanf_d_miss);
-    tcase_add_test(tc_core_d, test_s21_sscanf_d_width);
-    tcase_add_test(tc_core_d, test_s21_sscanf_d_some_fmt_wrong);
-    tcase_add_test(tc_core_d, test_s21_sscanf_d_wrong_fmt);
-    tcase_add_test(tc_core_d, test_s21_sscanf_d_wrong_fmt_width);
-    tcase_add_test(tc_core_d, test_s21_sscanf_d_some_sep);
-    tcase_add_test(tc_core_d, test_s21_sscanf_d_zero);
-    tcase_add_test(tc_core_d, test_s21_sscanf_d_zero_start);
-    tcase_add_test(tc_core_d, test_s21_sscanf_d_skip_assignment);
-    tcase_add_test(tc_core_d, test_s21_sscanf_hd);
-    tcase_add_test(tc_core_d, test_s21_sscanf_ld);
-    tcase_add_test(tc_core_d, test_s21_sscanf_ld_skip_assignment);
-    tcase_add_test(tc_core_d, test_s21_sscanf_ld_width);
-    tcase_add_test(tc_core_d, test_s21_sscanf_ld_invalid);
-    tcase_add_test(tc_core_d, test_s21_sscanf_ld_empty);
-    tcase_add_test(tc_core_d, test_s21_sscanf_d_separator_space);
-    tcase_add_test(tc_core_d, test_s21_sscanf_d_separator_tab);
-    tcase_add_test(tc_core_d, test_s21_sscanf_d_separator_comma);
-    tcase_add_test(tc_core_d, test_s21_sscanf_d_separator_mixed);
-    tcase_add_test(tc_core_d, test_s21_sscanf_d_separator_newline);
-    tcase_add_test(tc_core_d, test_s21_sscanf_d_separator_skip);
-    tcase_add_test(tc_core_d, test_s21_sscanf_d_separator_semicolon);
-
-return tc_core_d;
+  return tc_core_d;
 }

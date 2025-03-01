@@ -4,7 +4,6 @@
 #include <locale.h>
 #include <stdio.h>
 
-  
 START_TEST(test_s21_sscanf_g) {
   const char str[] = "12345";
   float res1 = 0, res2 = 0;
@@ -196,26 +195,25 @@ START_TEST(test_s21_sscanf_g_width_star_negative) {
 }
 END_TEST
 
-
 TCase *create_s21_sscanf_g_tests(void) {
-    TCase *tc_core_g;
-    tc_core_g = tcase_create("Specifier= %g");
+  TCase *tc_core_g;
+  tc_core_g = tcase_create("Specifier= %g");
 
-    tcase_add_test(tc_core_g, test_s21_sscanf_g_width_star_negative);
-    tcase_add_test(tc_core_g, test_s21_sscanf_g_width_star_overflow);
-    tcase_add_test(tc_core_g, test_s21_sscanf_g_width_star_max);
-    tcase_add_test(tc_core_g, test_s21_sscanf_g_width_star_zero);
-    tcase_add_test(tc_core_g, test_s21_sscanf_g_width_star);
-    tcase_add_test(tc_core_g, test_s21_sscanf_g_width_negative);
-    tcase_add_test(tc_core_g, test_s21_sscanf_g_width_overflow);
-    tcase_add_test(tc_core_g, test_s21_sscanf_g_width_max);
-    tcase_add_test(tc_core_g, test_s21_sscanf_g_width_zero);
-    tcase_add_test(tc_core_g, test_s21_sscanf_g_width);
-    tcase_add_test(tc_core_g, test_s21_sscanf_g_negative);
-    tcase_add_test(tc_core_g, test_s21_sscanf_g_overflow);
-    tcase_add_test(tc_core_g, test_s21_sscanf_g_max);
-    tcase_add_test(tc_core_g, test_s21_sscanf_g_zero);
-    tcase_add_test(tc_core_g, test_s21_sscanf_g);
+  tcase_add_test(tc_core_g, test_s21_sscanf_g_width_star_negative);
+  tcase_add_test(tc_core_g, test_s21_sscanf_g_width_star_overflow);
+  tcase_add_test(tc_core_g, test_s21_sscanf_g_width_star_max);
+  tcase_add_test(tc_core_g, test_s21_sscanf_g_width_star_zero);
+  tcase_add_test(tc_core_g, test_s21_sscanf_g_width_star);
+  tcase_add_test(tc_core_g, test_s21_sscanf_g_width_negative);
+  tcase_add_test(tc_core_g, test_s21_sscanf_g_width_overflow);
+  tcase_add_test(tc_core_g, test_s21_sscanf_g_width_max);
+  tcase_add_test(tc_core_g, test_s21_sscanf_g_width_zero);
+  tcase_add_test(tc_core_g, test_s21_sscanf_g_width);
+  tcase_add_test(tc_core_g, test_s21_sscanf_g_negative);
+  tcase_add_test(tc_core_g, test_s21_sscanf_g_overflow);
+  tcase_add_test(tc_core_g, test_s21_sscanf_g_max);
+  tcase_add_test(tc_core_g, test_s21_sscanf_g_zero);
+  tcase_add_test(tc_core_g, test_s21_sscanf_g);
 
   return tc_core_g;
 }

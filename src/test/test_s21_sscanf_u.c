@@ -4,8 +4,6 @@
 #include <locale.h>
 #include <stdio.h>
 
-  
-
 START_TEST(test_s21_sscanf_u_width_star_negative) {
   const char str[] = "-12345";
 
@@ -217,7 +215,6 @@ START_TEST(test_s21_sscanf_lu_with_large_width) {
 }
 END_TEST
 
-
 START_TEST(test_s21_sscanf_u) {
   const char str[] = "12345";
   unsigned int res1, res2;
@@ -384,42 +381,41 @@ START_TEST(test_s21_sscanf_u_width_star_overflow) {
 }
 END_TEST
 
-
 TCase *create_s21_sscanf_u_tests(void) {
-    TCase *tc;
-    tc = tcase_create("Specifier= %u");
+  TCase *tc;
+  tc = tcase_create("Specifier= %u");
 
-    tcase_add_test(tc, test_s21_sscanf_hu_simple);
-    tcase_add_test(tc, test_s21_sscanf_hu_width);
-    tcase_add_test(tc, test_s21_sscanf_hu_flag_star);
-    tcase_add_test(tc, test_s21_sscanf_hu_overflow);
-    tcase_add_test(tc, test_s21_sscanf_lu_simple);
-    tcase_add_test(tc, test_s21_sscanf_lu_width);
-    tcase_add_test(tc, test_s21_sscanf_lu_flag_star);
-    tcase_add_test(tc, test_s21_sscanf_lu_overflow);
-    tcase_add_test(tc, test_s21_sscanf_hu_and_lu_combination);
-    tcase_add_test(tc, test_s21_sscanf_hu_and_lu_with_width);
-    tcase_add_test(tc, test_s21_sscanf_hu_and_lu_with_star_flag);
-    tcase_add_test(tc, test_s21_sscanf_hu_and_lu_with_spaces);
-    tcase_add_test(tc, test_s21_sscanf_hu_with_zero_flag);
-    tcase_add_test(tc, test_s21_sscanf_lu_with_zero_flag);
-    tcase_add_test(tc, test_s21_sscanf_hu_with_large_width);
-    tcase_add_test(tc, test_s21_sscanf_lu_with_large_width);
-    tcase_add_test(tc, test_s21_sscanf_u_width_star_negative);
-    tcase_add_test(tc, test_s21_sscanf_u_width_star_overflow);
-    tcase_add_test(tc, test_s21_sscanf_u_width_star_max);
-    tcase_add_test(tc, test_s21_sscanf_u_width_star_zero);
-    tcase_add_test(tc, test_s21_sscanf_u_width_star);
-    tcase_add_test(tc, test_s21_sscanf_u_width_negative);
-    tcase_add_test(tc, test_s21_sscanf_u_width_overflow);
-    tcase_add_test(tc, test_s21_sscanf_u_width_max);
-    tcase_add_test(tc, test_s21_sscanf_u_width_zero);
-    tcase_add_test(tc, test_s21_sscanf_u_width);
-    tcase_add_test(tc, test_s21_sscanf_u_negative);
-    tcase_add_test(tc, test_s21_sscanf_u_overflow);
-    tcase_add_test(tc, test_s21_sscanf_u_max);
-    tcase_add_test(tc, test_s21_sscanf_u_zero);
-    tcase_add_test(tc, test_s21_sscanf_u);
+  tcase_add_test(tc, test_s21_sscanf_hu_simple);
+  tcase_add_test(tc, test_s21_sscanf_hu_width);
+  tcase_add_test(tc, test_s21_sscanf_hu_flag_star);
+  tcase_add_test(tc, test_s21_sscanf_hu_overflow);
+  tcase_add_test(tc, test_s21_sscanf_lu_simple);
+  tcase_add_test(tc, test_s21_sscanf_lu_width);
+  tcase_add_test(tc, test_s21_sscanf_lu_flag_star);
+  tcase_add_test(tc, test_s21_sscanf_lu_overflow);
+  tcase_add_test(tc, test_s21_sscanf_hu_and_lu_combination);
+  tcase_add_test(tc, test_s21_sscanf_hu_and_lu_with_width);
+  tcase_add_test(tc, test_s21_sscanf_hu_and_lu_with_star_flag);
+  tcase_add_test(tc, test_s21_sscanf_hu_and_lu_with_spaces);
+  tcase_add_test(tc, test_s21_sscanf_hu_with_zero_flag);
+  tcase_add_test(tc, test_s21_sscanf_lu_with_zero_flag);
+  tcase_add_test(tc, test_s21_sscanf_hu_with_large_width);
+  tcase_add_test(tc, test_s21_sscanf_lu_with_large_width);
+  tcase_add_test(tc, test_s21_sscanf_u_width_star_negative);
+  tcase_add_test(tc, test_s21_sscanf_u_width_star_overflow);
+  tcase_add_test(tc, test_s21_sscanf_u_width_star_max);
+  tcase_add_test(tc, test_s21_sscanf_u_width_star_zero);
+  tcase_add_test(tc, test_s21_sscanf_u_width_star);
+  tcase_add_test(tc, test_s21_sscanf_u_width_negative);
+  tcase_add_test(tc, test_s21_sscanf_u_width_overflow);
+  tcase_add_test(tc, test_s21_sscanf_u_width_max);
+  tcase_add_test(tc, test_s21_sscanf_u_width_zero);
+  tcase_add_test(tc, test_s21_sscanf_u_width);
+  tcase_add_test(tc, test_s21_sscanf_u_negative);
+  tcase_add_test(tc, test_s21_sscanf_u_overflow);
+  tcase_add_test(tc, test_s21_sscanf_u_max);
+  tcase_add_test(tc, test_s21_sscanf_u_zero);
+  tcase_add_test(tc, test_s21_sscanf_u);
 
   return tc;
 }

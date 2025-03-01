@@ -4,7 +4,6 @@
 #include <locale.h>
 #include <stdio.h>
 
-  
 START_TEST(test_s21_sscanf_n_simple) {
   const char *input = "HelloWorld";
   int n = 0;
@@ -173,23 +172,22 @@ START_TEST(test_s21_sscanf_n_with_length_modifiers) {
 }
 END_TEST
 
-
 TCase *create_s21_sscanf_n_tests(void) {
-    TCase *tc_core_n;
-    tc_core_n = tcase_create("Specifier= %n");
+  TCase *tc_core_n;
+  tc_core_n = tcase_create("Specifier= %n");
 
-    tcase_add_test(tc_core_n, test_s21_sscanf_n_simple);
-    tcase_add_test(tc_core_n, test_s21_sscanf_n_with_string);
-    tcase_add_test(tc_core_n, test_s21_sscanf_n_with_width);
-    tcase_add_test(tc_core_n, test_s21_sscanf_n_with_star_flag);
-    tcase_add_test(tc_core_n, test_s21_scanf_n_with_length_modifiers);
-    tcase_add_test(tc_core_n, test_s21_sscanf_n_with_zero_width);
-    tcase_add_test(tc_core_n, test_s21_sscanf_n_with_multiple_n);
-    tcase_add_test(tc_core_n, test_s21_sscanf_n_with_spaces);
-    tcase_add_test(tc_core_n, test_s21_sscanf_n_with_separator);
-    tcase_add_test(tc_core_n, test_s21_sscanf_n_with_large_input);
-    tcase_add_test(tc_core_n, test_s21_sscanf_n_with_no_conversion);
-    tcase_add_test(tc_core_n, test_s21_sscanf_n_with_length_modifiers);
+  tcase_add_test(tc_core_n, test_s21_sscanf_n_simple);
+  tcase_add_test(tc_core_n, test_s21_sscanf_n_with_string);
+  tcase_add_test(tc_core_n, test_s21_sscanf_n_with_width);
+  tcase_add_test(tc_core_n, test_s21_sscanf_n_with_star_flag);
+  tcase_add_test(tc_core_n, test_s21_scanf_n_with_length_modifiers);
+  tcase_add_test(tc_core_n, test_s21_sscanf_n_with_zero_width);
+  tcase_add_test(tc_core_n, test_s21_sscanf_n_with_multiple_n);
+  tcase_add_test(tc_core_n, test_s21_sscanf_n_with_spaces);
+  tcase_add_test(tc_core_n, test_s21_sscanf_n_with_separator);
+  tcase_add_test(tc_core_n, test_s21_sscanf_n_with_large_input);
+  tcase_add_test(tc_core_n, test_s21_sscanf_n_with_no_conversion);
+  tcase_add_test(tc_core_n, test_s21_sscanf_n_with_length_modifiers);
 
   return tc_core_n;
 }

@@ -4,8 +4,6 @@
 #include <locale.h>
 #include <stdio.h>
 
-
-
 START_TEST(test_s21_sscanf_s_separators_comp) {
   // const char *input = "Hello , Wide : World!";
   const char *input = "Hello, , Wide : World!";
@@ -250,7 +248,6 @@ START_TEST(test_s21_sscanf_ls_skip_assignment) {
 }
 END_TEST
 
-
 START_TEST(test_s21_sscanf_s_simple) {
   const char *input = "Hello World";
   char str[20] = {0}, strr[20] = {0};
@@ -304,33 +301,31 @@ START_TEST(test_s21_sscanf_s_multiple) {
 }
 END_TEST
 
-
-  
 TCase *create_s21_sscanf_s_tests(void) {
-    TCase *tc;
-    tc = tcase_create("Specifier= %s");
+  TCase *tc;
+  tc = tcase_create("Specifier= %s");
 
-    tcase_add_test(tc, test_s21_sscanf_s_separators_comp);
-    tcase_add_test(tc, test_s21_sscanf_s_simple);
-    tcase_add_test(tc, test_s21_sscanf_s_space);
-    tcase_add_test(tc, test_s21_sscanf_s_width);
-    tcase_add_test(tc, test_s21_sscanf_s_multiple);
-    tcase_add_test(tc, test_s21_sscanf_s_empty);
-    tcase_add_test(tc, test_s21_sscanf_s_wrong_fmt);
-    tcase_add_test(tc, test_s21_sscanf_s_width_wrong_fmt);
-    tcase_add_test(tc, test_s21_sscanf_s_separators);
-    tcase_add_test(tc, test_s21_sscanf_s_width_separators);
-    tcase_add_test(tc, test_s21_sscanf_s_add_spaces);
-    tcase_add_test(tc, test_s21_sscanf_s_skip_assignment);
-    tcase_add_test(tc, test_s21_sscanf_ls_simple);
-    tcase_add_test(tc, test_s21_sscanf_ls_space);
-    tcase_add_test(tc, test_s21_sscanf_ls_width);
-    tcase_add_test(tc, test_s21_sscanf_ls_multiple);
-    tcase_add_test(tc, test_s21_sscanf_ls_empty);
-    tcase_add_test(tc, test_s21_sscanf_ls_wrong_fmt);
-    tcase_add_test(tc, test_s21_sscanf_ls_width_separators);
-    tcase_add_test(tc, test_s21_sscanf_ls_skip_assignment);
-    tcase_add_test(tc, test_s21_sscanf_ls_separators);
+  tcase_add_test(tc, test_s21_sscanf_s_separators_comp);
+  tcase_add_test(tc, test_s21_sscanf_s_simple);
+  tcase_add_test(tc, test_s21_sscanf_s_space);
+  tcase_add_test(tc, test_s21_sscanf_s_width);
+  tcase_add_test(tc, test_s21_sscanf_s_multiple);
+  tcase_add_test(tc, test_s21_sscanf_s_empty);
+  tcase_add_test(tc, test_s21_sscanf_s_wrong_fmt);
+  tcase_add_test(tc, test_s21_sscanf_s_width_wrong_fmt);
+  tcase_add_test(tc, test_s21_sscanf_s_separators);
+  tcase_add_test(tc, test_s21_sscanf_s_width_separators);
+  tcase_add_test(tc, test_s21_sscanf_s_add_spaces);
+  tcase_add_test(tc, test_s21_sscanf_s_skip_assignment);
+  tcase_add_test(tc, test_s21_sscanf_ls_simple);
+  tcase_add_test(tc, test_s21_sscanf_ls_space);
+  tcase_add_test(tc, test_s21_sscanf_ls_width);
+  tcase_add_test(tc, test_s21_sscanf_ls_multiple);
+  tcase_add_test(tc, test_s21_sscanf_ls_empty);
+  tcase_add_test(tc, test_s21_sscanf_ls_wrong_fmt);
+  tcase_add_test(tc, test_s21_sscanf_ls_width_separators);
+  tcase_add_test(tc, test_s21_sscanf_ls_skip_assignment);
+  tcase_add_test(tc, test_s21_sscanf_ls_separators);
 
   return tc;
 }

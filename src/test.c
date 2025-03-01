@@ -14,6 +14,7 @@ int main(void) {
 
   SRunner *sr;
 
+    //[ ]: Uncomment test case suite
   sr = srunner_create(s21_string_suite());
   srunner_run_all(sr, CK_NORMAL);
   number_failed = srunner_ntests_failed(sr);

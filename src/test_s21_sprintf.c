@@ -330,20 +330,71 @@ START_TEST(test_s21_sprintf_f_large_number) {
 }
 END_TEST
 
+START_TEST(test_s21_sprintf_f_large_number_format) {
+  char buffer[1024] = {0};
+  char original_buffer[1024] = {0};
+  double large_value = -123456789.987654321;
+  s21_sprintf(buffer, "Large Number: %0.6f", large_value);
+  sprintf(original_buffer, "Large Number: %0.6f", large_value);
+  ck_assert_str_eq(buffer, original_buffer);
+}
+END_TEST
+
+
+//[ ]: не работает тест на реализация %Lf. Починить и раскомментировать
+// START_TEST(test_s21_sprintf_Lf_large_number_format) {
+//   char buffer[1024] = {0};
+//   char original_buffer[1024] = {0};
+//   long double large_value = -123456789.987654321e+235L;
+//   s21_sprintf(buffer, "Large Number: %0.6Lf", large_value);
+//   sprintf(original_buffer, "Large Number: %0.6Lf", large_value);
+//   ck_assert_str_eq(buffer, original_buffer);
+// }
+// END_TEST
+
+// START_TEST(test_s21_sprintf_f_left_padding) {
+//   char buffer[1024] = {0};
+//   char original_buffer[1024] = {0};
+//   double value = -123.4564;
+//   const char *fmt = "Number: %-14.4g";
+//   s21_sprintf(buffer, fmt, value);
+//   sprintf(original_buffer, fmt, value);
+//   ck_assert_str_eq(buffer, original_buffer);
+// }
+// END_TEST
+// START_TEST(test_s21_sprintf_g_left_padding) {
+//   char buffer[1024] = {0};
+//   char original_buffer[1024] = {0};
+//   double value = -123.4564;
+//   const char *fmt = "Number: %-14.4g";
+//   s21_sprintf(buffer, fmt, value);
+//   sprintf(original_buffer, fmt, value);
+//   ck_assert_str_eq(buffer, original_buffer);
+// }
+// END_TEST
+
 TCase *tcase_s21_sprintf_e(void);
+TCase *tcase_s21_sprintf_x(void);
+TCase *tcase_s21_sprintf_g(void);
+
+
 
 Suite *s21_sprintf_suite(void) {
   Suite *s;
-  TCase *tc_core, *tc_debug;
+  TCase *tc_core;
 
   s = suite_create("s21_sprintf");
 
   TCase *tc_core_e = tcase_s21_sprintf_e();
   suite_add_tcase(s, tc_core_e);
+  TCase *tc_core_x = tcase_s21_sprintf_x();
+  suite_add_tcase(s, tc_core_x);
+  // TCase *tc_core_g = tcase_s21_sprintf_g();
+  // suite_add_tcase(s, tc_core_g);
 
 
   tc_core = tcase_create("Core");
-  tc_debug = tcase_create("Debug");
+
 
   tcase_add_test(tc_core, test_s21_sprintf_basic_string);
   tcase_add_test(tc_core, test_s21_sprintf_d_int_format);
@@ -378,6 +429,8 @@ Suite *s21_sprintf_suite(void) {
   tcase_add_test(tc_core, test_s21_sprintf_f_precision_format);
   tcase_add_test(tc_core, test_s21_sprintf_ld_double_format);
   tcase_add_test(tc_core, test_s21_sprintf_f_precision_flag);
+  tcase_add_test(tc_core, test_s21_sprintf_f_large_number_format);
+  // tcase_add_test(tc_core, test_s21_sprintf_Lf_large_number_format);
 
   tcase_add_test(tc_core, test_s21_sprintf_s_precision);
   tcase_add_test(tc_core, test_s21_sprintf_s_basic);
@@ -391,7 +444,11 @@ Suite *s21_sprintf_suite(void) {
   tcase_add_test(tc_core, test_s21_sprintf_u_complex_case);
   suite_add_tcase(s, tc_core);
 
-  tcase_add_test(tc_debug, test_s21_sprintf_u_complex_case);
+  //[ ]: удалить отладочные тесты
+  // TCase *tc_debug;
+  // tc_debug = tcase_create("Debug");
+  // tcase_add_test(tc_debug, test_s21_sprintf_f_left_padding);
+  // tcase_add_test(tc_debug, test_s21_sprintf_g_left_padding);
   // suite_add_tcase(s, tc_debug);
 
   return s;

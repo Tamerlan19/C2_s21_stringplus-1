@@ -13,6 +13,8 @@ void handle_unsigned(char **buffer, Specifiers flags, unsigned int u);
 void handle_percent(char **buffer, Specifiers flags);
 
 void handle_exp(char **buffer, Specifiers flags, va_list args);
+void handle_hex(char **buffer, Specifiers flags, va_list args);
+void handle_general(char **buffer, Specifiers flags, va_list args);
 
 // int parse_specifiers_length(const char *format) {
 //     int len = 0;
@@ -31,7 +33,7 @@ int s21_sprintf(char *str, const char *format, ...) {
   va_start(args, format);
   char *buffer = str;
   const char *ptr = format;
-  DEBUG_PRINT("ptr = %s\n", ptr);
+  DEBUG_PRINT("\n\n\nptr = %s\n", ptr);
   DEBUG_PRINT("format = %s\n", format);
   while (*ptr) {
     if (*ptr == '%') {
@@ -62,7 +64,10 @@ int s21_sprintf(char *str, const char *format, ...) {
         handle_percent(&buffer, flags);
       } else if (flags.specifier == 'e' || flags.specifier == 'E') {
         handle_exp(&buffer, flags, args);
-        DEBUG_PRINT("HANDLE_EXP: buffer=|%s|\n", buffer);
+      } else if (flags.specifier == 'x' || flags.specifier == 'X') {
+        handle_hex(&buffer, flags, args);
+      } else if (flags.specifier == 'g' || flags.specifier == 'G') {
+        handle_general(&buffer, flags, args);
       } else
         *buffer++ = spec;
     } else {
@@ -170,23 +175,28 @@ void handle_int(char **buffer, Specifiers flags, va_list args) {
 }
 
 void handle_float(char **buffer, Specifiers flags, va_list args) {
-  char tmp[200] = {0};
+  char tmp[MAX_BUF_SIZE] = {0};
   int len = 0;
 
   // Определяем тип числа в зависимости от модификатора длины
   double f;
-  if (flags.length == 'l') {
+  if (flags.length == 'L') {
     // Для 'l' используем double (по умолчанию)
-    f = va_arg(args, double);
+    f = va_arg(args, long double);
   } else {
     // Без модификатора длины также используем double
     f = va_arg(args, double);
   }
   // Преобразуем число в строку вручную
+  if (flags.precision < 0) {
+    flags.precision = 6; //default value fro %f
+  }
   if (flags.precision >= 0) {
     // Используем массив для хранения целой части и дробной части
-    long int_part = (long)f;
-    double frac_part = f - int_part;
+    long int int_part = ( long int) f;
+    long double frac_part = f - int_part;
+
+    DEBUG_PRINT("int_part= %ld, frac_part= %Lf, f=|%Lf|\n", int_part, (long double)  frac_part,(long double) f);
 
     // Преобразуем целую часть
     if (int_part == 0) {
@@ -194,25 +204,31 @@ void handle_float(char **buffer, Specifiers flags, va_list args) {
     } else {
       int int_len = 0;
       if (int_part < 0) {
-        tmp[len++] = '-';
-        int_part = -int_part;
+        // tmp[len++] = '-';
+        DEBUG_PRINT("int_part is negative. tmp=%s\n", tmp);
+        int_part *= -1;
       }
       long n = int_part;
       while (n > 0) {
         tmp[int_len++] = '0' + (n % 10);
         n /= 10;
       }
-      for (int i = 0; i < int_len / 2; i++) {
-        char temp = tmp[i];
-        tmp[i] = tmp[int_len - i - 1];
-        tmp[int_len - i - 1] = temp;
+      for (int i = 0; i< int_len / 2; i++) {
+        char temp = tmp[i+len];
+        tmp[i+len] = tmp[int_len+len - i - 1];
+        tmp[int_len+len - i - 1] = temp;
       }
       len += int_len;
     }
 
     // Добавляем точку
     tmp[len++] = '.';
-
+    // tmp[len++]='\0';
+    DEBUG_PRINT("tmp=%s\n", tmp);
+    if(frac_part<0){
+      frac_part*=-1;
+    }
+    DEBUG_PRINT("frac_part= %Lf\n", frac_part);
     // Преобразуем дробную часть
     for (int i = 0; i < flags.precision; i++) {
       frac_part *= 10;
@@ -223,18 +239,36 @@ void handle_float(char **buffer, Specifiers flags, va_list args) {
         digit = (int)frac_part + 1;
       }
       tmp[len++] = '0' + digit;
+      DEBUG_PRINT("tmp in cycle = |%s|,digit=%i\n", tmp,digit);
       frac_part -= digit;
     }
-  } else {
-    // Если точность не указана, используем значение по умолчанию
-    sprintf(tmp, "%f", f); // Можно заменить на ручную реализацию
-    len = s21_strlen(tmp);
+
+    if(flags.specifier=='g'|| flags.specifier=='G'){
+      DEBUG_PRINT("GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG\n");
+      DEBUG_PRINT("Precision=%i\n", flags.precision);
+      for (int i = len - 1; tmp[i]=='0'; i--) {
+        DEBUG_PRINT("len=%i. tmp[%d]=%c\n", len, i, tmp[i]);
+        len--;
+      }
+      for (int i = len - 1; len>flags.precision+1; i--) {
+        len--;
+        DEBUG_PRINT("CUT!!!!!");
+      }
+    }
+  // } else {
+  //   // Если точность не указана, используем значение по умолчанию
+  //   sprintf(tmp, "%f", f); // Можно заменить на ручную реализацию
+  //   len = s21_strlen(tmp);
   }
 
   // Добавляем '+' только если флаг установлен
   if (flags.flag == '+' && f > 0) {
     s21_memmove(tmp + 1, tmp, len);
     tmp[0] = '+';
+    len++;
+  }else if(f<0){
+    s21_memmove(tmp + 1, tmp, len);
+    tmp[0] = '-';
     len++;
   }
 
@@ -371,20 +405,20 @@ void handle_percent(char **buffer, Specifiers flags) {
   }
 }
 
-int proc_int_to_str(char *str, int int_part, int base) {
-  DEBUG_PRINT("Star process handle_exp_int(|%s|,|%d|)\n", str - 3, int_part);
+int proc_int_to_str(char *str, long unsigned int_part, int base) {
+  DEBUG_PRINT("Star process proc_int_to_str(|%s|,|%lu|,|%d|)\n", str - 3, int_part,base);
   char *tmp = str;
   int len = 0;
   if (int_part == 0) {
     *(tmp++) = '0';
   } else {
     int int_len = 0;
-    long n = int_part;
+    long unsigned n = int_part;
     while (n > 0) {
       // *(tmp++) = '0' + (n % 10);
       // n /= 10;
       // int_len++;
-      int digit = n % base;
+      long unsigned digit = n % base;
       *(tmp++) = (digit < 10) ? '0' + digit : 'A' + digit - 10;
       int_len++;
       n /= base;
@@ -406,7 +440,7 @@ int proc_int_to_str(char *str, int int_part, int base) {
   // DEBUG_PRINT("Set exp_int=|%s|\n", (str-1));
   // DEBUG_PRINT("Set exp_int=|%s|\n", (str-2));
   // DEBUG_PRINT("Set exp_int=|%s|\n", (str-3));
-  DEBUG_PRINT("Set exp_int=|%s|\n", (str - len));
+  DEBUG_PRINT("Result stro to int conversation=|%s|\n", (str - len));
   return len;
 }
 
@@ -426,7 +460,6 @@ int set_znak(char *tmp, Specifiers flags, long double *ch) {
 }
 
 int add_exp(char *dst, int exp, Specifiers flags) {
-  // int res = 0;
   char *start = dst;
   DEBUG_PRINT("Start process add_exp(|%s|,|%d|)\n", dst, exp);
   if (flags.specifier == 'g' || flags.specifier == 'e') {
@@ -436,15 +469,17 @@ int add_exp(char *dst, int exp, Specifiers flags) {
   }
   if (exp < 0) {
     *(dst++) = '-';
+    if (exp>-10){
+      *(dst++) = '0';
+    }
     exp *= -1;
-  } else if (exp < 10) {
+  } else{
     *(dst++) = '+';
-    *(dst++) = '0';
-  } else if (exp < 10) {
-    *(dst++) = '+';
+    if (exp < 10) {
+      *(dst++) = '0';
+    } 
   }
   dst += proc_int_to_str(dst, exp, 10);
-
   DEBUG_PRINT("add exp=|%s|\n", (dst - 3));
   return dst - start;
 }
@@ -476,10 +511,8 @@ void proc_width_pading(char **buffer, char *src, Specifiers flags, int len) {
 void handle_exp(char **buffer, Specifiers flags, va_list args) {
   DEBUG_PRINT("Start process void handle_ex()\n");
   long double ch;
-  // char *tmp = malloc(sizeof(char) * 100);
   char tmp_arr[MAX_BUF_SIZE] = {0};
   char *tmp = tmp_arr;
-  // s21_memset(tmp, '\0', 100);
   char *tmp_ptr = tmp;
   int exp = 0;
   int int_part = 0;
@@ -494,7 +527,6 @@ void handle_exp(char **buffer, Specifiers flags, va_list args) {
   len += set_znak(tmp, flags, &ch);
   tmp += len;
   DEBUG_PRINT("Set znak=|%s|\n", (tmp - 1));
-
   if (ch < 1) {
     while (ch < 1) {
       ch *= 10;
@@ -525,17 +557,71 @@ void handle_exp(char **buffer, Specifiers flags, va_list args) {
   tmp += add_exp(tmp, exp, flags);
   proc_width_pading(buffer, tmp_ptr, flags, tmp - tmp_ptr);
 }
+
+void handle_hex(char **buffer, Specifiers flags, va_list args) {
+  DEBUG_PRINT("Start process void handle_hex()\n");
+  long unsigned ch;
+  char tmp_arr[MAX_BUF_SIZE] = {0};
+  char *tmp = tmp_arr;
+  char *tmp_ptr = tmp;
+  if (flags.length == 'l') {
+    ch = va_arg(args, long unsigned);
+  } else {
+    ch = va_arg(args, unsigned);
+  }
+  DEBUG_PRINT("Get args=|%lu|\n", (long unsigned) ch);
+
+  tmp += proc_int_to_str(tmp, ch, 16);
+  DEBUG_PRINT("strlen *tmp=|%d|\n", (int)s21_strlen(tmp_ptr));
+  
+  int len = tmp-tmp_ptr;
+  if (flags.precision > len) {
+    s21_memmove(tmp_ptr+flags.precision-len,tmp_ptr,len);
+    s21_memset(tmp_ptr,'0', flags.precision-len);
+    tmp+=flags.precision-len;
+  }
+  if (flags.specifier == 'x') {
+    char *r = (char *) s21_to_lower(tmp_ptr);
+    s21_memcpy(tmp_ptr, r, tmp - tmp_ptr);
+  }else{
+    char *r = (char *) s21_to_upper(tmp_ptr);
+    s21_memcpy(tmp_ptr, r, tmp - tmp_ptr);
+  }
+  proc_width_pading(buffer, tmp_ptr, flags, tmp - tmp_ptr);
+}
+
+
+int get_exp(long double ch) {
+  int res = 0;
+  if(ch<0){
+    ch*=-1;
+  }
+  if (ch >1){
+    while (ch>1)
+    {
+      ch/=10;
+      res++;
+    }
+  }else{
+    while (ch<1){
+      ch*=10;
+      res--;
+    }
+  }
+  return res;
+}
 void handle_general(char **buffer, Specifiers flags, va_list args) {
   va_list args_orig;
   va_copy(args_orig, args);
   float ch = va_arg(args, double);
-  if (flags.precision < 0) {
-    flags.precision = 6;
-  }
+  // if (flags.precision < 0) {
+  //   flags.precision = 6;
+  // }
+  int exp = get_exp(ch);
   args = args_orig;
-  if ((ch / 10000) < 1) {
-    handle_float(buffer, flags, args);
-  } else {
+  if (exp<-4 || (exp>=flags.precision && !(flags.precision<0))) {
     handle_exp(buffer, flags, args);
+  } else {
+    handle_float(buffer, flags, args);
   }
 }

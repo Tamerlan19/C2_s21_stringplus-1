@@ -3,12 +3,16 @@
 #include "s21_utils.h"
 #include <stdio.h>
 
+#define MAX_BUF_SIZE 1024
+
 void handle_char(char **buffer, Specifiers flags, int c);
 void handle_int(char **buffer, Specifiers flags, va_list argc);
 void handle_float(char **buffer, Specifiers flags, va_list argc);
 void handle_string(char **buffer, Specifiers flags, const char *s);
 void handle_unsigned(char **buffer, Specifiers flags, unsigned int u);
 void handle_percent(char **buffer, Specifiers flags);
+
+void handle_exp(char **buffer, Specifiers flags, va_list args);
 
 // int parse_specifiers_length(const char *format) {
 //     int len = 0;
@@ -56,6 +60,9 @@ int s21_sprintf(char *str, const char *format, ...) {
         handle_unsigned(&buffer, flags, u);
       } else if (flags.specifier == '%') {
         handle_percent(&buffer, flags);
+      } else if (flags.specifier == 'e' || flags.specifier == 'E') {
+        handle_exp(&buffer, flags, args);
+        DEBUG_PRINT("HANDLE_EXP: buffer=|%s|\n", buffer);
       } else
         *buffer++ = spec;
     } else {
@@ -85,6 +92,7 @@ void handle_int(char **buffer, Specifiers flags, va_list args) {
   } else {
     d = (int)va_arg(args, int);
   }
+
   char tmp[300] = {0};
   int is_negative = (d < 0);
   long int num = (is_negative) ? -d : d; // Работаем с положительным числом
@@ -282,7 +290,7 @@ void handle_string(char **buffer, Specifiers flags, const char *s) {
 }
 
 void handle_unsigned(char **buffer, Specifiers flags, unsigned int u) {
-  char tmp[100] = {0}; // Буфер для временного хранения числа
+  char tmp[MAX_BUF_SIZE] = {0}; // Буфер для временного хранения числа
   int len = 0; // Длина числа в строковом представлении
 
   // Шаг 1: Преобразуем число в строку
@@ -360,5 +368,174 @@ void handle_percent(char **buffer, Specifiers flags) {
 
     *(*buffer)++ = '%';
     **buffer = '\0';
+  }
+}
+
+int proc_int_to_str(char *str, int int_part, int base) {
+  DEBUG_PRINT("Star process handle_exp_int(|%s|,|%d|)\n", str - 3, int_part);
+  char *tmp = str;
+  int len = 0;
+  if (int_part == 0) {
+    *(tmp++) = '0';
+  } else {
+    int int_len = 0;
+    long n = int_part;
+    while (n > 0) {
+      // *(tmp++) = '0' + (n % 10);
+      // n /= 10;
+      // int_len++;
+      int digit = n % base;
+      *(tmp++) = (digit < 10) ? '0' + digit : 'A' + digit - 10;
+      int_len++;
+      n /= base;
+    }
+    char *t = str;
+    tmp--;
+    while (tmp - str >= 0) {
+      char temp = *tmp;
+      *tmp = *str;
+      *str = temp;
+      DEBUG_PRINT("Inser char into str=%c\n", *tmp);
+      str++;
+      tmp--;
+    }
+    str = t + int_len;
+    len += int_len;
+  }
+  *(str) = '\0';
+  // DEBUG_PRINT("Set exp_int=|%s|\n", (str-1));
+  // DEBUG_PRINT("Set exp_int=|%s|\n", (str-2));
+  // DEBUG_PRINT("Set exp_int=|%s|\n", (str-3));
+  DEBUG_PRINT("Set exp_int=|%s|\n", (str - len));
+  return len;
+}
+
+int set_znak(char *tmp, Specifiers flags, long double *ch) {
+  int res = 0;
+  DEBUG_PRINT("Start process set_znak(|%s|,|%Lf|)\n", tmp, *ch);
+  if (*ch < 0) {
+    *tmp++ = '-';
+    *ch *= -1;
+    res++;
+  } else if (flags.flag == '+') {
+    *tmp++ = '+';
+    res++;
+  }
+  DEBUG_PRINT("Set znak=|%s|\n", tmp - res);
+  return res;
+}
+
+int add_exp(char *dst, int exp, Specifiers flags) {
+  // int res = 0;
+  char *start = dst;
+  DEBUG_PRINT("Start process add_exp(|%s|,|%d|)\n", dst, exp);
+  if (flags.specifier == 'g' || flags.specifier == 'e') {
+    *(dst++) = 'e';
+  } else {
+    *(dst++) = 'E';
+  }
+  if (exp < 0) {
+    *(dst++) = '-';
+    exp *= -1;
+  } else if (exp < 10) {
+    *(dst++) = '+';
+    *(dst++) = '0';
+  } else if (exp < 10) {
+    *(dst++) = '+';
+  }
+  dst += proc_int_to_str(dst, exp, 10);
+
+  DEBUG_PRINT("add exp=|%s|\n", (dst - 3));
+  return dst - start;
+}
+
+void proc_width_pading(char **buffer, char *src, Specifiers flags, int len) {
+  DEBUG_PRINT("proc_width_pading(%s,%s,%d)\n", *buffer, src, len);
+  int total_width = flags.width > 0 ? flags.width : 0;
+  int padding = total_width > len ? total_width - len : 0;
+  if (*src == '-' && flags.flag == '0') {
+    *(*buffer)++ = *src++;
+    len--;
+  }
+  if (flags.flag == '-') { // Left align
+    DEBUG_PRINT("Left align\n");
+    s21_memcpy(*buffer, src, len);
+    *buffer += len;
+    s21_memset(*buffer, ' ', padding);
+    *buffer += padding;
+  } else { // Rgiht align 
+    DEBUG_PRINT("Right align\n");
+    char fill_char = (flags.flag == '0') ? '0' : ' ';
+    s21_memset(*buffer, fill_char, padding);
+    *buffer += padding;
+    s21_memcpy(*buffer, src, len);
+    *buffer += len;
+  }
+}
+
+void handle_exp(char **buffer, Specifiers flags, va_list args) {
+  DEBUG_PRINT("Start process void handle_ex()\n");
+  long double ch;
+  // char *tmp = malloc(sizeof(char) * 100);
+  char tmp_arr[MAX_BUF_SIZE] = {0};
+  char *tmp = tmp_arr;
+  // s21_memset(tmp, '\0', 100);
+  char *tmp_ptr = tmp;
+  int exp = 0;
+  int int_part = 0;
+  int len = 0;
+  if (flags.length == 'L') {
+    ch = va_arg(args, long double);
+  } else {
+    ch = va_arg(args, double);
+  }
+  DEBUG_PRINT("Get args=|%Lf|\n", ch);
+
+  len += set_znak(tmp, flags, &ch);
+  tmp += len;
+  DEBUG_PRINT("Set znak=|%s|\n", (tmp - 1));
+
+  if (ch < 1) {
+    while (ch < 1) {
+      ch *= 10;
+      exp--;
+    }
+  } else if (ch >= 10) {
+    while (ch >= 10) {
+      ch /= 10;
+      exp++;
+    }
+  }
+  int_part = (long)ch;
+  tmp += proc_int_to_str(tmp, int_part, 10);
+  *(tmp++) = '.';
+
+  ch = ch - int_part;
+  long int div_part = 0;
+  if (flags.precision < 0) {
+    flags.precision = 6;
+  }
+  ch *= s21_pow(10, flags.precision);
+  div_part = (int)ch;
+  if (ch - div_part >= 0.5) {
+    div_part++;
+  }
+  DEBUG_PRINT("div_part = |%Lf|, int_div=|%ld|\n", ch, div_part);
+  tmp += proc_int_to_str(tmp, div_part, 10);
+  tmp += add_exp(tmp, exp, flags);
+  proc_width_pading(buffer, tmp_ptr, flags, tmp - tmp_ptr);
+}
+void handle_general(char **buffer, Specifiers flags, va_list args) {
+  va_list args_orig;
+  va_copy(args_orig, args);
+  float ch = va_arg(args, double);
+  if (flags.precision < 0) {
+    flags.precision = 6;
+  }
+  args = args_orig;
+  if ((ch / 10000) < 1) {
+    handle_float(buffer, flags, args);
+  } else {
+    handle_exp(buffer, flags, args);
   }
 }

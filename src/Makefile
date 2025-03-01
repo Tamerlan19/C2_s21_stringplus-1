@@ -10,7 +10,7 @@ endif
 TESTFLAGS = -lcheck -lsubunit -lm
 SRC_DIR =./
 SOURCES =  s21_utils.h  s21_string.h s21_string.c s21_sprintf.c s21_sscanf.c s21_utils.c
-SOURCES_TST = test.c test_s21_string.c test_s21_sscanf.c test_s21_sprintf.c test_s21_sscanf_gen.c
+SOURCES_TST = test.c test_s21_string.c test_s21_sscanf.c test_s21_sprintf.c test_s21_sscanf_gen.c test/*.c
 SRCS = test.c s21_string.c test_s21_string.c test_s21_sscanf.c test_s21_sprintf.c s21_sscanf.c s21_sprintf.c s21_utils.c
 OBJS = $(SRCS:.c=.o)
 TARGET = ./
@@ -29,8 +29,8 @@ s21_string.a: s21_string.o s21_sprintf.o s21_sscanf.o s21_utils.o
 	ar rcs $(TARGET)$@ $^
 	rm $^
 
-test: clean s21_string.a test_s21_string.c test_s21_sscanf.c test_s21_sprintf.c
-	$(CC) $(CFLAGS) -o test.exe test.c test_s21_string.c test_s21_sscanf.c test_s21_sprintf.c -L. -l:s21_string.a $(TESTFLAGS)
+test: clean s21_string.a test_s21_string.c  test_s21_sprintf.c test/*.c
+	$(CC) $(CFLAGS) -o test.exe test.c test_s21_string.c test_s21_sprintf.c test/*.c -L. -l:s21_string.a $(TESTFLAGS)
 	./test.exe
 
 testgen: clean s21_string.a 
@@ -49,9 +49,9 @@ gcov_report: clean
 	$(CC) $(CFLAGS) -fprofile-arcs -ftest-coverage -c s21_sscanf.c -o s21_sscanf.o
 	# $(CC) $(CFLAGS) -fprofile-arcs -ftest-coverage -c s21_utils.c -o s21_utils.o
 	ar rcs $(TARGET)s21_string.a s21_string.o s21_sprintf.o s21_sscanf.o
-	$(CC) $(CFLAGS)  -fprofile-arcs -ftest-coverage  -o test.exe test.c test_s21_string.c test_s21_sscanf.c test_s21_sprintf.c -L. -l:s21_string.a $(TESTFLAGS)
+	$(CC) $(CFLAGS)  -fprofile-arcs -ftest-coverage  -o test.exe -o test.exe test.c test_s21_string.c test_s21_sprintf.c test/*.c  -L. -l:s21_string.a $(TESTFLAGS)
 	./test.exe
-	gcov s21_string.c
+	gcov s21_string.c s21_sprintf.c s21_sscanf.c
 	lcov --exclude "test*.c"   --capture --directory ./ --output-file flt-coverage.info
 	genhtml flt-coverage.info --output-directory gcov_report
 #--exclude "s21_utils.c"

@@ -343,7 +343,7 @@ int get_var(spec_type fmt[TEST_VAR], char *vars, char *args_sscanf,
   return res;
 }
 
-char *get_separator(int i) {
+const char *get_separator(int i) {
   const char *spr[15] = {"",    " ", ",", ".", ":",   "%%",  "_", "  ",
                          "   ", "!", ",", "$", "\\n", "\\t", "A"};
   return spr[i];

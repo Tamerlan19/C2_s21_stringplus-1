@@ -6,7 +6,6 @@ long double s21_pow(int x, int y);
 int get_number(const char *p, long int *res);
 int proc_spec_s(const char *str, va_list args, const Specifiers st_spec);
 int proc_spec_d(const char *str, va_list args, const Specifiers st_spec);
-int proc_spec_s(const char *str, va_list args, const Specifiers st_spec);
 int proc_spec_f(const char *str, va_list args, const Specifiers st_spec);
 int proc_spec_c(const char *str, va_list args, const Specifiers st_spec);
 int proc_spec_u(const char *str, va_list args, const Specifiers st_spec);
@@ -15,7 +14,6 @@ int proc_spec_i(const char *str, va_list args, const Specifiers st_spec);
 int proc_spec_o(const char *str, va_list args, const Specifiers st_spec);
 int proc_spec_x(const char *str, va_list args, const Specifiers st_spec);
 int proc_spec_p(const char *str, va_list args, const Specifiers st_spec);
-
 
 int str_to_int(const char *p, long int *res, int base);
 
@@ -66,11 +64,6 @@ int s21_sscanf(const char *str, const char *format, ...) {
   if (p != S21_NULL && fmt != S21_NULL) {
     DEBUG_PRINT("\n\nStart exec sscanf(). String and Format is not NULL\n");
     while (*p && *fmt && !stop) {
-      // DEBUG_PRINT("Start cycle (while (*p && *fmt && !stop))!\n");
-      // Skip separator in format string for non char types
-      // while ((*fmt == *p || *fmt == '%') && !stop) {
-      // while ((*fmt || *fmt == '%') && !stop) {  // 2025-02-25 18:56:12
-      // @morrigem: fix style
       while ((*fmt) && !stop) {
         if (*fmt == '%') {
           Specifiers st_spec = {' ', -10, -1, '*', '*'};
@@ -79,16 +72,11 @@ int s21_sscanf(const char *str, const char *format, ...) {
           DEBUG_PRINT("format after parse =|%s|\n", fmt);
           int step = 0;
           if (!(st_spec.specifier == 'c')) { // switch off for pass tests c->z
-            // noop_space(&fmt);
             noop_space(&p);
           }
           if (st_spec.specifier == 'c') {
             step = proc_spec_c(p, args, st_spec);
           } else if (st_spec.specifier == 'd') {
-            // while ((is_space(*p)) && *p != '-') {
-            //   DEBUG_PRINT("Noop symbol:|%c|\n", *p);
-            //   p++;
-            // }
             step = proc_spec_d(p, args, st_spec);
             DEBUG_PRINT(" after process %%d Result=%d\n", res);
             DEBUG_PRINT(" FINISH *String position=%s\n", p);
@@ -96,19 +84,13 @@ int s21_sscanf(const char *str, const char *format, ...) {
           } else if (st_spec.specifier == 'f' || st_spec.specifier == 'g' ||
                      st_spec.specifier == 'G' || st_spec.specifier == 'e' ||
                      st_spec.specifier == 'E') {
-            // while ((is_space(*p)) && *p != '-') {
-            //   DEBUG_PRINT("Noop symbol:|%c|\n", *p);
-            //   p++;
-            // }
             step = proc_spec_f(p, args, st_spec);
-            // proc_str(&p, step, st_spec, &res);
             DEBUG_PRINT(" after process %%f Result=%d\n", res);
             DEBUG_PRINT(" FINISH *String position=%s\n", p);
             DEBUG_PRINT(" FINISH *fmt position=%s\n", fmt);
 
           } else if (st_spec.specifier == 's') {
             step = proc_spec_s(p, args, st_spec);
-            // proc_str(&p, step, st_spec, &res);
             DEBUG_PRINT("Incriment *p +step=%d\n", step);
             DEBUG_PRINT(" after process string Result=%d\n", res);
             DEBUG_PRINT(" p=|%s|\n", p);
@@ -116,11 +98,7 @@ int s21_sscanf(const char *str, const char *format, ...) {
           } else if (st_spec.specifier == 'u') {
             DEBUG_PRINT("Start process %%u specificator...\n");
             step = proc_spec_u(p, args, st_spec);
-            // proc_str(&p, step, st_spec, &res);
-            DEBUG_PRINT("Incriment *p +step=%d\n", step);
-            DEBUG_PRINT(" after process string Result=%d\n", res);
-            DEBUG_PRINT(" p=|%s|\n", p);
-            DEBUG_PRINT(" fmt=|%s|\n", fmt);
+            DEBUG_PRINT("Incriment *p +step=%d. Result = %d\n", step, res);
 
           } else if (st_spec.specifier == 'n') {
             DEBUG_PRINT("/nStart process %%n specificator...\n");
@@ -128,42 +106,21 @@ int s21_sscanf(const char *str, const char *format, ...) {
             proc_spec_n(r, args, st_spec);
           } else if (st_spec.specifier == 'i') {
             DEBUG_PRINT("/nStart process %%i (percent) specificator...\n");
-            // while ((is_space(*p)) && *p != '-') {
-            //   DEBUG_PRINT("Noop symbol:|%c|\n", *p);
-            //   p++;
-            // }
             step = proc_spec_i(p, args, st_spec);
             DEBUG_PRINT(" after process %%n Result=%d\n", res);
             DEBUG_PRINT(" FINISH *String position=%s\n", p);
           } else if (st_spec.specifier == 'o') {
-            // while ((is_space(*p)) && *p != '-') {
-            //   DEBUG_PRINT("Noop symbol:|%c|\n", *p);
-            //   p++;
-            // }
             step = proc_spec_o(p, args, st_spec);
             DEBUG_PRINT(" after process %%o Result=%d\n", res);
             DEBUG_PRINT(" FINISH *String position=%s\n", p);
-
           } else if (st_spec.specifier == 'x' || st_spec.specifier == 'X') {
-            // while ((is_space(*p)) && *p != '-') {
-            //   DEBUG_PRINT("Noop symbol:|%c|\n", *p);
-            //   p++;
-            // }
             step = proc_spec_x(p, args, st_spec);
-            // proc_str(&p, step, st_spec, &res);
             DEBUG_PRINT(" after process %%d Result=%d\n", res);
             DEBUG_PRINT(" FINISH *String position=%s\n", p);
-
           } else if (st_spec.specifier == 'p') {
-            // while ((is_space(*p)) && *p != '-') {
-            //   DEBUG_PRINT("Noop symbol:|%c|\n", *p);
-            //   p++;
-            // }
             step = proc_spec_p(p, args, st_spec);
-            // proc_str(&p, step, st_spec, &res);
             DEBUG_PRINT(" after process %%p Result=%d\n", res);
             DEBUG_PRINT(" FINISH *String position=%s\n", p);
-
           } else if (st_spec.specifier == '%') {
             DEBUG_PRINT("/nStart process %% (percent) specificator...\n");
             if (is_space(*p)) {
@@ -245,7 +202,7 @@ int get_number(const char *p, long int *res) {
   *res = 0;
   int i = 0;
   int znak = 1;
-  if (*p == '-') {
+  if (*p == '-' && (is_digit(*(p + 1)) || (*(p-1)=='e') || (*(p-1)=='E'))) {
     znak = -1;
     p++;
     i++;
@@ -286,12 +243,12 @@ int str_to_int(const char *p, long int *res, int base) {
     int digit = -1;
 
     if (is_digit(*p))
-      digit = *p - '0'; // 0-9
+      digit = *p - '0'; 
     else if (is_hex(*p))
-      digit = (*p - 'A' + 10); // A-Z -> 10-35
+      digit = (*p - 'A' + 10); 
 
     if (digit < 0 || digit >= base)
-      break; 
+      break;
 
     if (temp > (LONG_MAX - digit) / base) {
       *res = (znak == 1) ? LONG_MAX : LONG_MIN;
@@ -300,6 +257,8 @@ int str_to_int(const char *p, long int *res, int base) {
     p++;
     i++;
   }
+
+    
   *res = temp * znak;
   return i;
 }
@@ -308,8 +267,9 @@ int proc_spec_c(const char *str, va_list args, const Specifiers st_spec) {
   int error = 0;
   size_t max_len = s21_strlen(str);
   const char *p = str;
-  DEBUG_PRINT(": String for decode=|%s|\n", str);
+  if (max_len>0){ 
   int width = st_spec.width > 0 ? get_width(str, st_spec) : 1;
+  DEBUG_PRINT("Start procesing Char. width=%d\n", (int)max_len);
   if (width > 0) {
     if (st_spec.flag == '*') {
       if (st_spec.length == 'l') {
@@ -319,23 +279,20 @@ int proc_spec_c(const char *str, va_list args, const Specifiers st_spec) {
             break;
         }
       } else {
-        p += width; // 2025-02-25 19:03:17 @morrigem: fix style: style:
+        p += width; 
       }
     } else {
       if ((st_spec.length == 'l')) {
         width = (width > (int)max_len) ? (int)max_len : width;
         wchar_t *wch = va_arg(args, wchar_t *);
         for (int i = 0; i < width; i++) {
-          DEBUG_PRINT(" wide Char=%x\n", L'Ω');
           int bytes_read = read_wchar(&p, &wch[i]);
           p += bytes_read;
           if (bytes_read == -1) {
             wch[i] = L'\0';
-            DEBUG_PRINT(" read wide char symbol=%d\n", i);
             error = 1;
             break;
           }
-          DEBUG_PRINT(" wide Char=%x\n", (wchar_t)wch[i]);
         }
       } else {
         char *ch = va_arg(args, char *);
@@ -343,27 +300,26 @@ int proc_spec_c(const char *str, va_list args, const Specifiers st_spec) {
         s21_memcpy(ch, p, copy_size);
         ch[copy_size] = '\0';
         p += copy_size;
-        DEBUG_PRINT(" ordinary Char=|%c|, int code=|%d|\n", *ch, *ch);
       }
     }
   }
+}
   return p - str - error;
 }
 
 int proc_spec_wchar(const char **p, wchar_t *ch) {
   int res = 0;
   DEBUG_PRINT("Start procesing and noop wide String\n");
-  // wchar_t ch[10];
   while (**p && !is_space(**p)) {
     s21_size_t mbr_res = mbrtowc(ch, *p, MB_CUR_MAX, NULL);
     if (mbr_res == (size_t)-1 || mbr_res == (size_t)-2) {
       DEBUG_PRINT("Error: Invalid multibyte sequence.\n");
-      break; // Прерываем цикл при ошибке
+      break;
     }
     DEBUG_PRINT("mbr_res=%lu, char=|%lc| \n", (unsigned long)mbr_res, *(ch));
-    *p += mbr_res; // Перемещаем указатель на следующий символ
-    ch++; // Перемещаем указатель на следующий широкий символ
-    res += mbr_res; // Увеличиваем счётчик прочитанных символов
+    *p += mbr_res;
+    ch++; 
+    res += mbr_res;
   }
   *ch = L'\0';
   DEBUG_PRINT("End procesing wide String. number chars=%d\n", res);
@@ -377,7 +333,7 @@ int proc_spec_f(const char *str, va_list args, const Specifiers st_spec) {
   const char *p = arg_str;
   noop_space(&p);
 
-  DEBUG_PRINT(" String=%s\n", p);
+  
   long int res = 0;
   int init = 0;
   long double result = 0.0;
@@ -386,7 +342,6 @@ int proc_spec_f(const char *str, va_list args, const Specifiers st_spec) {
     init++;
   }
   result += res;
-  DEBUG_PRINT(" RES_CELOE=%Lf\n", result);
   if (*p == '.' && is_digit(*(p + 1)) && *(p + 1) != '\0') {
     long int div = 0;
     p++;
@@ -394,58 +349,49 @@ int proc_spec_f(const char *str, va_list args, const Specifiers st_spec) {
     if (result < 0) {
       div = div * -1;
     }
-    DEBUG_PRINT(" Ostatoc_div=%d, div=%ld\n", ost_div, div);
     result = result + div * (1 / s21_pow(10, ost_div));
     p += ost_div;
-    DEBUG_PRINT(" String after get float=%s\n", p);
-    DEBUG_PRINT(" RES_frac=%Lf\n", result);
     init++;
   } else if (*p == '.' && p - arg_str > 0) {
     p++;
   }
-
+  
   if (init && (*p == 'e' || *p == 'E')) {
     p++;
     p += get_number(p, &res);
-    DEBUG_PRINT(" exp=%ld\n", res);
     result = result * s21_pow(10, (res));
-    DEBUG_PRINT(" result=%Lf\n", (s21_pow(10, (res))));
+    DEBUG_PRINT("number=%ld, init=%d\n", res, init);
   }
 
   if (p - arg_str > 0 && st_spec.flag != '*') {
     if (st_spec.length == 'L') {
-      DEBUG_PRINT("Process proc_spec_f(): length=L, result=%Lf\n", result);
       long double *ch = va_arg(args, long double *);
       *ch = result;
     } else {
-      DEBUG_PRINT("Process proc_spec_f(): float, result=%f\n", (float)result);
       float *ch = va_arg(args, float *);
       *ch = (float)result;
     }
-    DEBUG_PRINT(" Float=%Lf\n", result);
     r = p - arg_str;
   } else if (st_spec.flag == '*') {
     r = p - arg_str;
   } else {
     r = -1;
   }
-
   free(arg_str);
   return r;
 }
 int proc_spec_s(const char *str, va_list args, const Specifiers st_spec) {
-  DEBUG_PRINT("Call proc_spec_s()\n");
-  int res = 0, i=0;
+  int res = 0, i = 0;
   int width = get_width(str, st_spec);
+  if(width>0){
+
+  
   char *arg_str = get_arg_width(str, width);
   const char *p = arg_str;
   noop_space(&p);
-  DEBUG_PRINT("proc_spec_s(): String length=%lu\n",
-              (unsigned long)s21_strlen(p));
   if (*p) {
     if (st_spec.flag == '*') {
       if ((st_spec.length == 'l')) {
-        DEBUG_PRINT("Start procesing and noop wide String\n");
         wchar_t ch[sizeof(char) * s21_strlen(p)];
         i += proc_spec_wchar(&p, ch);
 
@@ -463,8 +409,6 @@ int proc_spec_s(const char *str, va_list args, const Specifiers st_spec) {
       } else {
         char *ch = va_arg(args, char *);
         if (ch != NULL) {
-          DEBUG_PRINT("String write to args=|%s|, strlen=%lu, width=%d\n", p,
-                      (unsigned long)s21_strlen(p), width);
           for (; *p && !(is_space(*p)); i++) {
             *ch++ = *p++;
           }
@@ -480,100 +424,10 @@ int proc_spec_s(const char *str, va_list args, const Specifiers st_spec) {
     res = -1;
   } else
     res = p - arg_str;
-  DEBUG_PRINT(" value Step=%td\n", p - arg_str);
-  DEBUG_PRINT("proc_spec_s() result=|%d|, String = |%s|\n", res, ch - i);
   free(arg_str);
+}
   return res;
 }
-
-// int proc_spec_s_old_work(const char *str, va_list args, const Specifiers
-// st_spec) {
-//   DEBUG_PRINT("Call proc_spec_s()\n");
-//   int width = get_width(str, st_spec);
-//   DEBUG_PRINT("width=%d\n", width);
-//   const char *p = str;
-//   int res = 0;
-//   int i = 0;
-//   DEBUG_PRINT("proc_spec_s(): String length=%lu\n",
-//               (unsigned long)s21_strlen(p));
-//   noop_space(&p);
-//   if (*p) {
-//     if (st_spec.flag == '*') {
-//       if ((st_spec.length == 'l')) {
-//         DEBUG_PRINT("Start procesing and noop wide String\n");
-//         wchar_t ch[10];
-//         while (*p && !is_space(*p) && i < width) {
-//           s21_size_t mbr_res = mbrtowc(ch, p, MB_CUR_MAX, NULL);
-//           if (mbr_res == (size_t)-1 || mbr_res == (size_t)-2) {
-//             DEBUG_PRINT("Error: Invalid multibyte sequence.\n");
-//             break; // Прерываем цикл при ошибке
-//           }
-//           DEBUG_PRINT("mbr_res=%lu\n", (unsigned long)mbr_res);
-//           p += mbr_res; // Перемещаем указатель на следующий символ
-//           // ch++;         // Перемещаем указатель на следующий широкий
-//           символ i++; // Увеличиваем счётчик прочитанных символов
-//         }
-//       } else {
-//         for (; !(is_space(*p)) && i < width; i++, p++)
-//           ;
-//       }
-//       res = 0;
-//     } else {
-//       if ((st_spec.length == 'l')) {
-//         DEBUG_PRINT("Start procesing wide String\n");
-//         wchar_t *ch = va_arg(args, wchar_t *);
-//         // wchar_t *start = ch;
-//         while (*p && !is_space(*p) && i < width) {
-//           s21_size_t mbr_res = mbrtowc(ch, p, MB_CUR_MAX, NULL);
-//           if (mbr_res == (s21_size_t)-1 || mbr_res == (s21_size_t)-2) {
-//             DEBUG_PRINT("Error: Invalid multibyte sequence.\n");
-//             break; // Прерываем цикл при ошибке
-//           }
-//           p += mbr_res;
-//           ch++;
-//           i++;
-//         }
-//         *ch = L'\0';
-//         if (i > 0) {
-//           res++; // Увеличиваем счётчик успешных преобразований
-//           // DEBUG_PRINT("Wide string=%ls\n", start); // Выводим строку с
-//           начала
-//         } else {
-//           DEBUG_PRINT("Warning: No valid characters read.\n");
-//         }
-//         res++;
-//       } else {
-//         DEBUG_PRINT("proc_spec_s(process string)\n");
-//         char *ch = va_arg(args, char *);
-//         if (ch != NULL) {
-//           DEBUG_PRINT("String write to args=|%s|, strlen=%lu, width=%d\n", p,
-//                       (unsigned long)s21_strlen(p), width);
-//           while (*p && !is_space(*p) && i < width) {
-//             *ch++ = *p++;
-//             DEBUG_PRINT("i=%d, symbol=%c\n", i, *(ch - 1)); // Отладочный
-//             вывод i++;
-//           }
-//           *ch = '\0';
-
-//           if (i > 0) {
-//             res++;
-//           } else {
-//             DEBUG_PRINT("Warning: No valid characters read.\n");
-//           }
-//         } else
-//           DEBUG_PRINT("ERRRRRROOR");
-//         DEBUG_PRINT("proc_spec_s()=%d\n", res);
-//         DEBUG_PRINT("String=%s\n", ch - i);
-//       }
-//     }
-//   }
-//   if (i == 0 && res == 0) {
-//     res = -1;
-//   } else
-//     res = p - str;
-//   DEBUG_PRINT(" value Step=%td\n", p - str);
-//   return res;
-// }
 
 int proc_spec_d(const char *str, va_list args, const Specifiers st_spec) {
   int res = 0;
@@ -582,33 +436,21 @@ int proc_spec_d(const char *str, va_list args, const Specifiers st_spec) {
   char *arg_str = get_arg_width(str, width);
   const char *p = arg_str;
   noop_space(&p);
-  DEBUG_PRINT(" String str=|%s|\n", str);
-  DEBUG_PRINT(" String arg_str=|%s|\n", arg_str);
-  DEBUG_PRINT(" String copy with Width=%s\n", p);
-  DEBUG_PRINT(" Input string for convert to int=|%s|\n", p);
   int step = 0;
   step = str_to_int(p, &result, 10);
   p += step;
-  DEBUG_PRINT(" Width=%d result=%ld step=%d.\n", width, result, step);
-  DEBUG_PRINT("Accept result into int=|%ld|\n", result);
   if (step > 0) {
-    DEBUG_PRINT("Accept result into int=|%ld|\n", result);
     if (st_spec.flag != '*') {
-      DEBUG_PRINT("Accept result into int=|%ld|\n", result);
       if (st_spec.length == 'h') {
-        DEBUG_PRINT("Value process...%%hd");
         short int *ch = va_arg(args, short int *);
         *ch = (short int)result;
       } else if (st_spec.length == 'l') {
-        DEBUG_PRINT("Value process...%%ld");
         long int *ch = va_arg(args, long int *);
         *ch = result;
       } else {
         int *ch = va_arg(args, int *);
         if (ch != S21_NULL) {
-          DEBUG_PRINT("Value process...result=%d\n", (int)result);
           *ch = (int)result;
-          DEBUG_PRINT("Value assign to *ch=%d", *ch);
         }
       }
     }
@@ -631,12 +473,9 @@ int proc_spec_u(const char *str, va_list args, const Specifiers st_spec) {
   char *arg_str = get_arg_width(str, width);
   const char *p = arg_str;
   noop_space(&p);
-  DEBUG_PRINT(" Input string for convert to int=|%s|\n", p);
   int step = 0;
   step = get_number(p, &result);
   p += step;
-  DEBUG_PRINT(" Width=%d result=%ld step=%d.\n", width, result, step);
-  // i++;
   if (step > 0) {
     if (st_spec.flag != '*') {
       if (st_spec.length == 'h') {
@@ -651,7 +490,6 @@ int proc_spec_u(const char *str, va_list args, const Specifiers st_spec) {
       }
     }
     res = p - arg_str;
-    // } else if (*p == '\0' && st_spec.flag != '*') { //2025-02-22 02:50
   } else if (st_spec.flag != '*') {
     res = -1;
   }
@@ -661,7 +499,6 @@ int proc_spec_u(const char *str, va_list args, const Specifiers st_spec) {
 
 int proc_spec_n(long int result, va_list args, const Specifiers st_spec) {
   int res = 0;
-  DEBUG_PRINT(" Input string for convert to result=|%ld|\n", result);
   if (st_spec.length == 'h') {
     short int *ch = va_arg(args, short int *);
     if (ch != S21_NULL) {
@@ -706,16 +543,9 @@ int proc_spec_o(const char *str, va_list args, const Specifiers st_spec) {
   char *arg_str = get_arg_width(str, width);
   const char *p = arg_str;
   noop_space(&p);
-  DEBUG_PRINT(" String str=|%s|\n", str);
-  DEBUG_PRINT(" String arg_str=|%s|\n", arg_str);
-  DEBUG_PRINT(" String copy with Width=%s\n", p);
-  DEBUG_PRINT(" Input string for convert to int=|%s|\n", p);
   int step = 0;
   step = str_to_int(p, &result, 8);
   p += step;
-  DEBUG_PRINT(" Width=%d result=%ld step=%d.\n", width, result, step);
-  // i++;
-  DEBUG_PRINT("Accept result into int=|%ld|\n", result);
   if (step > 0) {
     if (st_spec.flag != '*') {
       if (st_spec.length == 'h') {
@@ -729,11 +559,8 @@ int proc_spec_o(const char *str, va_list args, const Specifiers st_spec) {
         *ch = (int)result;
       }
     }
-    // p++;
     res = p - arg_str;
-    // } else if (*p == '\0' && st_spec.flag != '*') { 2025-02-24 20:15
   } else if (st_spec.flag != '*') {
-    // p++;
     res = -1;
   } else {
     res = 0;
@@ -750,11 +577,6 @@ int proc_spec_x(const char *str, va_list args, const Specifiers st_spec) {
   char *arg_str = get_arg_width(str, width);
   const char *p = arg_str;
   noop_space(&p);
-  DEBUG_PRINT(" String str=|%s|\n", str);
-  DEBUG_PRINT(" String arg_str=|%s|\n", arg_str);
-  DEBUG_PRINT(" String copy with Width=%s\n", p);
-  DEBUG_PRINT(" Input string for convert to hex=|%s|\n", p);
-
   int step = 0;
   if (*p == '0' && *(p + 1) == 'x') {
     p += 2;
@@ -762,9 +584,6 @@ int proc_spec_x(const char *str, va_list args, const Specifiers st_spec) {
   step = str_to_int(p, &result, 16);
   p += step;
 
-  DEBUG_PRINT(" Width=%d result=%ld step=%d.\n", width, result, step);
-  // i++;
-  DEBUG_PRINT("Accept result into int=|%ld|\n", result);
   if (step > 0) {
     if (st_spec.flag != '*') {
       if (st_spec.length == 'h') {
@@ -775,18 +594,15 @@ int proc_spec_x(const char *str, va_list args, const Specifiers st_spec) {
         *ch = result;
       } else {
         unsigned int *ch = va_arg(args, unsigned int *);
-        // unsigned int t = (unsigned int)result;
-        if (result > 0xFFFFFFFF) {
-          // unsigned int lower_4_bytes = result & 0xFFFFFFFF;
-          // *ch = lower_4_bytes;
-          *ch = 0xFFFFFFFF;
+        if (result > 4294967295) {
+            // *ch = ((unsigned ) result) % 4294967296;
+            *ch = 4294967295;
         } else {
           *ch = (unsigned)result;
         }
       }
     }
     res = p - arg_str;
-    // } else if (*p == '\0' && st_spec.flag != '*') {
   } else if (st_spec.flag != '*') {
     res = -1;
   } else {
@@ -799,7 +615,6 @@ int proc_spec_x(const char *str, va_list args, const Specifiers st_spec) {
 
 int proc_spec_p(const char *str, va_list args, const Specifiers st_spec) {
   int res = 0;
-  DEBUG_PRINT("pointer String=%s\n", str);
   if (str != NULL) {
     const char *p = str;
     if (st_spec.flag != '*') {
@@ -814,7 +629,6 @@ int proc_spec_p(const char *str, va_list args, const Specifiers st_spec) {
             *ch = (void *)address;
             p += conv;
             res = p - str;
-            DEBUG_PRINT("pointer assign=%p, res =%d\n", *ch, res);
           } else {
             res = -1;
           }
@@ -824,10 +638,7 @@ int proc_spec_p(const char *str, va_list args, const Specifiers st_spec) {
           conv = str_to_int(p, &address, 16);
           if (conv != 0 && address > 0) {
             *ch = (void *)address;
-            // p += conv; // 2025-02-25 19:05:16 @morrigem: fiz style: Variable
-            // 'p' is assigned a value that is never used. [unreadVariable]
             res = 0;
-            DEBUG_PRINT("pointer assign=%p, res =%d\n", *ch, res);
           } else {
             res = -1;
           }
@@ -844,7 +655,6 @@ int proc_spec_p(const char *str, va_list args, const Specifiers st_spec) {
         if (conv != 0 && address > 0) {
           p += conv;
           res = p - str;
-          DEBUG_PRINT("SKIP: pointer not assig, res =%d\n", res);
         } else {
           res = -1;
         }

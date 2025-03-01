@@ -2,14 +2,16 @@
 #include "s21_string.h"
 #include "s21_utils.h"
 #include <stdio.h>
+#include <wchar.h>
+#include <limits.h>
 
 #define MAX_BUF_SIZE 1024
 
-void handle_char(char **buffer, Specifiers flags, int c);
+void handle_char(char **buffer, Specifiers flags, va_list args);
 void handle_int(char **buffer, Specifiers flags, va_list argc);
 void handle_float(char **buffer, Specifiers flags, va_list argc);
-void handle_string(char **buffer, Specifiers flags, const char *s);
-void handle_unsigned(char **buffer, Specifiers flags, unsigned int u);
+void handle_string(char **buffer, Specifiers flags, va_list argc);
+void handle_unsigned(char **buffer, Specifiers flags, va_list args);
 void handle_percent(char **buffer, Specifiers flags);
 
 void handle_exp(char **buffer, Specifiers flags, va_list args);
@@ -46,18 +48,16 @@ int s21_sprintf(char *str, const char *format, ...) {
                   flags.flag);
       char spec = *ptr;
       if (flags.specifier == 'c') {
-        int c = va_arg(args, int);
-        handle_char(&buffer, flags, c);
+
+        handle_char(&buffer, flags, args);
       } else if (flags.specifier == 'd') {
         handle_int(&buffer, flags, args);
       } else if (flags.specifier == 'f') {
         handle_float(&buffer, flags, args);
       } else if (flags.specifier == 's') {
-        const char *s = va_arg(args, const char *);
-        handle_string(&buffer, flags, s);
+        handle_string(&buffer, flags, args);
       } else if (flags.specifier == 'u') {
-        unsigned int u = va_arg(args, unsigned int);
-        handle_unsigned(&buffer, flags, u);
+        handle_unsigned(&buffer, flags, args);
       } else if (flags.specifier == '%') {
         handle_percent(&buffer, flags);
       } else if (flags.specifier == 'e' || flags.specifier == 'E') {
@@ -258,111 +258,161 @@ void handle_float(char **buffer, Specifiers flags, va_list args) {
   **buffer = '\0';
 }
 
-void handle_string(char **buffer, Specifiers flags, const char *s) {
-  if (s == NULL) {
-    s = "(null)";
-  }
-  int len = s21_strlen(s);
-  DEBUG_PRINT("len = %d\n", len);
-  // Применяем точность, если она указана
-  if (flags.precision >= 0 && len > flags.precision) {
-    len = flags.precision;
-  }
-  // Определяем общую длину с учетом ширины
-  int total_width = flags.width > 0 ? flags.width : 0;
-  int padding = total_width > len ? total_width - len : 0;
-  DEBUG_PRINT("TEST. len = %d, padding = %d, string= %s\n", len, padding, s);
-  if (flags.flag == '-') { // Левое выравнивание
-    s21_memcpy(*buffer, s, len);
-    *buffer += len;
-    s21_memset(*buffer, ' ', padding);
-    *buffer += padding;
-  } else { // Правое выравнивание
+void handle_string(char **buffer, Specifiers flags, va_list args) {
+    const char *s = NULL;
+    wchar_t *ws = NULL;
+    int len = 0;
+    char tmp[MAX_BUF_SIZE] = {0}; // Объявляем временный буфер для преобразования широких строк
 
-    s21_memset(*buffer, ' ', padding);
-    *buffer += padding;
-    DEBUG_PRINT("Right padding\n");
-    s21_memcpy(*buffer, s, len);
-    *buffer += len;
-  }
-
-  **buffer = '\0';
-}
-
-void handle_unsigned(char **buffer, Specifiers flags, unsigned int u) {
-  char tmp[MAX_BUF_SIZE] = {0}; // Буфер для временного хранения числа
-  int len = 0; // Длина числа в строковом представлении
-
-  // Шаг 1: Преобразуем число в строку
-  char *ptr = tmp + sizeof(tmp) - 1; // Начинаем с конца массива
-  *ptr = '\0'; // Завершающий нулевой символ
-  if (u == 0 && flags.precision == 0) {
-    // Если число равно 0 и точность равна 0, результат должен быть пустой
-    // строкой
-    len = 0;
-  } else {
-    unsigned int num = u;
-    do {
-      *--ptr = '0' + (num % 10); // Преобразуем цифру в символ
-      num /= 10;
-      len++;
-    } while (num > 0);
-
-    // Применяем точность (precision)
-    if (flags.precision >= 0 && len < flags.precision) {
-      int pad = flags.precision - len;
-      s21_memmove(ptr + pad, ptr, len); // Сдвигаем число вправо
-      s21_memset(ptr, '0', pad); // Дополняем нулями слева
-      len += pad;
+    // Проверяем длину
+    if (flags.length == 'l') {
+        // Обрабатываем широкую строку
+        ws = va_arg(args, wchar_t*);
+        if (ws == NULL) {
+            s = "(null)";
+        } else {
+            // Преобразуем широкую строку в обычную (если нужно)
+            // Используем wcstombs для преобразования
+            wcstombs(tmp, ws, MAX_BUF_SIZE); // Преобразуем широкую строку в многобайтовую
+            s = tmp; // Используем tmp как источник данных
+        }
+    } else {
+        // Обрабатываем обычную строку
+        s = va_arg(args, const char*);
+        if (s == NULL) {
+            s = "(null)";
+        }
     }
-  }
 
-  // Шаг 2: Определяем общую длину с учетом ширины
-  int total_width = flags.width > 0 ? flags.width : 0;
-  int padding = total_width > len ? total_width - len : 0;
+    // Вычисляем длину строки
+    len = s21_strlen(s);
 
-  // Шаг 3: Выравнивание
-  if (flags.flag == '-') { // Левое выравнивание
-    s21_memcpy(*buffer, ptr, len);
-    *buffer += len;
-    s21_memset(*buffer, ' ', padding);
-    *buffer += padding;
-  } else { // Правое выравнивание
-    // char fill_char = (flags.flag == '0') && !(flags.flag == '-') ? '0' : ' ';
-    // // 2025-02-26 02:29:22 @morrigem: fix style
-    char fill_char = (flags.flag == '0') ? '0' : ' ';
-    s21_memset(*buffer, fill_char, padding);
-    *buffer += padding;
-    s21_memcpy(*buffer, ptr, len);
-    *buffer += len;
-  }
+    // Применяем точность (precision), если она указана
+    if (flags.precision >= 0 && len > flags.precision) {
+        len = flags.precision;
+    }
 
-  // Шаг 4: Завершающий нулевой символ
-  **buffer = '\0';
+    // Определяем общую длину с учетом ширины
+    int total_width = flags.width > 0 ? flags.width : 0;
+    int padding = total_width > len ? total_width - len : 0;
+
+    // Выравнивание
+    if (flags.flag == '-') { // Левое выравнивание
+        s21_memcpy(*buffer, s, len); // Копируем строку
+        *buffer += len;
+        s21_memset(*buffer, ' ', padding); // Добавляем пробелы справа
+        *buffer += padding;
+    } else { // Правое выравнивание
+        s21_memset(*buffer, ' ', padding); // Добавляем пробелы слева
+        *buffer += padding;
+        s21_memcpy(*buffer, s, len); // Копируем строку
+        *buffer += len;
+    }
+
+    // Завершающий нулевой символ
+    **buffer = '\0';
 }
-void handle_char(char **buffer, Specifiers flags, int c) {
-  const char tmp[2] = {(char)c, '\0'};
-  int len = 1;
 
-  // Определяем общую длину с учетом ширины
-  int total_width = flags.width > 0 ? flags.width : 0;
-  int padding = total_width > len ? total_width - len : 0;
+void handle_unsigned(char **buffer, Specifiers flags, va_list args) {
+    unsigned long num; // Используем unsigned long для поддержки 'l'
+    char tmp[MAX_BUF_SIZE] = {0}; // Буфер для временного хранения числа
+    int len = 0; // Длина числа в строковом представлении
 
-  if (flags.flag == '-') { // Левое выравнивание
-    s21_memcpy(*buffer, tmp, len);
-    *buffer += len;
-    s21_memset(*buffer, ' ', padding);
-    *buffer += padding;
-  } else { // Правое выравнивание
-    char fill_char = (flags.flag == '0') ? '0' : ' ';
-    s21_memset(*buffer, fill_char, padding);
-    *buffer += padding;
-    s21_memcpy(*buffer, tmp, len);
-    *buffer += len;
-  }
+    // Получаем число из va_list с учетом длины
+    if (flags.length == 'l') {
+        num = va_arg(args, unsigned long); // Для 'l' используем unsigned long
+    } else if (flags.length == 'h') {
+        num = (unsigned short)va_arg(args, unsigned int); // Для 'h' используем unsigned short
+    } else {
+        num = va_arg(args, unsigned int); // По умолчанию unsigned int
+    }
 
-  **buffer = '\0';
+    // Преобразуем число в строку
+    char *ptr = tmp + sizeof(tmp) - 1; // Начинаем с конца массива
+    *ptr = '\0'; // Завершающий нулевой символ
+    if (num == 0 && flags.precision == 0) {
+        // Если число равно 0 и точность равна 0, результат должен быть пустой строкой
+        len = 0;
+    } else {
+        do {
+            *--ptr = '0' + (num % 10); // Преобразуем цифру в символ
+            num /= 10;
+            len++;
+        } while (num > 0);
+
+        // Применяем точность (precision)
+        if (flags.precision >= 0 && len < flags.precision) {
+            int pad = flags.precision - len;
+            s21_memmove(ptr + pad, ptr, len); // Сдвигаем число вправо
+            s21_memset(ptr, '0', pad); // Дополняем нулями слева
+            len += pad;
+        }
+    }
+
+    // Определяем общую длину с учетом ширины
+    int total_width = flags.width > 0 ? flags.width : 0;
+    int padding = total_width > len ? total_width - len : 0;
+
+    // Выравнивание
+    if (flags.flag == '-') { // Левое выравнивание
+        s21_memcpy(*buffer, ptr, len);
+        *buffer += len;
+        s21_memset(*buffer, ' ', padding);
+        *buffer += padding;
+    } else { // Правое выравнивание
+        char fill_char = (flags.flag == '0' && flags.precision < 0) ? '0' : ' ';
+        s21_memset(*buffer, fill_char, padding);
+        *buffer += padding;
+        s21_memcpy(*buffer, ptr, len);
+        *buffer += len;
+    }
+
+    // Завершающий нулевой символ
+    **buffer = '\0';
 }
+
+void handle_char(char **buffer, Specifiers flags, va_list args) {
+    char tmp[MB_LEN_MAX] = {0}; // Временный буфер для многобайтового символа
+    int len = 1; // Длина символа (по умолчанию 1)
+
+    // Проверяем длину
+    if (flags.length == 'l') {
+        // Обрабатываем широкий символ
+        wchar_t wc = va_arg(args, wchar_t); // Извлекаем широкий символ
+        len = wctomb(tmp, wc); // Преобразуем широкий символ в многобайтовый
+        if (len == -1) {
+            // Если преобразование не удалось, используем замену
+            tmp[0] = '?';
+            len = 1;
+        }
+    } else {
+        // Обрабатываем обычный символ
+        char c = (char)va_arg(args, int); // Извлекаем обычный символ
+        tmp[0] = c;
+    }
+
+    // Определяем общую длину с учетом ширины
+    int total_width = flags.width > 0 ? flags.width : 0;
+    int padding = total_width > len ? total_width - len : 0;
+
+    // Выравнивание
+    if (flags.flag == '-') { // Левое выравнивание
+        s21_memcpy(*buffer, tmp, len); // Копируем символ
+        *buffer += len;
+        s21_memset(*buffer, ' ', padding); // Добавляем пробелы справа
+        *buffer += padding;
+    } else { // Правое выравнивание
+        char fill_char = (flags.flag == '0') ? '0' : ' ';
+        s21_memset(*buffer, fill_char, padding); // Добавляем символы заполнения слева
+        *buffer += padding;
+        s21_memcpy(*buffer, tmp, len); // Копируем символ
+        *buffer += len;
+    }
+
+    // Завершающий нулевой символ
+    **buffer = '\0';
+}
+
 void handle_percent(char **buffer, Specifiers flags) {
   if (flags.specifier == '%') {
 
@@ -370,6 +420,7 @@ void handle_percent(char **buffer, Specifiers flags) {
     **buffer = '\0';
   }
 }
+
 
 int proc_int_to_str(char *str, int int_part, int base) {
   DEBUG_PRINT("Star process handle_exp_int(|%s|,|%d|)\n", str - 3, int_part);
@@ -538,4 +589,77 @@ void handle_general(char **buffer, Specifiers flags, va_list args) {
   } else {
     handle_exp(buffer, flags, args);
   }
+}
+void handle_hex(char **buffer, Specifiers flags, va_list args) {
+    unsigned long num; // Используем unsigned long для поддержки 'l'
+    char tmp[MAX_BUF_SIZE] = {0}; // Временный буфер для хранения числа
+    int len = 0; // Длина числа в строковом представлении
+
+    // Получаем число из va_list с учетом длины
+    if (flags.length == 'l') {
+        num = va_arg(args, unsigned long); // Для 'l' используем unsigned long
+    } else if (flags.length == 'h') {
+        num = (unsigned short)va_arg(args, unsigned int); // Для 'h' используем unsigned short
+    } else {
+        num = va_arg(args, unsigned int); // По умолчанию unsigned int
+    }
+
+    // Преобразуем число в шестнадцатеричную строку
+    char *ptr = tmp + sizeof(tmp) - 1; // Начинаем с конца буфера
+    *ptr = '\0'; // Завершающий нулевой символ
+
+    if (num == 0) {
+        *--ptr = '0'; // Если число равно 0, просто записываем '0'
+        len = 1;
+    } else {
+        while (num > 0) {
+            int digit = num % 16;
+            char c;
+            if (digit < 10) {
+                c = '0' + digit;
+            } else {
+                // Для спецификатора 'x' используем буквы в нижнем регистре, для 'X' — в верхнем
+                c = (flags.specifier == 'x') ? ('a' + digit - 10) : ('A' + digit - 10);
+            }
+            *--ptr = c; // Записываем символ в буфер
+            num /= 16;
+            len++;
+        }
+    }
+
+    // Добавляем префикс "0x" или "0X", если установлен флаг '#'
+    if (flags.flag == '#') {
+        *--ptr = (flags.specifier == 'x') ? 'x' : 'X';
+        *--ptr = '0';
+        len += 2;
+    }
+
+    // Применяем точность (precision)
+    if (flags.precision >= 0 && len < flags.precision) {
+        int pad = flags.precision - len;
+        s21_memmove(ptr + pad, ptr, len); // Сдвигаем число вправо
+        s21_memset(ptr, '0', pad); // Дополняем нулями слева
+        len += pad;
+    }
+
+    // Определяем общую длину с учетом ширины
+    int total_width = flags.width > 0 ? flags.width : 0;
+    int padding = total_width > len ? total_width - len : 0;
+
+    // Выравнивание
+    if (flags.flag == '-') { // Левое выравнивание
+        s21_memcpy(*buffer, ptr, len);
+        *buffer += len;
+        s21_memset(*buffer, ' ', padding);
+        *buffer += padding;
+    } else { // Правое выравнивание
+        char fill_char = (flags.flag == '0' && flags.precision < 0) ? '0' : ' ';
+        s21_memset(*buffer, fill_char, padding);
+        *buffer += padding;
+        s21_memcpy(*buffer, ptr, len);
+        *buffer += len;
+    }
+
+    // Завершающий нулевой символ
+    **buffer = '\0';
 }

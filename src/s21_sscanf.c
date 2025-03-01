@@ -42,21 +42,21 @@ void proc_str(const char **p, int step, Specifiers st_spec, int *res,
 }
 
 int s21_sscanf(const char *str, const char *format, ...) {
+  int res = 0;
+  if(*format){
+
+  
   va_list args;
   va_start(args, format);
   const char *p = str; 
   const char *fmt = format; 
-  int res = 0;
   int stop = 0;
   if (p != S21_NULL && fmt != S21_NULL) {
-    DEBUG_PRINT("\n\nStart exec sscanf(). String and Format is not NULL\n");
     while (*p && *fmt && !stop) {
       while ((*fmt) && !stop) {
         if (*fmt == '%') {
           Specifiers st_spec = {' ', -10, -1, '*', '*'};
-          DEBUG_PRINT("\n str=|%s|\n format=|%s|\n", p, fmt);
           fmt += parse_specifiers(fmt, &st_spec);
-          DEBUG_PRINT("format after parse =|%s|\n", fmt);
           int step = 0;
           if (!(st_spec.specifier == 'c')) {
             noop_space(&p);
@@ -65,74 +65,42 @@ int s21_sscanf(const char *str, const char *format, ...) {
             step = proc_spec_c(p, args, st_spec);
           } else if (st_spec.specifier == 'd') {
             step = proc_spec_d(p, args, st_spec);
-            DEBUG_PRINT(" after process %%d Result=%d\n", res);
-            DEBUG_PRINT(" FINISH *String position=%s\n", p);
-
           } else if (st_spec.specifier == 'f' || st_spec.specifier == 'g' ||
                      st_spec.specifier == 'G' || st_spec.specifier == 'e' ||
                      st_spec.specifier == 'E') {
             step = proc_spec_f(p, args, st_spec);
-            DEBUG_PRINT(" after process %%f Result=%d\n", res);
-            DEBUG_PRINT(" FINISH *String position=%s\n", p);
-            DEBUG_PRINT(" FINISH *fmt position=%s\n", fmt);
-
           } else if (st_spec.specifier == 's') {
             step = proc_spec_s(p, args, st_spec);
-            DEBUG_PRINT("Incriment *p +step=%d\n", step);
-            DEBUG_PRINT(" after process string Result=%d\n", res);
-            DEBUG_PRINT(" p=|%s|\n", p);
-            DEBUG_PRINT(" fmt=|%s|\n", fmt);
           } else if (st_spec.specifier == 'u') {
-            DEBUG_PRINT("Start process %%u specificator...\n");
             step = proc_spec_u(p, args, st_spec);
-            DEBUG_PRINT("Incriment *p +step=%d. Result = %d\n", step, res);
-
           } else if (st_spec.specifier == 'n') {
-            DEBUG_PRINT("/nStart process %%n specificator...\n");
             long int r = p - str;
             proc_spec_n(r, args, st_spec);
           } else if (st_spec.specifier == 'i') {
-            DEBUG_PRINT("/nStart process %%i (percent) specificator...\n");
             step = proc_spec_i(p, args, st_spec);
-            DEBUG_PRINT(" after process %%n Result=%d\n", res);
-            DEBUG_PRINT(" FINISH *String position=%s\n", p);
           } else if (st_spec.specifier == 'o') {
             step = proc_spec_o(p, args, st_spec);
-            DEBUG_PRINT(" after process %%o Result=%d\n", res);
-            DEBUG_PRINT(" FINISH *String position=%s\n", p);
           } else if (st_spec.specifier == 'x' || st_spec.specifier == 'X') {
             step = proc_spec_x(p, args, st_spec);
-            DEBUG_PRINT(" after process %%d Result=%d\n", res);
-            DEBUG_PRINT(" FINISH *String position=%s\n", p);
           } else if (st_spec.specifier == 'p') {
             step = proc_spec_p(p, args, st_spec);
-            DEBUG_PRINT(" after process %%p Result=%d\n", res);
-            DEBUG_PRINT(" FINISH *String position=%s\n", p);
           } else if (st_spec.specifier == '%') {
-            DEBUG_PRINT("/nStart process %% (percent) specificator...\n");
-            if (is_space(*p)) {
-              noop_space(&p);
-            }
+            // if (is_space(*p)) { // 2025-03-01 11:28:25 @morrigem: comment 2025-03-01 11:28
+            //   noop_space(&p);
+            // }
             if (*(p) == '%') {
               p++;
             } else
               stop = 1;
-
             step = 0;
           }
           proc_str(&p, step, st_spec, &res, &stop);
-          DEBUG_PRINT("RESULT fmt after procer *fmt=|%s|\n", fmt);
-          DEBUG_PRINT("Flag STOP=%d \n", stop);
         } else if (*fmt == *p) {
-          DEBUG_PRINT("Equal char: *fmt=%c is eq *p=%c\n", *fmt, *p);
-          DEBUG_PRINT("Equal char: str=%s\n", p);
-          DEBUG_PRINT("Equal char: format=%s\n", fmt);
           fmt++;
           p++;
         } else if (is_space(*fmt)) {
           noop_space(&fmt);
           noop_space(&p);
-          DEBUG_PRINT("NOOP SPACE in *fmt=|%s| and *str=|%s|\n", fmt, p);
         } else {
           stop = 1;
         }
@@ -141,18 +109,16 @@ int s21_sscanf(const char *str, const char *format, ...) {
       if (is_space(*fmt)) {
         noop_space(&fmt);
         noop_space(&p);
-        DEBUG_PRINT("NOOP SPACE in *fmt=|%s| and *str=|%s|\n", fmt, p);
       }
     }
-  } else {
-    DEBUG_PRINT("Format or Input is NULL\n");
-    res = -1;
+  // } else { // 2025-03-01 11:29:06 @morrigem: comment 2025-03-01 11:29
+  //   res = -1;
   }
   if (stop == 0) {
     res = -1;
   }
-  DEBUG_PRINT(" FINISH result=%d\n", res);
   va_end(args);
+}
 
   return res;
 }
@@ -243,9 +209,41 @@ int str_to_int(const char *p, long int *res, int base) {
     temp = (temp * base + digit);
     p++;
     i++;
-  }
+  }   
+  *res = temp * znak;
+  return i;
+}
 
-    
+
+int str_to_luint(const char *p, long unsigned *res, int base) {
+  *res = 0;
+  int i = 0;
+  int znak = 1;
+  if (*p == '-' && is_digit(*(p + 1))) {
+    znak = -1;
+    p++;
+    i++;
+  }
+  p = s21_to_upper(p);
+  long int temp = 0;
+  while (*p) {
+    int digit = -1;
+
+    if (is_digit(*p))
+      digit = *p - '0'; 
+    else if (is_hex(*p))
+      digit = (*p - 'A' + 10); 
+
+    if (digit < 0 || digit >= base)
+      break;
+
+    if (temp > (LONG_MAX - digit) / base) {
+      *res = (znak == 1) ? LONG_MAX : LONG_MIN;
+    }
+    temp = (temp * base + digit);
+    p++;
+    i++;
+  }   
   *res = temp * znak;
   return i;
 }
@@ -333,9 +331,9 @@ int proc_spec_f(const char *str, va_list args, const Specifiers st_spec) {
     long int div = 0;
     p++;
     int ost_div = get_number(p, &div);
-    if (result < 0) {
-      div = div * -1;
-    }
+    // if (result < 0) { // 2025-03-01 11:30:57 @morrigem: delete in next commit
+    //   div = div * -1;
+    // }
     result = result + div * (1 / s21_pow(10, ost_div));
     p += ost_div;
     init++;
@@ -456,12 +454,14 @@ int proc_spec_d(const char *str, va_list args, const Specifiers st_spec) {
 int proc_spec_u(const char *str, va_list args, const Specifiers st_spec) {
   int res = 0;
   int width = get_width(str, st_spec);
-  long int result = 0;
+  // long int result = 0;
+  long unsigned result = 0;
   char *arg_str = get_arg_width(str, width);
   const char *p = arg_str;
   noop_space(&p);
   int step = 0;
-  step = get_number(p, &result);
+  // step = get_number(p, &result);
+  step = str_to_luint(p, &result,10);
   p += step;
   if (step > 0) {
     if (st_spec.flag != '*') {
@@ -560,7 +560,8 @@ int proc_spec_o(const char *str, va_list args, const Specifiers st_spec) {
 int proc_spec_x(const char *str, va_list args, const Specifiers st_spec) {
   int res = 0;
   int width = get_width(str, st_spec);
-  long int result = 0;
+  // long int result = 0;
+  long unsigned result = 0;
   char *arg_str = get_arg_width(str, width);
   const char *p = arg_str;
   noop_space(&p);
@@ -568,9 +569,10 @@ int proc_spec_x(const char *str, va_list args, const Specifiers st_spec) {
   if (*p == '0' && *(p + 1) == 'x') {
     p += 2;
   }
-  step = str_to_int(p, &result, 16);
+  step = str_to_luint(p, &result, 16);
+  DEBUG_PRINT("Result after convert to long unsigned int is %ld.\n", result);
+  // DEBUG_PRINT("Result result<0=%d.\n", result<0);
   p += step;
-
   if (step > 0) {
     if (st_spec.flag != '*') {
       if (st_spec.length == 'h') {
@@ -582,8 +584,9 @@ int proc_spec_x(const char *str, va_list args, const Specifiers st_spec) {
       } else {
         unsigned int *ch = va_arg(args, unsigned int *);
         if (result > 4294967295) {
-            // *ch = ((unsigned ) result) % 4294967296;
-            *ch = 4294967295;
+            *ch = ((unsigned) result) % 4294967296;
+            // *ch = 4294967295;
+            // *ch = (unsigned) result;
         } else {
           *ch = (unsigned)result;
         }
@@ -609,10 +612,11 @@ int proc_spec_p(const char *str, va_list args, const Specifiers st_spec) {
       if (ch != S21_NULL) {
         if (*p == '0' && (*(p + 1) == 'x' || *(p + 1) == 'X')) {
           p += 2;
-          long int address;
+          long unsigned address;
           int conv = 0;
-          conv = str_to_int(p, &address, 16);
-          if (conv != 0 && address > 0) {
+          conv = str_to_luint(p, &address, 16);
+          DEBUG_PRINT("Converted %d chars to pointer.\n",conv);
+          if (conv != 0 ) {
             *ch = (void *)address;
             p += conv;
             res = p - str;
@@ -623,7 +627,7 @@ int proc_spec_p(const char *str, va_list args, const Specifiers st_spec) {
           long int address;
           int conv = 0;
           conv = str_to_int(p, &address, 16);
-          if (conv != 0 && address > 0) {
+          if (conv != 0 ) {
             *ch = (void *)address;
             res = 0;
           } else {

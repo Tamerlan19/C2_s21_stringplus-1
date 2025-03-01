@@ -238,7 +238,7 @@ START_TEST(test_s21_sscanf_cmpx_2214) {
 END_TEST
 
 START_TEST(test_s21_sscanf_cmpx_2388) {
-  const char *input = "2554294967295A456789   ";
+  const char *input = "2559994967295 A456789   ";
   unsigned var1 = 123, var1_s21 = 123;
   wchar_t var2[1024] = L"A", var2_s21[1024] = L"A";
   long double var3 = 1.123, var3_s21 = 1.123;
@@ -377,7 +377,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_cmpx_6523) {
   // const char *input="98  4294967295A4294967295";
-  const char *input = "98  11111295A4294967295";
+  const char *input = "98  11111295 A4294967295";
   unsigned var1 = 123, var1_s21 = 123;
   unsigned var2 = 123, var2_s21 = 123;
   float var3 = 1.123, var3_s21 = 1.123;
@@ -574,7 +574,7 @@ DEBUG_PRINT("Test test_s21_sscanf_cmpx_0112 is passed.\n");
 END_TEST 
 
 START_TEST(test_s21_sscanf_cmpx_2389) {
-  const char *input = "2554294967295A456789   ";
+  const char *input = "255429496729 5A456789   ";
   unsigned var1 = 123, var1_s21 = 123;
   wchar_t var2[1024] = L"A", var2_s21[1024] = L"A";
   long double var3 = 1.123, var3_s21 = 1.123;

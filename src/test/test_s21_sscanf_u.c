@@ -353,13 +353,13 @@ END_TEST
 
 START_TEST(test_s21_sscanf_u_width_star_zero) {
   const char str[] = "0";
-  unsigned int res1 = {0}, res2 = {0};
+  unsigned int res_s21 = {0}, res2 = {0};
   const char *fmt = "%*5u%u";
 
-  int ret_s21 = s21_sscanf(str, fmt, &res1);
+  int ret_s21 = s21_sscanf(str, fmt, &res_s21);
   int ret = sscanf(str, fmt, &res2);
 
-  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(res_s21, res2);
   ck_assert_int_eq(ret_s21, ret);
 }
 END_TEST

@@ -327,16 +327,18 @@ END_TEST
 
 START_TEST(test_s21_sscanf_X_width_negative) {
   const char str[] = "-12345";
-  unsigned res1 = 0, res2 = 0;
+  unsigned res_s21 = 0, res2 = 0;
 
   const char *fmt = "%5X";
-  int ret1 = s21_sscanf(str, fmt, &res1);
+  int ret1 = s21_sscanf(str, fmt, &res_s21);
   int ret2 = sscanf(str, fmt, &res2);
 
-  ck_assert_int_eq(res1, res2);
+  ck_assert_int_eq(res_s21, res2);
   ck_assert_int_eq(ret1, ret2);
 }
 END_TEST
+
+
 
 START_TEST(test_s21_sscanf_X_width_star) {
   const char str[] = "12345";

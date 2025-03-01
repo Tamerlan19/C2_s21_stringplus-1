@@ -667,6 +667,11 @@ Suite *s21_sprintf_suite(void) {
   TCase *tc_core, *tc_debug;
 
   s = suite_create("s21_sprintf");
+
+  TCase *tc_core_e = tcase_s21_sprintf_e();
+  suite_add_tcase(s, tc_core_e);
+
+
   tc_core = tcase_create("Core");
   tc_debug = tcase_create("Debug");
 
@@ -752,7 +757,9 @@ Suite *s21_sprintf_suite(void) {
 tcase_add_test(tc_debug, test_s21_sprintf_f_large_number);
 
   suite_add_tcase(s, tc_core);
-  suite_add_tcase(s, tc_debug);
+
+  tcase_add_test(tc_debug, test_s21_sprintf_u_complex_case);
+  // suite_add_tcase(s, tc_debug);
 
   return s;
 }

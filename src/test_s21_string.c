@@ -459,27 +459,6 @@ START_TEST(test_s21_strncat_n_zero) {
 }
 END_TEST
 
-// Тест: проверка NULL-указателей
-START_TEST(test_s21_strncat_null_pointers) {
-  char dest[50] = "Hello, ";
-  const char *src = NULL;
-  s21_size_t n = 5;
-
-  // Оригинальная функция не поддерживает NULL-указатели, поэтому ожидаем, что
-  // наша функция также ведет себя корректно
-  if (src == NULL) {
-    ck_assert_str_eq(dest, "Hello, "); // Должно остаться без изменений
-  } else {
-    // Если src не NULL, используем оригинальную функцию для сравнения
-    char original_dest[50] = "Hello, ";
-    strncat(original_dest, src, n);
-
-    s21_strncat(dest, src, n);
-    ck_assert_str_eq(dest, original_dest);
-  }
-}
-END_TEST
-
 START_TEST(test_s21_strncat) {
   char dest1[100] = "Hello, ";
   char dest2[100] = "Hello, ";
@@ -1197,14 +1176,193 @@ START_TEST(test_s21_sterror_all) {
   }
 }
 
+START_TEST(test_s21_strstr_normal_case) {
+  const char *haystack = "Hello, world!";
+  const char *needle = "world";
+  char *result = s21_strstr(haystack, needle);
+  char *expected = strstr(haystack, needle);
+  ck_assert_ptr_eq(result, expected);
+}
+END_TEST
+
+START_TEST(test_s21_strstr_empty_haystack) {
+  const char *haystack = "";
+  const char *needle = "world";
+  char *result = s21_strstr(haystack, needle);
+  char *expected = strstr(haystack, needle);
+  ck_assert_ptr_eq(result, expected);
+}
+END_TEST
+
+START_TEST(test_s21_strstr_empty_needle) {
+  const char *haystack = "Hello, world!";
+  const char *needle = "";
+  char *result = s21_strstr(haystack, needle);
+  char *expected = strstr(haystack, needle);
+  ck_assert_ptr_eq(result, expected);
+}
+END_TEST
+
+START_TEST(test_s21_strstr_both_empty) {
+  const char *haystack = "";
+  const char *needle = "";
+  char *result = s21_strstr(haystack, needle);
+  char *expected = strstr(haystack, needle);
+  ck_assert_str_eq(result, expected);
+  ck_assert_ptr_eq(result, expected);
+}
+END_TEST
+
+START_TEST(test_s21_strstr_needle_not_found) {
+  const char *haystack = "Hello, world!";
+  const char *needle = "foo";
+  char *result = s21_strstr(haystack, needle);
+  char *expected = strstr(haystack, needle);
+  ck_assert_ptr_eq(result, expected);
+}
+END_TEST
+
+START_TEST(test_s21_strstr_needle_at_start) {
+  const char *haystack = "Hello, world!";
+  const char *needle = "Hello";
+  char *result = s21_strstr(haystack, needle);
+  char *expected = strstr(haystack, needle);
+  ck_assert_ptr_eq(result, expected);
+}
+END_TEST
+
+START_TEST(test_s21_strstr_needle_at_end) {
+  const char *haystack = "Hello, world!";
+  const char *needle = "world!";
+  char *result = s21_strstr(haystack, needle);
+  char *expected = strstr(haystack, needle);
+  ck_assert_ptr_eq(result, expected);
+}
+END_TEST
+
+START_TEST(test_s21_strstr_large_haystack) {
+  const char *haystack = "This is a very large string with many characters to "
+                         "test the function s21_strstr.";
+  const char *needle = "large";
+  char *result = s21_strstr(haystack, needle);
+  char *expected = strstr(haystack, needle);
+  ck_assert_ptr_eq(result, expected);
+}
+END_TEST
+
+START_TEST(test_s21_strstr_special_characters) {
+  const char *haystack = "Hello, world!\n\t\r\0";
+  const char *needle = "\n\t\r";
+  char *result = s21_strstr(haystack, needle);
+  char *expected = strstr(haystack, needle);
+  ck_assert_ptr_eq(result, expected);
+}
+END_TEST
+
+// Тест 1: Обычный случай с разделителем ","
+START_TEST(test_s21_strtok_normal_case) {
+  char str[] = "Hello,world,this,is,a,test";
+  char str_s21[] = "Hello,world,this,is,a,test";
+  const char delim[] = ",";
+  char *result = s21_strtok(str_s21, delim);
+  char *expected = strtok(str, delim);
+  ck_assert_str_eq(result, expected);
+}
+END_TEST
+
+// Тест 2: Пустая строка
+START_TEST(test_s21_strtok_empty_string) {
+  char str[] = "";
+  char str_s21[] = "";
+  const char delim[] = ",";
+  char *result = s21_strtok(str_s21, delim);
+  char *expected = strtok(str, delim);
+  ck_assert_ptr_eq(result, expected);
+}
+END_TEST
+
+START_TEST(test_s21_strtok_large_string) {
+  char str[] =
+      "This,is,a,very,large,string,with,many,tokens,to,test,the,function";
+  char str_s21[] =
+      "This,is,a,very,large,string,with,many,tokens,to,test,the,function";
+  const char delim[] = ",";
+  char *result = s21_strtok(str_s21, delim);
+  char *expected = strtok(str, delim);
+  ck_assert_str_eq(result, expected);
+}
+END_TEST
+
+// Тест 6: Специальные символы в разделителях
+START_TEST(test_s21_strtok_special_delimiters) {
+  char str[] = "Hello\tworld\nthis\ris\fa\atest";
+  char str_s21[] = "Hello\tworld\nthis\ris\fa\atest";
+  const char delim[] = "\t\n\r\f";
+  char *result = s21_strtok(str_s21, delim);
+  char *expected = strtok(str, delim);
+  ck_assert_str_eq(result, expected);
+}
+END_TEST
+
+// Тест 7: Последовательные вызовы
+START_TEST(test_s21_strtok_multiple_calls) {
+  char str[] = "Hello,world,this,is,a,test";
+  char str_s21[] = "Hello,world,this,is,a,test";
+  const char delim[] = ",";
+  char *result = s21_strtok(str_s21, delim);
+  char *expected = strtok(str, delim);
+  ck_assert_str_eq(result, expected);
+
+  char *result2 = s21_strtok(NULL, delim);
+  char *expected2 = strtok(NULL, delim);
+  ck_assert_str_eq(result2, expected2);
+
+  char *result3 = s21_strtok(NULL, delim);
+  char *expected3 = strtok(NULL, delim);
+  ck_assert_str_eq(result3, expected3);
+}
+END_TEST
+
+// Тест 8: Разделители в начале и конце строки
+START_TEST(test_s21_strtok_delimiters_at_edges) {
+  char str[] = ",Hello,world,this,is,a,test,";
+  char str_s21[] = ",Hello,world,this,is,a,test,";
+  const char delim[] = ",";
+  char *result = s21_strtok(str_s21, delim);
+  char *expected = strtok(str, delim);
+  ck_assert_str_eq(result, expected);
+}
+END_TEST
+
+// Тест 9: Отсутствие разделителей в строке
+START_TEST(test_s21_strtok_no_delimiters) {
+  char str[] = "HelloWorldThisIsATest";
+  char str_s21[] = "HelloWorldThisIsATest";
+  const char delim[] = ",";
+  char *result = s21_strtok(str_s21, delim);
+  char *expected = strtok(str, delim);
+  ck_assert_str_eq(result, expected);
+}
+END_TEST
+
+// Тест 10: Разделители, состоящие из нескольких символов
+START_TEST(test_s21_strtok_multichar_delimiters) {
+  char str[] = "Hello##world##this##is##a##test";
+  char str_s21[] = "Hello##world##this##is##a##test";
+  const char delim[] = "##";
+  char *result = s21_strtok(str_s21, delim);
+  char *expected = strtok(str, delim);
+  ck_assert_str_eq(result, expected);
+}
+END_TEST
+
 Suite *s21_string_suite(void) {
   Suite *s;
-  TCase *tc_core;
+  TCase *tc_core, *tc_debug;
 
   s = suite_create("s21_string");
   tc_core = tcase_create("Core");
-  // tc_sprintf = tcase_create("sprintf");
-  // tc_sscanf = tcase_create("sscanf");
+  tc_debug = tcase_create("Debug");
 
   tcase_add_test(tc_core, test_s21_strlen);
   tcase_add_test(tc_core, test_s21_strncmp);
@@ -1244,7 +1402,6 @@ Suite *s21_string_suite(void) {
   tcase_add_test(tc_core, test_s21_strncat_partial_concatenation);
   tcase_add_test(tc_core, test_s21_strncat_empty_src);
   tcase_add_test(tc_core, test_s21_strncat_n_zero);
-  tcase_add_test(tc_core, test_s21_strncat_null_pointers);
   tcase_add_test(tc_core, test_s21_strncat);
   tcase_add_test(tc_core, test_s21_strncat_empty_dest);
   tcase_add_test(tc_core, test_s21_strncat_zero_n);

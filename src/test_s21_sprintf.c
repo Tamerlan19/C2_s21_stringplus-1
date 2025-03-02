@@ -573,20 +573,32 @@ START_TEST(test_s21_sprintf_hs_short_string) {
 END_TEST
 
 START_TEST(test_s21_sprintf_ls_wide_string) {
-  setlocale(LC_ALL, "en_US.utf8");
-  wchar_t buffer[1024];
-  wchar_t buffer_s21[1024];
-  const char *fmt_narrow = "Wide String: %ls";
-  wchar_t fmt_wide[1024];
-  mbstowcs(fmt_wide, fmt_narrow,
-           strlen(fmt_narrow) + 1); // Конвертируем формат в wchar_t
-  wchar_t wide_str[] = L"Привет"; // Строка широких символов
-  int ret = swprintf(buffer, 1024, fmt_wide, wide_str);
-  s21_sprintf((char *)buffer_s21, (char *)fmt_narrow,
-              wide_str); // Используем оригинальный формат для s21_sprintf
-  ck_assert_int_eq(ret, wcslen(buffer)); // Проверяем длину строки
-  ck_assert_int_eq(wcscmp(buffer, (wchar_t *)buffer_s21),
-                   0); // Сравниваем широкие строки
+    setlocale(LC_ALL, "en_US.utf8");
+
+    wchar_t buffer[1024];
+    char buffer_s21[1024];
+    wchar_t buffer_s21_wide[1024]; // Буфер для преобразования buffer_s21 в wide string
+
+    const char *fmt_narrow = "Wide String: %ls";
+    wchar_t fmt_wide[1024];
+    mbstowcs(fmt_wide, fmt_narrow, strlen(fmt_narrow) + 1); // Конвертируем формат в wchar_t
+
+    wchar_t wide_str[] = L"Привет"; // Строка широких символов
+
+    int ret = swprintf(buffer, 1024, fmt_wide, wide_str); // Форматируем wide string
+    s21_sprintf(buffer_s21, fmt_narrow, wide_str); // Форматируем с помощью s21_sprintf
+
+    // Преобразуем buffer_s21 в wide string
+    size_t converted = mbstowcs(buffer_s21_wide, buffer_s21, 1024);
+if (converted == (size_t)-1) {
+    printf("Ошибка преобразования buffer_s21 в wide string\n");
+    ck_abort(); // Аборт теста с сообщением об ошибке
+}
+
+    // Проверяем длину строки
+    ck_assert_int_eq(ret, wcslen(buffer));
+    // Сравниваем wide строки
+    ck_assert_int_eq(wcscmp(buffer, buffer_s21_wide), 0);
 }
 END_TEST
 
@@ -603,20 +615,33 @@ START_TEST(test_s21_sprintf_hc_short_char) {
 END_TEST
 
 START_TEST(test_s21_sprintf_lc_wide_char) {
-  setlocale(LC_ALL, "en_US.utf8");
-  wchar_t buffer[1024];
-  wchar_t buffer_s21[1024];
-  const char *fmt_narrow = "Wide Char: %lc";
-  wchar_t fmt_wide[1024];
-  mbstowcs(fmt_wide, fmt_narrow,
-           strlen(fmt_narrow) + 1); // Конвертируем формат в wchar_t
-  wchar_t wide_char = L'П';         // Широкий символ
-  int ret = swprintf(buffer, 1024, fmt_wide, wide_char);
-  s21_sprintf((char *)buffer_s21, (char *)fmt_narrow,
-              wide_char); // Используем оригинальный формат для s21_sprintf
-  ck_assert_int_eq(ret, wcslen(buffer)); // Проверяем длину строки
-  ck_assert_int_eq(wcscmp(buffer, (wchar_t *)buffer_s21),
-                   0); // Сравниваем широкие строки
+    setlocale(LC_ALL, "en_US.utf8");
+
+    wchar_t buffer[1024];
+    char buffer_s21[1024];
+    wchar_t buffer_s21_wide[1024]; // Буфер для преобразования buffer_s21 в wide string
+
+    const char *fmt_narrow = "Wide Char: %lc";
+    wchar_t fmt_wide[1024];
+    size_t len = strlen(fmt_narrow) + 1;
+    mbstowcs(fmt_wide, fmt_narrow, len); // Конвертируем формат в wchar_t
+
+    wchar_t wide_char = L'П'; // Широкий символ
+
+    int ret = swprintf(buffer, 1024, fmt_wide, wide_char); // Форматируем wide character
+    s21_sprintf(buffer_s21, fmt_narrow, wide_char);       // Форматируем с помощью s21_sprintf
+
+    // Преобразуем buffer_s21 в wide string
+    size_t converted = mbstowcs(buffer_s21_wide, buffer_s21, 1024);
+    if (converted == (size_t)-1) {
+        printf("Ошибка преобразования buffer_s21 в wide string\n");
+        ck_abort();
+    }
+
+    // Проверяем длину строки
+    ck_assert_int_eq(ret, wcslen(buffer));
+    // Сравниваем wide строки
+    ck_assert_int_eq(wcscmp(buffer, buffer_s21_wide), 0);
 }
 END_TEST
 

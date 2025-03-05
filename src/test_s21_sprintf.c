@@ -560,6 +560,259 @@ START_TEST(test_s21_sprintf_u_exceed_width) {
 }
 END_TEST
 
+START_TEST(test_s21_sprintf_o_basic) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Octal: %o";
+    unsigned int value = 64; // Восьмеричное представление: 100
+    int ret = sprintf(buffer, fmt, value);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_o_hash_flag) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Octal: %#o";
+    unsigned int value = 64; // Восьмеричное представление: 100
+    int ret = sprintf(buffer, fmt, value);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_o_width) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Octal: %5o";
+    unsigned int value = 64; // Восьмеричное представление: 100
+    int ret = sprintf(buffer, fmt, value);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_o_zero_padding) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Octal: %05o";
+    unsigned int value = 64; // Восьмеричное представление: 100
+    int ret = sprintf(buffer, fmt, value);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_o_dynamic_width) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Octal: %*o";
+    unsigned int value = 64; // Восьмеричное представление: 100
+    int width = 5;
+    int ret = sprintf(buffer, fmt, width, value);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, width, value);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_o_dynamic_precision) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Octal: %.*o";
+    unsigned int value = 64; // Восьмеричное представление: 100
+    int precision = 5;
+    int ret = sprintf(buffer, fmt, precision, value);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, precision, value);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_o_zero_value) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Octal: %o";
+    unsigned int value = 0; // Нулевое значение
+    int ret = sprintf(buffer, fmt, value);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_o_hash_zero_value) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Octal: %#o";
+    unsigned int value = 0; // Нулевое значение
+    int ret = sprintf(buffer, fmt, value);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_o_width_zero_padding) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Octal: %05o";
+    unsigned int value = 10; // Восьмеричное представление: 12
+    int ret = sprintf(buffer, fmt, value);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_o_large_number) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Octal: %o";
+    unsigned int value = 4294967295; // Максимальное значение для unsigned int (восьмеричное: 37777777777)
+    int ret = sprintf(buffer, fmt, value);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_p_basic) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Pointer: %p";
+    int value = 42;
+    int *ptr = &value;
+    int ret = sprintf(buffer, fmt, ptr);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, ptr);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_p_null_pointer) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Pointer: %p";
+    void *ptr = NULL;
+    int ret = sprintf(buffer, fmt, ptr);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, ptr);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_p_hash_flag) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Pointer: %#p";
+    int value = 42;
+    int *ptr = &value;
+    int ret = sprintf(buffer, fmt, ptr);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, ptr);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_p_dynamic_width) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Pointer: %*p";
+    int value = 42;
+    int *ptr = &value;
+    int width = 20; // Динамическая ширина
+    int ret = sprintf(buffer, fmt, width, ptr);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, width, ptr);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_p_zero_padding) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Pointer: %016p";
+    int value = 42;
+    int *ptr = &value;
+    int ret = sprintf(buffer, fmt, ptr);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, ptr);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_p_dynamic_precision) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Pointer: %.*p";
+    int value = 42;
+    int *ptr = &value;
+    int precision = 16; // Динамическая точность
+    int ret = sprintf(buffer, fmt, precision, ptr);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, precision, ptr);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_p_width_zero_padding) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Pointer: %020p";
+    int value = 42;
+    int *ptr = &value;
+    int ret = sprintf(buffer, fmt, ptr);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, ptr);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_p_long_address) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Pointer: %p";
+    long long value = 123456789012345LL;
+    long long *ptr = &value;
+    int ret = sprintf(buffer, fmt, ptr);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, ptr);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_p_left_alignment) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Pointer: %-20p";
+    int value = 42;
+    int *ptr = &value;
+    int ret = sprintf(buffer, fmt, ptr);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, ptr);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_p_zero_padding_with_width) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Pointer: %010p";
+    int value = 42;
+    int *ptr = &value;
+    int ret = sprintf(buffer, fmt, ptr);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, ptr);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
 START_TEST(test_s21_sprintf_hs_short_string) {
   char buffer[1024];
   char buffer_s21[1024];
@@ -762,6 +1015,28 @@ Suite *s21_sprintf_suite(void) {
   tcase_add_test(tc_core, test_s21_sprintf_s_long_string);
   tcase_add_test(tc_core, test_s21_sprintf_s_zero_padding);
   tcase_add_test(tc_core, test_s21_sprintf_s_exceed_width);
+
+  tcase_add_test(tc_core, test_s21_sprintf_o_basic);
+  tcase_add_test(tc_core, test_s21_sprintf_o_hash_flag);
+  tcase_add_test(tc_core, test_s21_sprintf_o_width);
+  tcase_add_test(tc_core, test_s21_sprintf_o_zero_padding);
+  tcase_add_test(tc_core, test_s21_sprintf_o_dynamic_width);
+  tcase_add_test(tc_core, test_s21_sprintf_o_dynamic_precision);
+  tcase_add_test(tc_core, test_s21_sprintf_o_zero_value);
+  tcase_add_test(tc_core, test_s21_sprintf_o_hash_zero_value);
+  tcase_add_test(tc_core, test_s21_sprintf_o_width_zero_padding);
+  tcase_add_test(tc_core, test_s21_sprintf_o_large_number);
+
+  tcase_add_test(tc_core, test_s21_sprintf_p_basic);
+  tcase_add_test(tc_core, test_s21_sprintf_p_null_pointer);
+  tcase_add_test(tc_core, test_s21_sprintf_p_hash_flag);
+  tcase_add_test(tc_core, test_s21_sprintf_p_dynamic_width);
+  tcase_add_test(tc_core, test_s21_sprintf_p_zero_padding);
+  tcase_add_test(tc_core, test_s21_sprintf_p_dynamic_precision);
+  tcase_add_test(tc_core, test_s21_sprintf_p_width_zero_padding);
+  tcase_add_test(tc_core, test_s21_sprintf_p_long_address);
+  tcase_add_test(tc_core, test_s21_sprintf_p_left_alignment);
+  tcase_add_test(tc_core, test_s21_sprintf_p_zero_padding_with_width);
 
   tcase_add_test(tc_core, test_s21_sprintf_hs_short_string);
   tcase_add_test(tc_core, test_s21_sprintf_ls_wide_string);

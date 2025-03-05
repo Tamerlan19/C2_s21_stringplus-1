@@ -352,26 +352,51 @@ END_TEST
 // }
 // END_TEST
 
-// START_TEST(test_s21_sprintf_f_left_padding) {
-//   char buffer[1024] = {0};
-//   char original_buffer[1024] = {0};
-//   double value = -123.4564;
-//   const char *fmt = "Number: %-14.4g";
-//   s21_sprintf(buffer, fmt, value);
-//   sprintf(original_buffer, fmt, value);
-//   ck_assert_str_eq(buffer, original_buffer);
-// }
-// END_TEST
-// START_TEST(test_s21_sprintf_g_left_padding) {
-//   char buffer[1024] = {0};
-//   char original_buffer[1024] = {0};
-//   double value = -123.4564;
-//   const char *fmt = "Number: %-14.4g";
-//   s21_sprintf(buffer, fmt, value);
-//   sprintf(original_buffer, fmt, value);
-//   ck_assert_str_eq(buffer, original_buffer);
-// }
-// END_TEST
+START_TEST(test_s21_sprintf_f_left_padding) {
+  char buffer[1024] = {0};
+  char original_buffer[1024] = {0};
+  double value = -123.4564;
+  const char *fmt = "Number: %-14.4f";
+  s21_sprintf(buffer, fmt, value);
+  sprintf(original_buffer, fmt, value);
+  ck_assert_str_eq(buffer, original_buffer);
+}
+END_TEST
+START_TEST(test_s21_sprintf_g_left_padding) {
+  char buffer[1024] = {0};
+  char original_buffer[1024] = {0};
+  double value = -123.4564;
+  const char *fmt = "Number: %-14.4g";
+  s21_sprintf(buffer, fmt, value);
+  sprintf(original_buffer, fmt, value);
+  ck_assert_str_eq(buffer, original_buffer);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_g_width_precision_negative) {
+  char buffer[1024] = {0};
+  char original_buffer[1024] = {0};
+  double value = -123.45;
+  const char *fmt = "Number: %14.2g";
+  int ret = sprintf(original_buffer, fmt, value);
+  int ret_s21 = s21_sprintf(buffer, fmt, value);
+  ck_assert_str_eq(buffer, original_buffer);
+  ck_assert_int_eq(ret_s21, ret);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_G_minimal_zero_padding) {
+  char buffer[1024] = {0};
+  char original_buffer[1024] = {0};
+  double value = 0.0002324456;
+  const char *fmt = "Number: %14.3G";
+  int ret = sprintf(original_buffer, fmt, value);
+  int ret_s21 = s21_sprintf(buffer, fmt, value);
+  ck_assert_str_eq(buffer, original_buffer);
+  ck_assert_int_eq(ret_s21, ret);
+}
+END_TEST
+
 
 TCase *tcase_s21_sprintf_e(void);
 TCase *tcase_s21_sprintf_x(void);
@@ -389,8 +414,8 @@ Suite *s21_sprintf_suite(void) {
   suite_add_tcase(s, tc_core_e);
   TCase *tc_core_x = tcase_s21_sprintf_x();
   suite_add_tcase(s, tc_core_x);
-  // TCase *tc_core_g = tcase_s21_sprintf_g();
-  // suite_add_tcase(s, tc_core_g);
+  TCase *tc_core_g = tcase_s21_sprintf_g();
+  suite_add_tcase(s, tc_core_g);
 
 
   tc_core = tcase_create("Core");
@@ -445,11 +470,13 @@ Suite *s21_sprintf_suite(void) {
   suite_add_tcase(s, tc_core);
 
   //[ ]: удалить отладочные тесты
-  // TCase *tc_debug;
-  // tc_debug = tcase_create("Debug");
-  // tcase_add_test(tc_debug, test_s21_sprintf_f_left_padding);
-  // tcase_add_test(tc_debug, test_s21_sprintf_g_left_padding);
-  // suite_add_tcase(s, tc_debug);
-
+  TCase *tc_debug;
+  tc_debug = tcase_create("Debug");
+  tcase_add_test(tc_debug, test_s21_sprintf_f_left_padding);
+  tcase_add_test(tc_debug, test_s21_sprintf_g_left_padding);
+  tcase_add_test(tc_debug, test_s21_sprintf_G_minimal_zero_padding);
+  tcase_add_test(tc_debug, test_s21_sprintf_g_width_precision_negative);
+  
+  suite_add_tcase(s, tc_debug);
   return s;
 }

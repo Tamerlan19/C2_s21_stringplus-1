@@ -221,15 +221,25 @@ void handle_float(char **buffer, Specifiers flags, va_list args) {
       len += int_len;
     }
 
-    // Добавляем точку
-    tmp[len++] = '.';
-    // tmp[len++]='\0';
+
     DEBUG_PRINT("tmp=%s\n", tmp);
     if(frac_part<0){
       frac_part*=-1;
     }
     DEBUG_PRINT("frac_part= %Lf\n", frac_part);
-    // Преобразуем дробную часть
+    if(flags.specifier=='g'|| flags.specifier=='G'){
+      if (frac_part*s21_pow(10,flags.precision)>1){
+        flags.precision = flags.precision-len;
+      }else{
+        while (frac_part*s21_pow(10,flags.precision-2)<1){
+          flags.precision++;
+        }
+      }
+    }
+    if (flags.precision>0){
+    tmp[len++] = '.';
+    }
+
     for (int i = 0; i < flags.precision; i++) {
       frac_part *= 10;
       int digit = (int)frac_part;
@@ -243,23 +253,12 @@ void handle_float(char **buffer, Specifiers flags, va_list args) {
       frac_part -= digit;
     }
 
-    if(flags.specifier=='g'|| flags.specifier=='G'){
-      DEBUG_PRINT("GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG\n");
-      DEBUG_PRINT("Precision=%i\n", flags.precision);
-      for (int i = len - 1; tmp[i]=='0'; i--) {
-        DEBUG_PRINT("len=%i. tmp[%d]=%c\n", len, i, tmp[i]);
-        len--;
-      }
-      for (int i = len - 1; len>flags.precision+1; i--) {
-        len--;
-        DEBUG_PRINT("CUT!!!!!");
-      }
-    }
   // } else {
   //   // Если точность не указана, используем значение по умолчанию
   //   sprintf(tmp, "%f", f); // Можно заменить на ручную реализацию
   //   len = s21_strlen(tmp);
   }
+
 
   // Добавляем '+' только если флаг установлен
   if (flags.flag == '+' && f > 0) {
@@ -547,7 +546,24 @@ void handle_exp(char **buffer, Specifiers flags, va_list args) {
   if (flags.precision < 0) {
     flags.precision = 6;
   }
+  len = tmp-tmp_ptr;
+  // if(flags.specifier=='g'|| flags.specifier=='G'){
+  //   flags.precision = flags.precision-len+2;
+  // }
+  DEBUG_PRINT("handle_exp: div_part=%Lf, flags.precision=%d\n",ch,flags.precision);
+  if(flags.specifier=='g'|| flags.specifier=='G'){
+    if (!int_part && ch*s21_pow(10,flags.precision-1)>1){
+      flags.precision = flags.precision;
+    }else{
+      while (ch*s21_pow(10,flags.precision+1)<1){
+        flags.precision++;
+      }
+    }
+  }
+  
+
   ch *= s21_pow(10, flags.precision);
+  DEBUG_PRINT("handle_exp: div_part=%Lf, flags.precision=%d\n",ch,flags.precision);
   div_part = (int)ch;
   if (ch - div_part >= 0.5) {
     div_part++;
@@ -610,16 +626,35 @@ int get_exp(long double ch) {
   }
   return res;
 }
+
+int proc_precission_g(double *ch, Specifiers flags){
+  int res = 0;
+  int i=0;
+  int val=0;
+  if (*ch<1){
+    while(val<=flags.precision){
+      int digit = (long)*ch*10;
+      *ch*=10;
+      if (digit!=0){
+        val++;
+      }
+      i++;
+  }
+}
+  *ch = *ch*((double)s21_pow(10,val));
+DEBUG_PRINT("Number with precidsion=|%f|\n",*ch);
+
+  return res;
+}
 void handle_general(char **buffer, Specifiers flags, va_list args) {
   va_list args_orig;
   va_copy(args_orig, args);
-  float ch = va_arg(args, double);
-  // if (flags.precision < 0) {
-  //   flags.precision = 6;
-  // }
+  double ch = va_arg(args, double);
   int exp = get_exp(ch);
+  DEBUG_PRINT("Spec g: exp =|%d|\n",exp);
+  proc_precission_g(&ch, flags);
   args = args_orig;
-  if (exp<-4 || (exp>=flags.precision && !(flags.precision<0))) {
+  if (exp<-4 || (exp>=flags.precision+1 && !(flags.precision<0))) {
     handle_exp(buffer, flags, args);
   } else {
     handle_float(buffer, flags, args);

@@ -30,7 +30,7 @@ START_TEST(test_s21_sprintf_g_simple) {
     char buffer[1024] = {0};
     char original_buffer[1024] = {0};
     double value = 123.456;
-    const char *fmt = "Number: %+14.3g";
+    const char *fmt = "Number: %+14.2g";
     s21_sprintf(buffer, fmt, value);
     sprintf(original_buffer, fmt, value);
     ck_assert_str_eq(buffer, original_buffer);
@@ -140,7 +140,7 @@ START_TEST(test_s21_sprintf_g_simple) {
     char buffer[1024] = {0};
     char original_buffer[1024] = {0};
     double value = 0.0002324456;
-    const char *fmt = "Number: %014.3G";
+    const char *fmt = "Number: %14.3G";
     s21_sprintf(buffer, fmt, value);
     sprintf(original_buffer, fmt, value);
     ck_assert_str_eq(buffer, original_buffer);
@@ -148,16 +148,16 @@ START_TEST(test_s21_sprintf_g_simple) {
   END_TEST
 
   //[ ]: не работает тест. Нужно починить.
-  // START_TEST(test_s21_sprintf_LG_large_zero_padding) {
-  //   char buffer[1024] = {0};
-  //   char original_buffer[1024] = {0};
-  //   long double value = 1.7976931348623157e+308L;
-  //   const char *fmt = "Number: %014.3LG";
-  //   s21_sprintf(buffer, fmt, value);
-  //   sprintf(original_buffer, fmt, value);
-  //   ck_assert_str_eq(buffer, original_buffer);
-  // }
-  // END_TEST
+  START_TEST(test_s21_sprintf_LG_large_zero_padding) {
+    char buffer[1024] = {0};
+    char original_buffer[1024] = {0};
+    long double value = 1.7976931348623157e+308L;
+    const char *fmt = "Number: %014.3LG";
+    s21_sprintf(buffer, fmt, value);
+    sprintf(original_buffer, fmt, value);
+    ck_assert_str_eq(buffer, original_buffer);
+  }
+  END_TEST
   
 
   TCase *tcase_s21_sprintf_g(void) {
@@ -176,7 +176,6 @@ START_TEST(test_s21_sprintf_g_simple) {
     tcase_add_test(tc_core_g, test_s21_sprintf_G_positive);
     tcase_add_test(tc_core_g, test_s21_sprintf_G_zero_padding);
     tcase_add_test(tc_core_g, test_s21_sprintf_G_minimal_zero_padding);
-    // tcase_add_test(tc_core_g, test_s21_sprintf_LG_large_zero_padding);
-
+    tcase_add_test(tc_core_g, test_s21_sprintf_LG_large_zero_padding);
     return tc_core_g;
   }

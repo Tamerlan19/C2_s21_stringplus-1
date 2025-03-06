@@ -579,8 +579,8 @@ START_TEST(test_s21_sprintf_o_hash_flag) {
     unsigned int value = 64; // Восьмеричное представление: 100
     int ret = sprintf(buffer, fmt, value);
     int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
-    ck_assert_int_eq(ret, ret_s21);
     ck_assert_str_eq(buffer, buffer_s21);
+    ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
@@ -653,8 +653,8 @@ START_TEST(test_s21_sprintf_o_hash_zero_value) {
     unsigned int value = 0; // Нулевое значение
     int ret = sprintf(buffer, fmt, value);
     int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
-    ck_assert_int_eq(ret, ret_s21);
     ck_assert_str_eq(buffer, buffer_s21);
+    ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
@@ -1050,11 +1050,11 @@ Suite *s21_sprintf_suite(void) {
   suite_add_tcase(s, tc_core);
 
   //[ ] удалить отладочные кейсы
-  //   TCase *tc_debug;
-  //   tc_debug = tcase_create("Debug");
-  //   tcase_add_test(tc_debug, test_s21_sprintf_u_complex_case);
+    TCase *tc_debug;
+    tc_debug = tcase_create("Debug");
+    tcase_add_test(tc_debug, test_s21_sprintf_o_hash_flag);
   // tcase_add_test(tc_debug, test_s21_sprintf_f_large_number);
-  // suite_add_tcase(s, tc_debug);
+  suite_add_tcase(s, tc_debug);
 
   return s;
 }

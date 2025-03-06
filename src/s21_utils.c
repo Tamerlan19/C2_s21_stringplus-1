@@ -102,8 +102,10 @@ int parse_specifiers(const char *fmt, Specifiers *st_spec) {
   if (*(format) == '.') {
     format++;
     st_spec->precision = 0;
-    if (*(format) == '*')
+    if (*(format) == '*'){
       st_spec->precision = -1;
+      format++;
+    }
     else {
       while (is_digit(*(format))) {
         st_spec->precision = st_spec->precision * 10 + *(format) - '0';

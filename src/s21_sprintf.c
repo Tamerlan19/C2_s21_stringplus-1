@@ -42,7 +42,7 @@ int s21_sprintf(char *str, const char *format, ...) {
   while (*ptr) {
     if (*ptr == '%') {
       // ptr++;
-      Specifiers flags = {'*', -10, -1, '*', '*'};
+      Specifiers flags = {'a', -10, -10, '*', '*'};
       // int t = parse_specifiers(ptr, &flags);
       ptr += parse_specifiers(ptr, &flags);
       // DEBUG_PRINT("Spec string_length = %s\n", t);
@@ -674,9 +674,18 @@ void handle_hex(char **buffer, Specifiers flags, va_list args) {
     **buffer = '\0';
 }
 void handle_octal(char **buffer, Specifiers flags, va_list args) {
-    unsigned long num; // Используем unsigned long для поддержки 'l'
+    unsigned long num,ch; // Используем unsigned long для поддержки 'l'
     char tmp[MAX_BUF_SIZE] = {0}; // Временный буфер для хранения числа
     int len = 0; // Длина числа в строковом представлении
+    if (flags.flag=='*') {
+      int w = va_arg(args, int);
+      flags.width = w;
+    }
+    if (flags.precision==-1) {
+      int p = va_arg(args, int);
+      flags.precision = p;
+    }
+    
 
     // Получаем число из va_list с учетом длины
     if (flags.length == 'l') {
@@ -686,6 +695,7 @@ void handle_octal(char **buffer, Specifiers flags, va_list args) {
     } else {
         num = va_arg(args, unsigned int); // По умолчанию unsigned int
     }
+    ch = num;
 
     // Преобразуем число в восьмеричную строку
     char *ptr = tmp + sizeof(tmp) - 1; // Начинаем с конца массива
@@ -700,7 +710,10 @@ void handle_octal(char **buffer, Specifiers flags, va_list args) {
             num /= 8;
             len++;
         } while (num > 0);
+DEBUG_PRINT("spec:%%o, len:%d, num=%ld\n",len,num);
 
+
+    
         // Применяем точность (precision)
         if (flags.precision >= 0 && len < flags.precision) {
             int pad = flags.precision - len;
@@ -711,12 +724,17 @@ void handle_octal(char **buffer, Specifiers flags, va_list args) {
     }
 
     // Добавляем префикс "0", если установлен флаг '#'
-    if (flags.flag == '#' && len > 0) {
+      DEBUG_PRINT("spec:%%o, flag:#, len:%d, num=%ld\n",len,num);
+    if (flags.flag == '#' && len> 0) {
+      DEBUG_PRINT("ADD 0!\n")
+        if (ch!=0){
         *--ptr = '0';
+        }
         len++;
     }
 
     // Определяем общую длину с учетом ширины
+
     int total_width = flags.width > 0 ? flags.width : 0;
     int padding = total_width > len ? total_width - len : 0;
 

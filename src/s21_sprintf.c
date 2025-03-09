@@ -18,7 +18,7 @@ void handle_percent(char **buffer, Specifiers flags);
 void handle_exp(char **buffer, Specifiers flags, va_list args);
 void handle_hex(char **buffer, Specifiers flags, va_list args);
 void handle_octal(char **buffer, Specifiers flags, va_list args);
-void handle_pointer(char **buffer, Specifiers flags, va_list args);
+void handle_pointer(char **buffer,  Specifiers flags, va_list args);
 
 // int parse_specifiers_length(const char *format) {
 //     int len = 0;
@@ -758,9 +758,9 @@ DEBUG_PRINT("spec:%%o, len:%d, num=%ld\n",len,num);
 void handle_pointer(char **buffer, Specifiers flags, va_list args) {
     void *ptr = va_arg(args, void *); // Извлекаем указатель из списка аргументов
     uintptr_t num = (uintptr_t)ptr;   // Преобразуем указатель в целое число
+  if (ptr!=S21_NULL){
 
-    // Инициализируем временный буфер для хранения результата
-    char tmp[MAX_BUF_SIZE] = {0};
+  char tmp[MAX_BUF_SIZE] = {0};
     char *tmp_ptr = tmp + sizeof(tmp) - 1; // Начинаем с конца буфера
     *tmp_ptr = '\0'; // Завершающий нулевой символ
 
@@ -809,6 +809,9 @@ void handle_pointer(char **buffer, Specifiers flags, va_list args) {
         *buffer += len;
     }
 
-    // Завершающий нулевой символ
+  }else{
+    s21_memcpy(*buffer, "(nil)", 5);
+    *buffer += 5;
+  }
     **buffer = '\0';
 }

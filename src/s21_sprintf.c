@@ -37,7 +37,7 @@ int s21_sprintf(char *str, const char *format, ...) {
   va_start(args, format);
   char *buffer = str;
   const char *ptr = format;
-  DEBUG_PRINT("ptr = %s\n", ptr);
+  DEBUG_PRINT("\n\n\nptr = %s\n", ptr);
   DEBUG_PRINT("format = %s\n", format);
   while (*ptr) {
     if (*ptr == '%') {
@@ -756,7 +756,25 @@ DEBUG_PRINT("spec:%%o, len:%d, num=%ld\n",len,num);
     **buffer = '\0';
 }
 void handle_pointer(char **buffer, Specifiers flags, va_list args) {
+  DEBUG_PRINT("Process handle_pointer()\n");
+
+if (flags.flag == '*') { // Если точность передана через *
+        flags.width = va_arg(args, int); // Извлекаем значение точности
+    }
+    DEBUG_PRINT("flags.precision=%d\n",flags.precision );
+    
+
+    // Обработка динамической точности
+    if (flags.precision == -1) { // Если точность передана через *
+        flags.precision = va_arg(args, int); // Извлекаем значение точности
+    }
+    DEBUG_PRINT("flags.precision=%d\n",flags.precision );
+    
+
+
+
     void *ptr = va_arg(args, void *); // Извлекаем указатель из списка аргументов
+    if (ptr!=S21_NULL){
     uintptr_t num = (uintptr_t)ptr;   // Преобразуем указатель в целое число
   if (ptr!=S21_NULL){
 
@@ -783,18 +801,20 @@ void handle_pointer(char **buffer, Specifiers flags, va_list args) {
     // Вычисляем длину строки
     int len = (int)(tmp + sizeof(tmp) - 1 - tmp_ptr);
 
+
+DEBUG_PRINT("tmp_ptr=%s\n",tmp_ptr);
     // Применяем точность (precision)
     if (flags.precision >= 0 && len - 2 < flags.precision) { // Учитываем длину "0x"
         int pad = flags.precision - (len - 2);
-        s21_memmove(tmp_ptr + pad, tmp_ptr + 2, len - 2); // Сдвигаем число вправо
+        DEBUG_PRINT("pad=%d\n",pad);
+        s21_memmove(tmp_ptr + pad, tmp_ptr, len+1); // Сдвигаем число вправо
         s21_memset(tmp_ptr + 2, '0', pad);               // Дополняем нулями слева
         len += pad;
     }
-
+DEBUG_PRINT("tmp_ptr=%s\n",tmp_ptr);
     // Определяем общую длину с учетом ширины
     int total_width = flags.width > 0 ? flags.width : 0;
     int padding = total_width > len ? total_width - len : 0;
-
     // Выравнивание
     if (flags.flag == '-') { // Левое выравнивание
         s21_memcpy(*buffer, tmp_ptr, len);
@@ -802,11 +822,27 @@ void handle_pointer(char **buffer, Specifiers flags, va_list args) {
         s21_memset(*buffer, ' ', padding);
         *buffer += padding;
     } else { // Правое выравнивание
-        char fill_char = (flags.flag == '0' && flags.precision < 0) ? '0' : ' ';
-        s21_memset(*buffer, fill_char, padding);
-        *buffer += padding;
-        s21_memcpy(*buffer, tmp_ptr, len);
-        *buffer += len;
+        if (flags.flag == '0' && flags.precision < 0) {
+            // Если флаг '0' и точность не указана, заполняем нулями после префикса
+            s21_memcpy(*buffer, tmp_ptr, 2); // Копируем "0x"
+            *buffer += 2;
+            s21_memset(*buffer, '0', padding); // Заполняем нулями
+            *buffer += padding;
+            DEBUG_PRINT("tmp_ptr=%s\n",tmp_ptr);
+            s21_memcpy(*buffer, tmp_ptr +2, len - 2); // Копируем остальную часть
+            *buffer += len - 2;
+        } else {
+            // Иначе заполняем пробелами
+            s21_memset(*buffer, ' ', padding);
+            *buffer += padding;
+            s21_memcpy(*buffer, tmp_ptr, len);
+            *buffer += len;
+        }
+    }
+    }else{
+      DEBUG_PRINT("ptr is NULL!\n");
+      s21_memcpy(*buffer, "(nil)", 5);
+      *buffer += 5;
     }
 
   }else{

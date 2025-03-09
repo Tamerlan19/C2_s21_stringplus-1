@@ -702,8 +702,8 @@ START_TEST(test_s21_sprintf_p_null_pointer) {
     void *ptr = NULL;
     int ret = sprintf(buffer, fmt, ptr);
     int ret_s21 = s21_sprintf(buffer_s21, fmt, ptr);
-    ck_assert_int_eq(ret, ret_s21);
     ck_assert_str_eq(buffer, buffer_s21);
+    ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
@@ -729,8 +729,8 @@ START_TEST(test_s21_sprintf_p_dynamic_width) {
     int width = 20; // Динамическая ширина
     int ret = sprintf(buffer, fmt, width, ptr);
     int ret_s21 = s21_sprintf(buffer_s21, fmt, width, ptr);
-    ck_assert_int_eq(ret, ret_s21);
     ck_assert_str_eq(buffer, buffer_s21);
+    ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
@@ -756,8 +756,8 @@ START_TEST(test_s21_sprintf_p_dynamic_precision) {
     int precision = 16; // Динамическая точность
     int ret = sprintf(buffer, fmt, precision, ptr);
     int ret_s21 = s21_sprintf(buffer_s21, fmt, precision, ptr);
-    ck_assert_int_eq(ret, ret_s21);
     ck_assert_str_eq(buffer, buffer_s21);
+    ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
@@ -1052,7 +1052,7 @@ Suite *s21_sprintf_suite(void) {
   //[ ] удалить отладочные кейсы
     TCase *tc_debug;
     tc_debug = tcase_create("Debug");
-    tcase_add_test(tc_debug, test_s21_sprintf_o_hash_flag);
+    tcase_add_test(tc_debug, test_s21_sprintf_p_dynamic_width);
   // tcase_add_test(tc_debug, test_s21_sprintf_f_large_number);
   suite_add_tcase(s, tc_debug);
 

@@ -135,7 +135,7 @@ START_TEST(test_s21_sprintf_lu_long_unsigned) {
 }
 END_TEST
 
-TCase *tcase_s21_sprintf_d(void) {
+TCase *tcase_s21_sprintf_u(void) {
   TCase *tc_core_u = tcase_create("Spec %u");
   tcase_add_test(tc_core_u, test_s21_sprintf_u_basic);
   tcase_add_test(tc_core_u, test_s21_sprintf_u_width);

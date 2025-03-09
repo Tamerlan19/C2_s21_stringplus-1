@@ -177,7 +177,7 @@ if (converted == (size_t)-1) {
 }
 END_TEST
 
-TCase *tcase_s21_sprintf_d(void) {
+TCase *tcase_s21_sprintf_s(void) {
   TCase *tc_core_s = tcase_create("Spec %s");
   
   tcase_add_test(tc_core_s, test_s21_sprintf_basic_string);

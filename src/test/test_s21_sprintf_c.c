@@ -79,7 +79,7 @@ START_TEST(test_s21_sprintf_c_negative_width) {
 }
 END_TEST
 
-TCase *tcase_s21_sprintf_d(void) {
+TCase *tcase_s21_sprintf_c(void) {
   TCase *tc_core_c = tcase_create("Spec %c");
 
 tcase_add_test(tc_core_c, test_s21_sprintf_c_zero_padding);

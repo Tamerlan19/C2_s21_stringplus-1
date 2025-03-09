@@ -133,7 +133,7 @@ START_TEST(test_s21_sprintf_p_zero_padding_with_width) {
 }
 END_TEST
 
-TCase *tcase_s21_sprintf_d(void) {
+TCase *tcase_s21_sprintf_p(void) {
   TCase *tc_core_p = tcase_create("Spec %p");
   
   tcase_add_test(tc_core_p, test_s21_sprintf_p_basic);

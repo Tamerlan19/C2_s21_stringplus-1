@@ -132,6 +132,7 @@ tcase_add_test(tc_core_d, test_s21_sprintf_ld_long_int_format);
 tcase_add_test(tc_core_d, test_s21_sprintf_negative_hd_short_int_format);
 tcase_add_test(tc_core_d, test_s21_sprintf_hd_short_int_format);
 tcase_add_test(tc_core_d, test_s21_sprintf_ld_long_int);
+tcase_add_test(tc_core_d, test_s21_sprintf_negative_ld_long_int_format);
 
   return tc_core_d;
 }

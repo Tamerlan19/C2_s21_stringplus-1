@@ -3,9 +3,6 @@
 #include <stdio.h>
 #include <string.h>
 
-
-
-
 TCase *tcase_s21_sprintf_d(void);
 TCase *tcase_s21_sprintf_c(void);
 TCase *tcase_s21_sprintf_f(void);
@@ -16,6 +13,7 @@ TCase *tcase_s21_sprintf_g(void);
 TCase *tcase_s21_sprintf_p(void);
 TCase *tcase_s21_sprintf_o(void);
 TCase *tcase_s21_sprintf_s(void);
+TCase *tcase_s21_sprintf_pcnt(void);
 
 Suite *s21_sprintf_suite(void) {
   Suite *s;
@@ -44,15 +42,16 @@ Suite *s21_sprintf_suite(void) {
   suite_add_tcase(s, tc_core_x);
   TCase *tc_core_g = tcase_s21_sprintf_g();
   suite_add_tcase(s, tc_core_g);
+  TCase *tc_core_pcnt = tcase_s21_sprintf_pcnt();
+  suite_add_tcase(s, tc_core_pcnt);
 
   tc_core = tcase_create("Core");
-
 
   suite_add_tcase(s, tc_core);
 
   //[ ] удалить отладочные кейсы
-    TCase *tc_debug;
-    tc_debug = tcase_create("Debug");
+  TCase *tc_debug;
+  tc_debug = tcase_create("Debug");
   //   tcase_add_test(tc_debug, test_s21_sprintf_o_hash_flag);
   // tcase_add_test(tc_debug, test_s21_sprintf_p_width_zero_padding);
   suite_add_tcase(s, tc_debug);

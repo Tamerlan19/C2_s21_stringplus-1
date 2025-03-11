@@ -148,38 +148,42 @@ START_TEST(test_s21_sprintf_hs_short_string) {
 END_TEST
 
 START_TEST(test_s21_sprintf_ls_wide_string) {
-    setlocale(LC_ALL, "en_US.utf8");
+  setlocale(LC_ALL, "en_US.utf8");
 
-    wchar_t buffer[1024];
-    char buffer_s21[1024];
-    wchar_t buffer_s21_wide[1024]; // Буфер для преобразования buffer_s21 в wide string
+  wchar_t buffer[1024];
+  char buffer_s21[1024];
+  wchar_t buffer_s21_wide[1024]; // Буфер для преобразования buffer_s21 в wide
+                                 // string
 
-    const char *fmt_narrow = "Wide String: %ls";
-    wchar_t fmt_wide[1024];
-    mbstowcs(fmt_wide, fmt_narrow, strlen(fmt_narrow) + 1); // Конвертируем формат в wchar_t
+  const char *fmt_narrow = "Wide String: %ls";
+  wchar_t fmt_wide[1024];
+  mbstowcs(fmt_wide, fmt_narrow,
+           strlen(fmt_narrow) + 1); // Конвертируем формат в wchar_t
 
-    wchar_t wide_str[] = L"Привет"; // Строка широких символов
+  wchar_t wide_str[] = L"Привет"; // Строка широких символов
 
-    int ret = swprintf(buffer, 1024, fmt_wide, wide_str); // Форматируем wide string
-    s21_sprintf(buffer_s21, fmt_narrow, wide_str); // Форматируем с помощью s21_sprintf
+  int ret =
+      swprintf(buffer, 1024, fmt_wide, wide_str); // Форматируем wide string
+  s21_sprintf(buffer_s21, fmt_narrow,
+              wide_str); // Форматируем с помощью s21_sprintf
 
-    // Преобразуем buffer_s21 в wide string
-    size_t converted = mbstowcs(buffer_s21_wide, buffer_s21, 1024);
-if (converted == (size_t)-1) {
+  // Преобразуем buffer_s21 в wide string
+  size_t converted = mbstowcs(buffer_s21_wide, buffer_s21, 1024);
+  if (converted == (size_t)-1) {
     printf("Ошибка преобразования buffer_s21 в wide string\n");
     ck_abort(); // Аборт теста с сообщением об ошибке
-}
+  }
 
-    // Проверяем длину строки
-    ck_assert_int_eq(ret, wcslen(buffer));
-    // Сравниваем wide строки
-    ck_assert_int_eq(wcscmp(buffer, buffer_s21_wide), 0);
+  // Проверяем длину строки
+  ck_assert_int_eq(ret, wcslen(buffer));
+  // Сравниваем wide строки
+  ck_assert_int_eq(wcscmp(buffer, buffer_s21_wide), 0);
 }
 END_TEST
 
 TCase *tcase_s21_sprintf_s(void) {
   TCase *tc_core_s = tcase_create("Spec %s");
-  
+
   tcase_add_test(tc_core_s, test_s21_sprintf_basic_string);
   tcase_add_test(tc_core_s, test_s21_sprintf_s_basic);
   tcase_add_test(tc_core_s, test_s21_sprintf_s_precision);
@@ -194,6 +198,5 @@ TCase *tcase_s21_sprintf_s(void) {
   tcase_add_test(tc_core_s, test_s21_sprintf_hs_short_string);
   tcase_add_test(tc_core_s, test_s21_sprintf_ls_wide_string);
 
-  
   return tc_core_s;
 }

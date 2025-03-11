@@ -136,7 +136,6 @@ START_TEST(test_s21_sprintf_f_precision_flag) {
 }
 END_TEST
 
-
 TCase *tcase_s21_sprintf_f(void) {
   TCase *tc_core_f = tcase_create("Spec %f");
 

@@ -1,10 +1,10 @@
-// [ ] Удалить импорт библиотеки, использовалась для отладки кода
-#include "s21_string.h"
-#include "s21_utils.h"
-#include <stdio.h>
 #include <wchar.h>
 #include <limits.h>
 #include <stdint.h>
+#include "s21_string.h"
+#include "s21_utils.h"
+// [ ] Удалить импорт библиотеки, использовалась для отладки кода
+// #include <stdio.h>
 
 #define MAX_BUF_SIZE 1024
 
@@ -21,17 +21,6 @@ void handle_octal(char **buffer, Specifiers flags, va_list args);
 void handle_pointer(char **buffer,  Specifiers flags, va_list args);
 void handle_general(char **buffer, Specifiers flags, va_list args);
 
-// int parse_specifiers_length(const char *format) {
-//     int len = 0;
-//     while (format[len] && (format[len] != ' ' || format[len] != '%')) {
-//       len++;
-//     }
-//     // if (is_alpha(format[len])) {
-//     //   len++; // Учитываем спецификатор
-//     // }
-//     DEBUG_PRINT("len = %d, format= = %s\n", len, format);
-//     return len;
-//   }
 
 int s21_sprintf(char *str, const char *format, ...) {
   va_list args;
@@ -65,16 +54,14 @@ int s21_sprintf(char *str, const char *format, ...) {
         handle_unsigned(&buffer, flags, args);
       } else if (flags.specifier == 'x' || flags.specifier == 'X') {
         handle_hex(&buffer, flags, args);
-      } else if (flags.specifier == 'o') { // Добавляем обработку '%o'
+      } else if (flags.specifier == 'o') { 
         handle_octal(&buffer, flags, args);
-      } else if (flags.specifier == 'p') { // Добавляем обработку '%p'
+      } else if (flags.specifier == 'p') { 
         handle_pointer(&buffer, flags, args);
       }else if (flags.specifier == '%') {
         handle_percent(&buffer, flags);
       } else if (flags.specifier == 'e' || flags.specifier == 'E') {
         handle_exp(&buffer, flags, args);
-      } else if (flags.specifier == 'x' || flags.specifier == 'X') {
-        handle_hex(&buffer, flags, args);
       } else if (flags.specifier == 'g' || flags.specifier == 'G') {
         handle_general(&buffer, flags, args);
       } else
@@ -496,9 +483,6 @@ int proc_int_to_str(char *str, int int_part, int base) {
     len += int_len;
   }
   *(str) = '\0';
-  // DEBUG_PRINT("Set exp_int=|%s|\n", (str-1));
-  // DEBUG_PRINT("Set exp_int=|%s|\n", (str-2));
-  // DEBUG_PRINT("Set exp_int=|%s|\n", (str-3));
   DEBUG_PRINT("Result stro to int conversation=|%s|\n", (str - len));
   return len;
 }

@@ -119,20 +119,19 @@ START_TEST(test_s21_sprintf_ld_long_int) {
 }
 END_TEST
 
-
 TCase *tcase_s21_sprintf_d(void) {
   TCase *tc_core_d = tcase_create("Spec %d");
 
-tcase_add_test(tc_core_d, test_s21_sprintf_d_int_format);
-tcase_add_test(tc_core_d, test_s21_sprintf_d_int);
-tcase_add_test(tc_core_d, test_s21_sprintf_d_left_alignment);
-tcase_add_test(tc_core_d, test_s21_sprintf_d_width_flag);
-tcase_add_test(tc_core_d, test_s21_sprintf_d_zero_padding);
-tcase_add_test(tc_core_d, test_s21_sprintf_ld_long_int_format);
-tcase_add_test(tc_core_d, test_s21_sprintf_negative_hd_short_int_format);
-tcase_add_test(tc_core_d, test_s21_sprintf_hd_short_int_format);
-tcase_add_test(tc_core_d, test_s21_sprintf_ld_long_int);
-tcase_add_test(tc_core_d, test_s21_sprintf_negative_ld_long_int_format);
+  tcase_add_test(tc_core_d, test_s21_sprintf_d_int_format);
+  tcase_add_test(tc_core_d, test_s21_sprintf_d_int);
+  tcase_add_test(tc_core_d, test_s21_sprintf_d_left_alignment);
+  tcase_add_test(tc_core_d, test_s21_sprintf_d_width_flag);
+  tcase_add_test(tc_core_d, test_s21_sprintf_d_zero_padding);
+  tcase_add_test(tc_core_d, test_s21_sprintf_ld_long_int_format);
+  tcase_add_test(tc_core_d, test_s21_sprintf_negative_hd_short_int_format);
+  tcase_add_test(tc_core_d, test_s21_sprintf_hd_short_int_format);
+  tcase_add_test(tc_core_d, test_s21_sprintf_ld_long_int);
+  tcase_add_test(tc_core_d, test_s21_sprintf_negative_ld_long_int_format);
 
   return tc_core_d;
 }

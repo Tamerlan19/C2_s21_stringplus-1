@@ -11,18 +11,16 @@ int contains_char(const char *str, char ch) {
   return 0;
 }
 
-
 void *s21_memmove(void *dest, const void *src, s21_size_t n) {
   unsigned char *d = (unsigned char *)dest;
   const unsigned char *s = (const unsigned char *)src;
-  
-  if (d!=s){
+
+  if (d != s) {
     if (d > s && d < s + n) {
       for (size_t i = n; i > 0; i--) {
         d[i - 1] = s[i - 1];
       }
-    }
-    else {
+    } else {
       for (size_t i = 0; i < n; i++) {
         d[i] = s[i];
       }
@@ -68,11 +66,10 @@ int parse_specifiers(const char *fmt, Specifiers *st_spec) {
   if (*(format) == '.') {
     format++;
     st_spec->precision = 0;
-    if (*(format) == '*'){
+    if (*(format) == '*') {
       st_spec->precision = -1;
       format++;
-    }
-    else {
+    } else {
       while (is_digit(*(format))) {
         st_spec->precision = st_spec->precision * 10 + *(format) - '0';
         format++;
@@ -115,7 +112,6 @@ int is_hex(char c) {
   return ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'F'));
 }
 
-
 void int_to_str(int num, char *str, int base) {
   int i = 0;
   int is_negative = 0;
@@ -141,7 +137,7 @@ void int_to_str(int num, char *str, int base) {
     str[i++] = '-';
   }
 
-  str[i] = '\0'; 
+  str[i] = '\0';
 
   int start = 0, end = i - 1;
   while (start < end) {

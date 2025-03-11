@@ -11,56 +11,21 @@ int contains_char(const char *str, char ch) {
   return 0;
 }
 
-// int s21_strcmp(const char *str1, const char *str2) {
-//   int rtn = 0;
-//   for (; *str1 && *str1 == *str2; str1++, str2++)
-//     ;
-//   int result = *str1 - *str2;
-//   if (result > 0)
-//     rtn = 1;
-//   else if (result < 0)
-//     rtn = -1;
-//   else
-//     rtn = 0;
-//   return rtn;
-// }
-
-// char *s21_strcpy(char *dest, const char *src) {
-//   if (src != S21_NULL) {
-//     for (int i = 0; (dest[i] = src[i]) != '\0'; i++) {
-//     }
-//   }
-//   return dest;
-// }
-
-// char *s21_strcat(char *destination, const char *append) {
-//   int len = 0;
-//   for (; destination[len] != '\0'; len++) {
-//   }
-//   for (; *append; append++, len++) {
-//     destination[len] = *append;
-//   }
-//   return destination;
-// }
 
 void *s21_memmove(void *dest, const void *src, s21_size_t n) {
-  // Приводим указатели к типу unsigned char для побайтового копирования
   unsigned char *d = (unsigned char *)dest;
   const unsigned char *s = (const unsigned char *)src;
-  // Если dest и src указывают на одну и ту же область памяти, ничего не делаем
-  if (d == s) {
-    return dest;
-  }
-  // Если dest находится после src и перекрывается с ним, копируем с конца
-  if (d > s && d < s + n) {
-    for (size_t i = n; i > 0; i--) {
-      d[i - 1] = s[i - 1];
+  
+  if (d!=s){
+    if (d > s && d < s + n) {
+      for (size_t i = n; i > 0; i--) {
+        d[i - 1] = s[i - 1];
+      }
     }
-  }
-  // В остальных случаях копируем с начала
-  else {
-    for (size_t i = 0; i < n; i++) {
-      d[i] = s[i];
+    else {
+      for (size_t i = 0; i < n; i++) {
+        d[i] = s[i];
+      }
     }
   }
   return dest;
@@ -84,6 +49,7 @@ int parse_specifiers(const char *fmt, Specifiers *st_spec) {
     DEBUG_PRINT(" FLAGS=%c\n", st_spec->flag);
     format++;
   }
+  // Width
   if (*(format) == '*' || is_digit(*(format))) {
     if (*(format) == '*') {
       st_spec->flag = *(format);
@@ -144,47 +110,39 @@ int parse_specifiers(const char *fmt, Specifiers *st_spec) {
 }
 
 int is_digit(char c) { return (c >= '0' && c <= '9'); }
-int is_octa(char c) { return (c >= '0' && c <= '7'); }
+
 int is_hex(char c) {
   return ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'F'));
 }
 
-// int is_alpha(char c) {
-//   return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
-// }
 
 void int_to_str(int num, char *str, int base) {
   int i = 0;
   int is_negative = 0;
 
-  // Обрабатываем 0 отдельно
   if (num == 0) {
     str[i++] = '0';
     str[i] = '\0';
     return;
   }
 
-  // Обрабатываем отрицательные числа для десятичной системы
   if (num < 0 && base == 10) {
     is_negative = 1;
-    num = -num; // Преобразуем в положительное
+    num = -num;
   }
 
-  // Преобразуем число в строку (обратный порядок)
   while (num > 0) {
     int digit = num % base;
     str[i++] = (digit > 9) ? (digit - 10) + 'A' : digit + '0';
     num /= base;
   }
 
-  // Добавляем знак минус для десятичной системы
   if (is_negative) {
     str[i++] = '-';
   }
 
-  str[i] = '\0'; // Завершаем строку
+  str[i] = '\0'; 
 
-  // Переворачиваем строку
   int start = 0, end = i - 1;
   while (start < end) {
     char temp = str[start];
@@ -209,10 +167,7 @@ void noop_space(const char **str) {
 long double s21_pow(int x, int y) {
   long double result = 1.0;
   if (y < 0) {
-    // while (y < 0) {
     result = result / s21_pow(x, y * -1);
-    // y++;
-    // }
   } else {
     while (y > 0) {
       result = result * x;
@@ -229,6 +184,6 @@ int get_width(const char *str, const Specifiers st_spec) {
   } else {
     width = (int)s21_strlen(str);
   }
-  DEBUG_PRINT("Width set =%d\n", width);
+
   return width;
 }

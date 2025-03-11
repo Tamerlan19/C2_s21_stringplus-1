@@ -19,6 +19,7 @@ void handle_exp(char **buffer, Specifiers flags, va_list args);
 void handle_hex(char **buffer, Specifiers flags, va_list args);
 void handle_octal(char **buffer, Specifiers flags, va_list args);
 void handle_pointer(char **buffer,  Specifiers flags, va_list args);
+void handle_general(char **buffer, Specifiers flags, va_list args);
 
 // int parse_specifiers_length(const char *format) {
 //     int len = 0;
@@ -719,79 +720,81 @@ void handle_general(char **buffer, Specifiers flags, va_list args) {
     handle_float(buffer, flags, args);
   }
 }
-void handle_hex(char **buffer, Specifiers flags, va_list args) {
-    unsigned long num; // Используем unsigned long для поддержки 'l'
-    char tmp[MAX_BUF_SIZE] = {0}; // Временный буфер для хранения числа
-    int len = 0; // Длина числа в строковом представлении
 
-    // Получаем число из va_list с учетом длины
-    if (flags.length == 'l') {
-        num = va_arg(args, unsigned long); // Для 'l' используем unsigned long
-    } else if (flags.length == 'h') {
-        num = (unsigned short)va_arg(args, unsigned int); // Для 'h' используем unsigned short
-    } else {
-        num = va_arg(args, unsigned int); // По умолчанию unsigned int
-    }
+// void handle_hex(char **buffer, Specifiers flags, va_list args) {
+//     unsigned long num; // Используем unsigned long для поддержки 'l'
+//     char tmp[MAX_BUF_SIZE] = {0}; // Временный буфер для хранения числа
+//     int len = 0; // Длина числа в строковом представлении
 
-    // Преобразуем число в шестнадцатеричную строку
-    char *ptr = tmp + sizeof(tmp) - 1; // Начинаем с конца буфера
-    *ptr = '\0'; // Завершающий нулевой символ
+//     // Получаем число из va_list с учетом длины
+//     if (flags.length == 'l') {
+//         num = va_arg(args, unsigned long); // Для 'l' используем unsigned long
+//     } else if (flags.length == 'h') {
+//         num = (unsigned short)va_arg(args, unsigned int); // Для 'h' используем unsigned short
+//     } else {
+//         num = va_arg(args, unsigned int); // По умолчанию unsigned int
+//     }
 
-    if (num == 0) {
-        *--ptr = '0'; // Если число равно 0, просто записываем '0'
-        len = 1;
-    } else {
-        while (num > 0) {
-            int digit = num % 16;
-            char c;
-            if (digit < 10) {
-                c = '0' + digit;
-            } else {
-                // Для спецификатора 'x' используем буквы в нижнем регистре, для 'X' — в верхнем
-                c = (flags.specifier == 'x') ? ('a' + digit - 10) : ('A' + digit - 10);
-            }
-            *--ptr = c; // Записываем символ в буфер
-            num /= 16;
-            len++;
-        }
-    }
+//     // Преобразуем число в шестнадцатеричную строку
+//     char *ptr = tmp + sizeof(tmp) - 1; // Начинаем с конца буфера
+//     *ptr = '\0'; // Завершающий нулевой символ
 
-    // Добавляем префикс "0x" или "0X", если установлен флаг '#'
-    if (flags.flag == '#') {
-        *--ptr = (flags.specifier == 'x') ? 'x' : 'X';
-        *--ptr = '0';
-        len += 2;
-    }
+//     if (num == 0) {
+//         *--ptr = '0'; // Если число равно 0, просто записываем '0'
+//         len = 1;
+//     } else {
+//         while (num > 0) {
+//             int digit = num % 16;
+//             char c;
+//             if (digit < 10) {
+//                 c = '0' + digit;
+//             } else {
+//                 // Для спецификатора 'x' используем буквы в нижнем регистре, для 'X' — в верхнем
+//                 c = (flags.specifier == 'x') ? ('a' + digit - 10) : ('A' + digit - 10);
+//             }
+//             *--ptr = c; // Записываем символ в буфер
+//             num /= 16;
+//             len++;
+//         }
+//     }
 
-    // Применяем точность (precision)
-    if (flags.precision >= 0 && len < flags.precision) {
-        int pad = flags.precision - len;
-        s21_memmove(ptr + pad, ptr, len); // Сдвигаем число вправо
-        s21_memset(ptr, '0', pad); // Дополняем нулями слева
-        len += pad;
-    }
+//     // Добавляем префикс "0x" или "0X", если установлен флаг '#'
+//     if (flags.flag == '#') {
+//         *--ptr = (flags.specifier == 'x') ? 'x' : 'X';
+//         *--ptr = '0';
+//         len += 2;
+//     }
 
-    // Определяем общую длину с учетом ширины
-    int total_width = flags.width > 0 ? flags.width : 0;
-    int padding = total_width > len ? total_width - len : 0;
+//     // Применяем точность (precision)
+//     if (flags.precision >= 0 && len < flags.precision) {
+//         int pad = flags.precision - len;
+//         s21_memmove(ptr + pad, ptr, len); // Сдвигаем число вправо
+//         s21_memset(ptr, '0', pad); // Дополняем нулями слева
+//         len += pad;
+//     }
 
-    // Выравнивание
-    if (flags.flag == '-') { // Левое выравнивание
-        s21_memcpy(*buffer, ptr, len);
-        *buffer += len;
-        s21_memset(*buffer, ' ', padding);
-        *buffer += padding;
-    } else { // Правое выравнивание
-        char fill_char = (flags.flag == '0' && flags.precision < 0) ? '0' : ' ';
-        s21_memset(*buffer, fill_char, padding);
-        *buffer += padding;
-        s21_memcpy(*buffer, ptr, len);
-        *buffer += len;
-    }
+//     // Определяем общую длину с учетом ширины
+//     int total_width = flags.width > 0 ? flags.width : 0;
+//     int padding = total_width > len ? total_width - len : 0;
 
-    // Завершающий нулевой символ
-    **buffer = '\0';
-}
+//     // Выравнивание
+//     if (flags.flag == '-') { // Левое выравнивание
+//         s21_memcpy(*buffer, ptr, len);
+//         *buffer += len;
+//         s21_memset(*buffer, ' ', padding);
+//         *buffer += padding;
+//     } else { // Правое выравнивание
+//         char fill_char = (flags.flag == '0' && flags.precision < 0) ? '0' : ' ';
+//         s21_memset(*buffer, fill_char, padding);
+//         *buffer += padding;
+//         s21_memcpy(*buffer, ptr, len);
+//         *buffer += len;
+//     }
+
+//     // Завершающий нулевой символ
+//     **buffer = '\0';
+// }
+
 void handle_octal(char **buffer, Specifiers flags, va_list args) {
     unsigned long num,ch; // Используем unsigned long для поддержки 'l'
     char tmp[MAX_BUF_SIZE] = {0}; // Временный буфер для хранения числа

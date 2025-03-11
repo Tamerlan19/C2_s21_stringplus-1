@@ -497,30 +497,30 @@ void *s21_insert(const char *src, const char *str, s21_size_t start_index) {
 void *s21_trim(const char *src, const char *trim_chars) {
   void *res = S21_NULL;
 
-  if (src != S21_NULL && trim_chars != S21_NULL) {
+  if (src != S21_NULL) {
     s21_size_t src_length = s21_strlen(src);
-    s21_size_t trim_length = s21_strlen(trim_chars);
-
-    if (trim_length == 0) {
+    if (trim_chars == S21_NULL || *trim_chars == '\0') {
       trim_chars = " \t\n\r";
     }
 
     s21_size_t start = 0;
-    while (start < src_length &&
-           s21_strchr(trim_chars, src[start]) != S21_NULL) {
+    while (start < src_length && s21_strchr(trim_chars, src[start])) {
       start++;
     }
 
     s21_size_t end = src_length;
-    while (end > start && s21_strchr(trim_chars, src[end - 1]) != S21_NULL) {
+    while (end > start && s21_strchr(trim_chars, src[end - 1])) {
       end--;
     }
 
     s21_size_t result_length = end - start;
+
     char *result = (char *)malloc(result_length + 1);
-    s21_memcpy(result, src + start, result_length);
-    result[result_length] = '\0';
-    res = (void *)res;
+    if (result != S21_NULL) {
+      s21_memcpy(result, src + start, result_length);
+      result[result_length] = '\0';
+      res = (void *)result;
+    }
   }
-  return (void *)res;
-};
+  return res;
+}

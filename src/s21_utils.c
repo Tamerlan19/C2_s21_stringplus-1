@@ -11,37 +11,37 @@ int contains_char(const char *str, char ch) {
   return 0;
 }
 
-int s21_strcmp(const char *str1, const char *str2) {
-  int rtn = 0;
-  for (; *str1 && *str1 == *str2; str1++, str2++)
-    ;
-  int result = *str1 - *str2;
-  if (result > 0)
-    rtn = 1;
-  else if (result < 0)
-    rtn = -1;
-  else
-    rtn = 0;
-  return rtn;
-}
+// int s21_strcmp(const char *str1, const char *str2) {
+//   int rtn = 0;
+//   for (; *str1 && *str1 == *str2; str1++, str2++)
+//     ;
+//   int result = *str1 - *str2;
+//   if (result > 0)
+//     rtn = 1;
+//   else if (result < 0)
+//     rtn = -1;
+//   else
+//     rtn = 0;
+//   return rtn;
+// }
 
-char *s21_strcpy(char *dest, const char *src) {
-  if (src != S21_NULL) {
-    for (int i = 0; (dest[i] = src[i]) != '\0'; i++) {
-    }
-  }
-  return dest;
-}
+// char *s21_strcpy(char *dest, const char *src) {
+//   if (src != S21_NULL) {
+//     for (int i = 0; (dest[i] = src[i]) != '\0'; i++) {
+//     }
+//   }
+//   return dest;
+// }
 
-char *s21_strcat(char *destination, const char *append) {
-  int len = 0;
-  for (; destination[len] != '\0'; len++) {
-  }
-  for (; *append; append++, len++) {
-    destination[len] = *append;
-  }
-  return destination;
-}
+// char *s21_strcat(char *destination, const char *append) {
+//   int len = 0;
+//   for (; destination[len] != '\0'; len++) {
+//   }
+//   for (; *append; append++, len++) {
+//     destination[len] = *append;
+//   }
+//   return destination;
+// }
 
 void *s21_memmove(void *dest, const void *src, s21_size_t n) {
   // Приводим указатели к типу unsigned char для побайтового копирования
@@ -102,8 +102,10 @@ int parse_specifiers(const char *fmt, Specifiers *st_spec) {
   if (*(format) == '.') {
     format++;
     st_spec->precision = 0;
-    if (*(format) == '*')
+    if (*(format) == '*'){
       st_spec->precision = -1;
+      format++;
+    }
     else {
       while (is_digit(*(format))) {
         st_spec->precision = st_spec->precision * 10 + *(format) - '0';

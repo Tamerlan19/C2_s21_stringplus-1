@@ -17,8 +17,6 @@ START_TEST(test_s21_sscanf_f) {
 }
 END_TEST
 
-
-
 START_TEST(test_s21_sscanf_f_zero) {
   const char str[] = "0";
   float res1 = 555, res2 = 555;
@@ -189,26 +187,25 @@ START_TEST(test_s21_sscanf_f_width_star_negative) {
 }
 END_TEST
 
-
 TCase *create_s21_sscanf_f_tests(void) {
-    TCase *tc_core_f;
-    tc_core_f = tcase_create("Specifier= %f");
+  TCase *tc_core_f;
+  tc_core_f = tcase_create("Specifier= %f");
 
-    tcase_add_test(tc_core_f, test_s21_sscanf_f_width_star_negative);
-    tcase_add_test(tc_core_f, test_s21_sscanf_f_width_star_overflow);
-    tcase_add_test(tc_core_f, test_s21_sscanf_f_width_star_max);
-    tcase_add_test(tc_core_f, test_s21_sscanf_f_width_star_zero);
-    tcase_add_test(tc_core_f, test_s21_sscanf_f_width_star);
-    tcase_add_test(tc_core_f, test_s21_sscanf_f_width_negative);
-    tcase_add_test(tc_core_f, test_s21_sscanf_f_width_overflow);
-    tcase_add_test(tc_core_f, test_s21_sscanf_f_width_max);
-    tcase_add_test(tc_core_f, test_s21_sscanf_f_width_zero);
-    tcase_add_test(tc_core_f, test_s21_sscanf_f_width);
-    tcase_add_test(tc_core_f, test_s21_sscanf_f_negative);
-    tcase_add_test(tc_core_f, test_s21_sscanf_f_overflow);
-    tcase_add_test(tc_core_f, test_s21_sscanf_f_max);
-    tcase_add_test(tc_core_f, test_s21_sscanf_f_zero);
-    tcase_add_test(tc_core_f, test_s21_sscanf_f);
+  tcase_add_test(tc_core_f, test_s21_sscanf_f_width_star_negative);
+  tcase_add_test(tc_core_f, test_s21_sscanf_f_width_star_overflow);
+  tcase_add_test(tc_core_f, test_s21_sscanf_f_width_star_max);
+  tcase_add_test(tc_core_f, test_s21_sscanf_f_width_star_zero);
+  tcase_add_test(tc_core_f, test_s21_sscanf_f_width_star);
+  tcase_add_test(tc_core_f, test_s21_sscanf_f_width_negative);
+  tcase_add_test(tc_core_f, test_s21_sscanf_f_width_overflow);
+  tcase_add_test(tc_core_f, test_s21_sscanf_f_width_max);
+  tcase_add_test(tc_core_f, test_s21_sscanf_f_width_zero);
+  tcase_add_test(tc_core_f, test_s21_sscanf_f_width);
+  tcase_add_test(tc_core_f, test_s21_sscanf_f_negative);
+  tcase_add_test(tc_core_f, test_s21_sscanf_f_overflow);
+  tcase_add_test(tc_core_f, test_s21_sscanf_f_max);
+  tcase_add_test(tc_core_f, test_s21_sscanf_f_zero);
+  tcase_add_test(tc_core_f, test_s21_sscanf_f);
 
   return tc_core_f;
 }

@@ -69,7 +69,7 @@ Suite *s21_sscanf_suite(void) {
   suite_add_tcase(suite, tc_core_pcnt);
   TCase *tc_core_cmpx = create_s21_sscanf_complex_tests();
   suite_add_tcase(suite, tc_core_cmpx);
-  
+
   //[ ] Delete debug case
   TCase *tc_debug;
   tc_debug = tcase_create("Debug");

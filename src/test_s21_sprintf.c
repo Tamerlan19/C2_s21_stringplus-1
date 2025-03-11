@@ -3,412 +3,40 @@
 #include <stdio.h>
 #include <string.h>
 
-START_TEST(test_s21_sprintf_basic_string) {
-  char buffer[1024];
-  s21_sprintf(buffer, "Hello, World!");
-  ck_assert_str_eq(buffer, "Hello, World!");
-}
-END_TEST
-
-START_TEST(test_s21_sprintf_d_int_format) {
-  char buffer[1024] = {0};
-  char original_buffer[1024] = {0};
-
-  s21_sprintf(buffer, "Number: %d", 42);
-  sprintf(original_buffer, "Number: %d", 42);
-  ck_assert_str_eq(buffer, original_buffer);
-}
-END_TEST
-
-START_TEST(test_s21_sprintf_hd_short_int_format) {
-  char buffer[1024] = {0};
-  char original_buffer[1024] = {0};
-
-  short int short_value = 32767; // Максимальное значение для short
-  s21_sprintf(buffer, "Short Number: %hd", short_value);
-  sprintf(original_buffer, "Short Number: %hd", short_value);
-  ck_assert_str_eq(buffer, original_buffer);
-}
-END_TEST
-
-START_TEST(test_s21_sprintf_ld_long_int_format) {
-  char buffer[1024] = {0};
-  char original_buffer[1024] = {0};
-
-  long int long_value = 2147483647L; // Максимальное значение для long
-  s21_sprintf(buffer, "Long Number: %ld", long_value);
-  sprintf(original_buffer, "Long Number: %ld", long_value);
-  ck_assert_str_eq(buffer, original_buffer);
-}
-END_TEST
-
-START_TEST(test_s21_sprintf_negative_hd_short_int_format) {
-  char buffer[1024] = {0};
-  char original_buffer[1024] = {0};
-
-  short int negative_short = -32767;
-  s21_sprintf(buffer, "Negative Short: %hd", negative_short);
-  sprintf(original_buffer, "Negative Short: %hd", negative_short);
-  ck_assert_str_eq(buffer, original_buffer);
-}
-END_TEST
-
-START_TEST(test_s21_sprintf_negative_ld_long_int_format) {
-  char buffer[1024] = {0};
-  char original_buffer[1024] = {0};
-
-  long int negative_long = -2147483647L;
-  s21_sprintf(buffer, "Negative Long: %ld", negative_long);
-  sprintf(original_buffer, "Negative Long: %ld", negative_long);
-  ck_assert_str_eq(buffer, original_buffer);
-}
-END_TEST
-START_TEST(test_s21_sprintf_d_width_flag) {
-  char buffer[1024];
-  s21_sprintf(buffer, "Number: %5d", 42);
-  ck_assert_str_eq(buffer, "Number:    42");
-}
-END_TEST
-
-START_TEST(test_s21_sprintf_f_precision_flag) {
-  char buffer[1024];
-  char buffer_s21[1024];
-  const char *fmt = "Float: %.2f";
-  int ret = sprintf(buffer, fmt, 3.14759);
-  int ret_s21 = s21_sprintf(buffer_s21, fmt, 3.14759);
-
-  ck_assert_int_eq(ret, ret_s21);
-  ck_assert_str_eq(buffer, buffer_s21);
-}
-END_TEST
-
-START_TEST(test_s21_sprintf_d_zero_padding) {
-  char buffer[1024];
-  s21_sprintf(buffer, "Number: %05d", 42);
-  ck_assert_str_eq(buffer, "Number: 00042");
-}
-END_TEST
-
-START_TEST(test_s21_sprintf_d_left_alignment) {
-  char buffer[1024];
-  s21_sprintf(buffer, "Number: %-5d", 42);
-  ck_assert_str_eq(buffer, "Number: 42   ");
-}
-START_TEST(test_s21_sprintf_c_simple_char) {
-  char buffer[256] = {0};
-  s21_sprintf(buffer, "%c", 'A'); // Передаем буфер явно
-  ck_assert_str_eq(buffer, "A");
-}
-END_TEST
-
-// Тест 2: Ширина больше одного символа
-START_TEST(test_s21_sprintf_c_width) {
-  char buffer[256] = {0};
-  s21_sprintf(buffer, "%5c", 'B'); // Передаем буфер явно
-  ck_assert_str_eq(buffer, "    B");
-}
-END_TEST
-
-// Тест 3: Левое выравнивание
-START_TEST(test_s21_sprintf_c_left_align) {
-  char buffer[256] = {0};
-  s21_sprintf(buffer, "%-5c", 'C'); // Передаем буфер явно
-  ck_assert_str_eq(buffer, "C    ");
-}
-END_TEST
-
-// Тест 4: Заполнение нулями
-START_TEST(test_s21_sprintf_c_zero_padding) {
-  char buffer[256] = {0};
-  s21_sprintf(buffer, "%05c", 'D'); // Передаем буфер явно
-  ck_assert_str_eq(buffer, "0000D");
-}
-END_TEST
-
-// Тест 5: Минимальная ширина равна единице
-START_TEST(test_s21_sprintf_c_min_width_one) {
-  char buffer[256] = {0};
-  s21_sprintf(buffer, "%1c", 'E'); // Передаем буфер явно
-  ck_assert_str_eq(buffer, "E");
-}
-END_TEST
-
-// Тест 6: Отрицательная ширина (должна игнорироваться)
-START_TEST(test_s21_sprintf_c_negative_width) {
-  char buffer[256] = {0};
-  s21_sprintf(buffer, "%-5c", 'F'); // Передаем буфер явно
-  ck_assert_str_eq(buffer, "F    ");
-}
-END_TEST
-
-START_TEST(test_s21_sprintf_s_basic) {
-  char buffer[100];
-  s21_sprintf(buffer, "Hello, %s!", "world");
-  ck_assert_str_eq(buffer, "Hello, world!");
-}
-END_TEST
-
-START_TEST(test_s21_sprintf_d_int) {
-  char buffer[100];
-  s21_sprintf(buffer, "Number: %d", 42);
-  ck_assert_str_eq(buffer, "Number: 42");
-}
-END_TEST
-
-START_TEST(test_s21_sprintf_f_float) {
-  char buffer[100];
-  s21_sprintf(buffer, "Float: %.2f", 3.14159);
-  ck_assert_str_eq(buffer, "Float: 3.14");
-}
-END_TEST
-
-START_TEST(test_s21_sprintf_s_precision) {
-  char buffer[100];
-  s21_sprintf(buffer, "%.3s", "testing");
-  ck_assert_str_eq(buffer, "tes");
-}
-END_TEST
-
-// Тестовый кейс 1: Простое число без дополнительных форматов
-START_TEST(test_s21_sprintf_u_simple_number) {
-  char buffer[1024];
-  s21_sprintf(buffer, "Number: %u", 123);
-  ck_assert_str_eq(buffer, "Number: 123");
-}
-END_TEST
-
-// Тестовый кейс 2: Число с шириной поля
-START_TEST(test_s21_sprintf_u_with_width) {
-  char buffer[1024];
-  s21_sprintf(buffer, "Number: %5u", 45);
-  ck_assert_str_eq(buffer, "Number:    45");
-}
-END_TEST
-
-START_TEST(test_s21_sprintf_u_with_precision) {
-  char buffer[1024];
-  s21_sprintf(buffer, "Number: %.5u", 678);
-  ck_assert_str_eq(buffer, "Number: 00678");
-}
-END_TEST
-
-START_TEST(test_s21_sprintf_u_left_alignment) {
-  char buffer[1024];
-  s21_sprintf(buffer, "Number: %-5u", 45);
-  ck_assert_str_eq(buffer, "Number: 45   ");
-}
-END_TEST
-
-START_TEST(test_s21_sprintf_u_zero_padding) {
-  char buffer[1024];
-  s21_sprintf(buffer, "Number: %05u", 45);
-  ck_assert_str_eq(buffer, "Number: 00045");
-}
-END_TEST
-
-START_TEST(test_s21_sprintf_u_zero_with_zero_precision) {
-  char buffer[1024];
-  s21_sprintf(buffer, "Number: %.0u", 0);
-  ck_assert_str_eq(buffer, "Number: ");
-}
-END_TEST
-
-START_TEST(test_s21_sprintf_u_complex_case) {
-  char buffer[1024] = {0};
-  const char fmt[30] = "Number: %08u";
-  s21_sprintf(buffer, fmt, 789);
-  ck_assert_str_eq(buffer, "Number: 00000789");
-}
-END_TEST
-START_TEST(test_s21_sprintf_ld_double_format) {
-  char buffer[1024] = {0};
-  char original_buffer[1024] = {0};
-  double long_value = 123456789.987654321;
-  s21_sprintf(buffer, "Long Number: %lf", long_value);
-  sprintf(original_buffer, "Long Number: %lf", long_value);
-  ck_assert_str_eq(buffer, original_buffer);
-}
-END_TEST
-
-START_TEST(test_s21_sprintf_negative_f_format) {
-  char buffer[1024] = {0};
-  char original_buffer[1024] = {0};
-  double negative_value = -123.456;
-  s21_sprintf(buffer, "Negative Number: %f", negative_value);
-  sprintf(original_buffer, "Negative Number: %f", negative_value);
-  ck_assert_str_eq(buffer, original_buffer);
-}
-END_TEST
-
-START_TEST(test_s21_sprintf_f_precision_format) {
-  char buffer[1024] = {0};
-  char original_buffer[1024] = {0};
-  double value = 123.456;
-  s21_sprintf(buffer, "Number: %.2f", value);
-  sprintf(original_buffer, "Number: %.2f", value);
-  ck_assert_str_eq(buffer, original_buffer);
-}
-END_TEST
-
-START_TEST(test_s21_sprintf_f_width_format) {
-  char buffer[1024] = {0};
-  char original_buffer[1024] = {0};
-  double value = 123.456;
-  s21_sprintf(buffer, "Number: %10f", value);
-  sprintf(original_buffer, "Number: %10f", value);
-  ck_assert_str_eq(buffer, original_buffer);
-}
-END_TEST
-
-START_TEST(test_s21_sprintf_f_width_precision_format) {
-  char buffer[1024] = {0};
-  char original_buffer[1024] = {0};
-  double value = 123.456;
-  s21_sprintf(buffer, "Number: %10.2f", value);
-  sprintf(original_buffer, "Number: %10.2f", value);
-  ck_assert_str_eq(buffer, original_buffer);
-}
-END_TEST
-
-START_TEST(test_s21_sprintf_f_positive_sign_flag) {
-  char buffer[1024] = {0};
-  char original_buffer[1024] = {0};
-  double value = 123.456;
-  s21_sprintf(buffer, "Number: %+f", value);
-  sprintf(original_buffer, "Number: %+f", value);
-  ck_assert_str_eq(buffer, original_buffer);
-}
-END_TEST
-
-START_TEST(test_s21_sprintf_f_negative_sign_flag) {
-  char buffer[1024] = {0};
-  char original_buffer[1024] = {0};
-  double negative_value = -123.456;
-  s21_sprintf(buffer, "Number: %+f", negative_value);
-  sprintf(original_buffer, "Number: %+f", negative_value);
-  ck_assert_str_eq(buffer, original_buffer);
-}
-END_TEST
-
-START_TEST(test_s21_sprintf_f_zero_padding) {
-  char buffer[1024] = {0};
-  char original_buffer[1024] = {0};
-  double value = 123.456;
-  s21_sprintf(buffer, "Number: %010f", value);
-  sprintf(original_buffer, "Number: %010f", value);
-  ck_assert_str_eq(buffer, original_buffer);
-}
-END_TEST
-
-START_TEST(test_s21_sprintf_f_left_alignment) {
-  char buffer[1024] = {0};
-  char original_buffer[1024] = {0};
-  double value = 123.456;
-  s21_sprintf(buffer, "Number: %-10f", value);
-  sprintf(original_buffer, "Number: %-10f", value);
-  ck_assert_str_eq(buffer, original_buffer);
-}
-END_TEST
-
-START_TEST(test_s21_sprintf_f_small_number) {
-  char buffer[1024] = {0};
-  char original_buffer[1024] = {0};
-  double small_value = 0.000123;
-  s21_sprintf(buffer, "Small Number: %f", small_value);
-  sprintf(original_buffer, "Small Number: %f", small_value);
-  ck_assert_str_eq(buffer, original_buffer);
-}
-END_TEST
-
-START_TEST(test_s21_sprintf_f_large_number) {
-  char buffer[1024] = {0};
-  char original_buffer[1024] = {0};
-  double large_value = 123456789.987654321;
-  s21_sprintf(buffer, "Large Number: %.6f", large_value);
-  sprintf(original_buffer, "Large Number: %.6f", large_value);
-  ck_assert_str_eq(buffer, original_buffer);
-}
-END_TEST
-
-START_TEST(test_s21_sprintf_f_large_number_format) {
-  char buffer[1024] = {0};
-  char original_buffer[1024] = {0};
-  double large_value = -123456789.987654321;
-  s21_sprintf(buffer, "Large Number: %0.6f", large_value);
-  sprintf(original_buffer, "Large Number: %0.6f", large_value);
-  ck_assert_str_eq(buffer, original_buffer);
-}
-END_TEST
 
 
-//[ ]: не работает тест на реализация %Lf. Починить и раскомментировать
-// START_TEST(test_s21_sprintf_Lf_large_number_format) {
-//   char buffer[1024] = {0};
-//   char original_buffer[1024] = {0};
-//   long double large_value = -123456789.987654321e+235L;
-//   s21_sprintf(buffer, "Large Number: %0.6Lf", large_value);
-//   sprintf(original_buffer, "Large Number: %0.6Lf", large_value);
-//   ck_assert_str_eq(buffer, original_buffer);
-// }
-// END_TEST
 
-START_TEST(test_s21_sprintf_f_left_padding) {
-  char buffer[1024] = {0};
-  char original_buffer[1024] = {0};
-  double value = -123.4564;
-  const char *fmt = "Number: %-14.4f";
-  s21_sprintf(buffer, fmt, value);
-  sprintf(original_buffer, fmt, value);
-  ck_assert_str_eq(buffer, original_buffer);
-}
-END_TEST
-START_TEST(test_s21_sprintf_g_left_padding) {
-  char buffer[1024] = {0};
-  char original_buffer[1024] = {0};
-  double value = -123.4564;
-  const char *fmt = "Number: %-14.4g";
-  s21_sprintf(buffer, fmt, value);
-  sprintf(original_buffer, fmt, value);
-  ck_assert_str_eq(buffer, original_buffer);
-}
-END_TEST
-
-START_TEST(test_s21_sprintf_g_width_precision_negative) {
-  char buffer[1024] = {0};
-  char original_buffer[1024] = {0};
-  double value = -123.45;
-  const char *fmt = "Number: %14.2g";
-  int ret = sprintf(original_buffer, fmt, value);
-  int ret_s21 = s21_sprintf(buffer, fmt, value);
-  ck_assert_str_eq(buffer, original_buffer);
-  ck_assert_int_eq(ret_s21, ret);
-}
-END_TEST
-
-START_TEST(test_s21_sprintf_G_minimal_zero_padding) {
-  char buffer[1024] = {0};
-  char original_buffer[1024] = {0};
-  double value = 0.0002324456;
-  const char *fmt = "Number: %14.3G";
-  int ret = sprintf(original_buffer, fmt, value);
-  int ret_s21 = s21_sprintf(buffer, fmt, value);
-  ck_assert_str_eq(buffer, original_buffer);
-  ck_assert_int_eq(ret_s21, ret);
-}
-END_TEST
-
-
+TCase *tcase_s21_sprintf_d(void);
+TCase *tcase_s21_sprintf_c(void);
+TCase *tcase_s21_sprintf_f(void);
+TCase *tcase_s21_sprintf_u(void);
 TCase *tcase_s21_sprintf_e(void);
 TCase *tcase_s21_sprintf_x(void);
 TCase *tcase_s21_sprintf_g(void);
-
-
+TCase *tcase_s21_sprintf_p(void);
+TCase *tcase_s21_sprintf_o(void);
+TCase *tcase_s21_sprintf_s(void);
 
 Suite *s21_sprintf_suite(void) {
   Suite *s;
   TCase *tc_core;
 
   s = suite_create("s21_sprintf");
+
+  TCase *tc_core_d = tcase_s21_sprintf_d();
+  suite_add_tcase(s, tc_core_d);
+  TCase *tc_core_c = tcase_s21_sprintf_c();
+  suite_add_tcase(s, tc_core_c);
+  TCase *tc_core_f = tcase_s21_sprintf_f();
+  suite_add_tcase(s, tc_core_f);
+  TCase *tc_core_u = tcase_s21_sprintf_u();
+  suite_add_tcase(s, tc_core_u);
+  TCase *tc_core_s = tcase_s21_sprintf_s();
+  suite_add_tcase(s, tc_core_s);
+  TCase *tc_core_o = tcase_s21_sprintf_o();
+  suite_add_tcase(s, tc_core_o);
+  TCase *tc_core_p = tcase_s21_sprintf_p();
+  suite_add_tcase(s, tc_core_p);
 
   TCase *tc_core_e = tcase_s21_sprintf_e();
   suite_add_tcase(s, tc_core_e);
@@ -417,66 +45,17 @@ Suite *s21_sprintf_suite(void) {
   TCase *tc_core_g = tcase_s21_sprintf_g();
   suite_add_tcase(s, tc_core_g);
 
-
   tc_core = tcase_create("Core");
 
 
-  tcase_add_test(tc_core, test_s21_sprintf_basic_string);
-  tcase_add_test(tc_core, test_s21_sprintf_d_int_format);
-  tcase_add_test(tc_core, test_s21_sprintf_d_int);
-  tcase_add_test(tc_core, test_s21_sprintf_d_left_alignment);
-  tcase_add_test(tc_core, test_s21_sprintf_d_width_flag);
-  tcase_add_test(tc_core, test_s21_sprintf_d_zero_padding);
-  tcase_add_test(tc_core, test_s21_sprintf_ld_long_int_format);
-  tcase_add_test(tc_core, test_s21_sprintf_ld_long_int_format);
-  tcase_add_test(tc_core, test_s21_sprintf_negative_hd_short_int_format);
-  tcase_add_test(tc_core, test_s21_sprintf_hd_short_int_format);
-  tcase_add_test(tc_core, test_s21_sprintf_c_zero_padding);
-  tcase_add_test(tc_core, test_s21_sprintf_c_simple_char);
-  tcase_add_test(tc_core, test_s21_sprintf_c_width);
-  tcase_add_test(tc_core, test_s21_sprintf_c_left_align);
-  tcase_add_test(tc_core, test_s21_sprintf_c_zero_padding);
-  tcase_add_test(tc_core, test_s21_sprintf_c_min_width_one);
-  tcase_add_test(tc_core, test_s21_sprintf_c_negative_width);
-  tcase_add_test(tc_core, test_s21_sprintf_c_width);
-  tcase_add_test(tc_core, test_s21_sprintf_negative_ld_long_int_format);
-  tcase_add_test(tc_core, test_s21_sprintf_f_large_number);
-  tcase_add_test(tc_core, test_s21_sprintf_f_large_number);
-  tcase_add_test(tc_core, test_s21_sprintf_f_small_number);
-  tcase_add_test(tc_core, test_s21_sprintf_f_left_alignment);
-  tcase_add_test(tc_core, test_s21_sprintf_f_zero_padding);
-  tcase_add_test(tc_core, test_s21_sprintf_f_negative_sign_flag);
-  tcase_add_test(tc_core, test_s21_sprintf_f_positive_sign_flag);
-  tcase_add_test(tc_core, test_s21_sprintf_f_width_precision_format);
-  tcase_add_test(tc_core, test_s21_sprintf_f_width_format);
-  tcase_add_test(tc_core, test_s21_sprintf_negative_f_format);
-  tcase_add_test(tc_core, test_s21_sprintf_f_float);
-  tcase_add_test(tc_core, test_s21_sprintf_f_precision_format);
-  tcase_add_test(tc_core, test_s21_sprintf_ld_double_format);
-  tcase_add_test(tc_core, test_s21_sprintf_f_precision_flag);
-  tcase_add_test(tc_core, test_s21_sprintf_f_large_number_format);
-  // tcase_add_test(tc_core, test_s21_sprintf_Lf_large_number_format);
-
-  tcase_add_test(tc_core, test_s21_sprintf_s_precision);
-  tcase_add_test(tc_core, test_s21_sprintf_s_basic);
-
-  tcase_add_test(tc_core, test_s21_sprintf_u_simple_number);
-  tcase_add_test(tc_core, test_s21_sprintf_u_with_width);
-  tcase_add_test(tc_core, test_s21_sprintf_u_with_precision);
-  tcase_add_test(tc_core, test_s21_sprintf_u_left_alignment);
-  tcase_add_test(tc_core, test_s21_sprintf_u_zero_padding);
-  tcase_add_test(tc_core, test_s21_sprintf_u_zero_with_zero_precision);
-  tcase_add_test(tc_core, test_s21_sprintf_u_complex_case);
   suite_add_tcase(s, tc_core);
 
-  //[ ]: удалить отладочные тесты
-  TCase *tc_debug;
-  tc_debug = tcase_create("Debug");
-  tcase_add_test(tc_debug, test_s21_sprintf_f_left_padding);
-  tcase_add_test(tc_debug, test_s21_sprintf_g_left_padding);
-  tcase_add_test(tc_debug, test_s21_sprintf_G_minimal_zero_padding);
-  tcase_add_test(tc_debug, test_s21_sprintf_g_width_precision_negative);
-  
+  //[ ] удалить отладочные кейсы
+    TCase *tc_debug;
+    tc_debug = tcase_create("Debug");
+  //   tcase_add_test(tc_debug, test_s21_sprintf_o_hash_flag);
+  // tcase_add_test(tc_debug, test_s21_sprintf_p_width_zero_padding);
   suite_add_tcase(s, tc_debug);
+
   return s;
 }

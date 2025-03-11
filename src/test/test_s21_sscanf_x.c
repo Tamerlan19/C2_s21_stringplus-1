@@ -4,8 +4,6 @@
 #include <locale.h>
 #include <stdio.h>
 
-  
-
 START_TEST(test_s21_sscanf_x) {
   const char str[] = "12345";
   unsigned res1 = 0, res2 = 0;
@@ -338,8 +336,6 @@ START_TEST(test_s21_sscanf_X_width_negative) {
 }
 END_TEST
 
-
-
 START_TEST(test_s21_sscanf_X_width_star) {
   const char str[] = "12345";
 
@@ -401,45 +397,43 @@ START_TEST(test_s21_sscanf_X_simple) {
 }
 END_TEST
 
-
 TCase *create_s21_sscanf_x_tests(void) {
-    TCase *tc_core_x;
-    tc_core_x = tcase_create("Specifier= %x");
+  TCase *tc_core_x;
+  tc_core_x = tcase_create("Specifier= %x");
 
-
-    tcase_add_test(tc_core_x, test_s21_sscanf_x_simple);
-    tcase_add_test(tc_core_x, test_s21_sscanf_xh_simple);
-    tcase_add_test(tc_core_x, test_s21_sscanf_x_width_star_negative);
-    tcase_add_test(tc_core_x, test_s21_sscanf_x_width_star_overflow);
-    tcase_add_test(tc_core_x, test_s21_sscanf_x_width_star_max);
-    tcase_add_test(tc_core_x, test_s21_sscanf_x_width_star_zero);
-    tcase_add_test(tc_core_x, test_s21_sscanf_x_width_star);
-    tcase_add_test(tc_core_x, test_s21_sscanf_x_width_negative);
-    tcase_add_test(tc_core_x, test_s21_sscanf_x_width_overflow);
-    tcase_add_test(tc_core_x, test_s21_sscanf_x_width_max);
-    tcase_add_test(tc_core_x, test_s21_sscanf_x_width_zero);
-    tcase_add_test(tc_core_x, test_s21_sscanf_x_width);
-    tcase_add_test(tc_core_x, test_s21_sscanf_x_negative);
-    tcase_add_test(tc_core_x, test_s21_sscanf_x_overflow);
-    tcase_add_test(tc_core_x, test_s21_sscanf_x_max);
-    tcase_add_test(tc_core_x, test_s21_sscanf_x_zero);
-    tcase_add_test(tc_core_x, test_s21_sscanf_x);
-    tcase_add_test(tc_core_x, test_s21_sscanf_X_simple);
-    tcase_add_test(tc_core_x, test_s21_sscanf_X_width_star_negative);
-    tcase_add_test(tc_core_x, test_s21_sscanf_X_width_star_overflow);
-    tcase_add_test(tc_core_x, test_s21_sscanf_X_width_star_max);
-    tcase_add_test(tc_core_x, test_s21_sscanf_X_width_star_zero);
-    tcase_add_test(tc_core_x, test_s21_sscanf_X_width_star);
-    tcase_add_test(tc_core_x, test_s21_sscanf_X_width_negative);
-    tcase_add_test(tc_core_x, test_s21_sscanf_X_width_overflow);
-    tcase_add_test(tc_core_x, test_s21_sscanf_X_width_max);
-    tcase_add_test(tc_core_x, test_s21_sscanf_X_width_zero);
-    tcase_add_test(tc_core_x, test_s21_sscanf_X_width);
-    tcase_add_test(tc_core_x, test_s21_sscanf_X_negative);
-    tcase_add_test(tc_core_x, test_s21_sscanf_X_overflow);
-    tcase_add_test(tc_core_x, test_s21_sscanf_X_max);
-    tcase_add_test(tc_core_x, test_s21_sscanf_X_zero);
-    tcase_add_test(tc_core_x, test_s21_sscanf_X);
+  tcase_add_test(tc_core_x, test_s21_sscanf_x_simple);
+  tcase_add_test(tc_core_x, test_s21_sscanf_xh_simple);
+  tcase_add_test(tc_core_x, test_s21_sscanf_x_width_star_negative);
+  tcase_add_test(tc_core_x, test_s21_sscanf_x_width_star_overflow);
+  tcase_add_test(tc_core_x, test_s21_sscanf_x_width_star_max);
+  tcase_add_test(tc_core_x, test_s21_sscanf_x_width_star_zero);
+  tcase_add_test(tc_core_x, test_s21_sscanf_x_width_star);
+  tcase_add_test(tc_core_x, test_s21_sscanf_x_width_negative);
+  tcase_add_test(tc_core_x, test_s21_sscanf_x_width_overflow);
+  tcase_add_test(tc_core_x, test_s21_sscanf_x_width_max);
+  tcase_add_test(tc_core_x, test_s21_sscanf_x_width_zero);
+  tcase_add_test(tc_core_x, test_s21_sscanf_x_width);
+  tcase_add_test(tc_core_x, test_s21_sscanf_x_negative);
+  tcase_add_test(tc_core_x, test_s21_sscanf_x_overflow);
+  tcase_add_test(tc_core_x, test_s21_sscanf_x_max);
+  tcase_add_test(tc_core_x, test_s21_sscanf_x_zero);
+  tcase_add_test(tc_core_x, test_s21_sscanf_x);
+  tcase_add_test(tc_core_x, test_s21_sscanf_X_simple);
+  tcase_add_test(tc_core_x, test_s21_sscanf_X_width_star_negative);
+  tcase_add_test(tc_core_x, test_s21_sscanf_X_width_star_overflow);
+  tcase_add_test(tc_core_x, test_s21_sscanf_X_width_star_max);
+  tcase_add_test(tc_core_x, test_s21_sscanf_X_width_star_zero);
+  tcase_add_test(tc_core_x, test_s21_sscanf_X_width_star);
+  tcase_add_test(tc_core_x, test_s21_sscanf_X_width_negative);
+  tcase_add_test(tc_core_x, test_s21_sscanf_X_width_overflow);
+  tcase_add_test(tc_core_x, test_s21_sscanf_X_width_max);
+  tcase_add_test(tc_core_x, test_s21_sscanf_X_width_zero);
+  tcase_add_test(tc_core_x, test_s21_sscanf_X_width);
+  tcase_add_test(tc_core_x, test_s21_sscanf_X_negative);
+  tcase_add_test(tc_core_x, test_s21_sscanf_X_overflow);
+  tcase_add_test(tc_core_x, test_s21_sscanf_X_max);
+  tcase_add_test(tc_core_x, test_s21_sscanf_X_zero);
+  tcase_add_test(tc_core_x, test_s21_sscanf_X);
 
   return tc_core_x;
 }

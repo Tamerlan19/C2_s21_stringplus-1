@@ -4,7 +4,6 @@
 #include <locale.h>
 #include <stdio.h>
 
-  
 START_TEST(test_s21_sscanf_percent) {
   const char str[] = "12345%54321";
   const char *fmt = "%d%%%d";
@@ -79,16 +78,15 @@ START_TEST(test_s21_sscanf_percent_space_triple) {
 }
 END_TEST
 
-
 TCase *create_s21_sscanf_pcnt_tests(void) {
-    TCase *tc_core_pcnt;
-    tc_core_pcnt = tcase_create("Specifier= %%");
+  TCase *tc_core_pcnt;
+  tc_core_pcnt = tcase_create("Specifier= %%");
 
-    tcase_add_test(tc_core_pcnt, test_s21_sscanf_percent);
-    tcase_add_test(tc_core_pcnt, test_s21_sscanf_percent_space);
-    tcase_add_test(tc_core_pcnt, test_s21_sscanf_percent_space_2);
-    tcase_add_test(tc_core_pcnt, test_s21_sscanf_percent_space_s);
-    tcase_add_test(tc_core_pcnt, test_s21_sscanf_percent_space_triple);
+  tcase_add_test(tc_core_pcnt, test_s21_sscanf_percent);
+  tcase_add_test(tc_core_pcnt, test_s21_sscanf_percent_space);
+  tcase_add_test(tc_core_pcnt, test_s21_sscanf_percent_space_2);
+  tcase_add_test(tc_core_pcnt, test_s21_sscanf_percent_space_s);
+  tcase_add_test(tc_core_pcnt, test_s21_sscanf_percent_space_triple);
 
   return tc_core_pcnt;
 }

@@ -4,7 +4,6 @@
 #include <locale.h>
 #include <stdio.h>
 
-  
 START_TEST(test_s21_sscanf_p_simple) {
   int val = 44;
   void *ptr = &val;
@@ -82,8 +81,8 @@ START_TEST(test_s21_sscanf_p_empty_string) {
   int ret = sscanf(str, format, &ptr);
   int ret_s21 = s21_sscanf(str, format, &ptr_s21);
 
-  ck_assert_int_eq(ret, ret_s21);  // Сравнение кодов завершения
-  ck_assert_ptr_eq(ptr, ptr_s21);  // Сравнение указателей
+  ck_assert_int_eq(ret, ret_s21); // Сравнение кодов завершения
+  ck_assert_ptr_eq(ptr, ptr_s21); // Сравнение указателей
 }
 END_TEST
 
@@ -91,8 +90,8 @@ END_TEST
 START_TEST(test_s21_sscanf_p_null_pointer) {
   const char *str = "0x0";
   const char *format = "%p";
-  void *ptr = (void *) 0x7ffee5a3b9a0;
-  void *ptr_s21 = (void *) 0x7ffee5a3b9a0;
+  void *ptr = (void *)0x7ffee5a3b9a0;
+  void *ptr_s21 = (void *)0x7ffee5a3b9a0;
 
   int ret = sscanf(str, format, &ptr);
   int ret_s21 = s21_sscanf(str, format, &ptr_s21);
@@ -101,7 +100,6 @@ START_TEST(test_s21_sscanf_p_null_pointer) {
   ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
-
 
 // Тест 3: Проверка работы с валидным указателем
 START_TEST(test_s21_sscanf_p_valid_pointer) {
@@ -179,8 +177,6 @@ START_TEST(test_s21_sscanf_p_empty_format) {
 }
 END_TEST
 
-
-
 // Тест 9: Проверка работы с указателем и специальными символами
 START_TEST(test_s21_sscanf_p_pointer_with_special_chars) {
   const char *str = "0x7ffee5a3b9a0!@#";
@@ -212,23 +208,23 @@ START_TEST(test_s21_sscanf_p_pointer_with_spaces) {
 END_TEST
 
 TCase *create_s21_sscanf_p_tests(void) {
-    TCase *tc_core_p;
-    tc_core_p = tcase_create("Specifier= %p");
+  TCase *tc_core_p;
+  tc_core_p = tcase_create("Specifier= %p");
 
-    tcase_add_test(tc_core_p, test_s21_sscanf_p_simple);
-    tcase_add_test(tc_core_p, test_s21_sscanf_p);
-    tcase_add_test(tc_core_p, test_s21_sscanf_p_suppress);
-    tcase_add_test(tc_core_p, test_s21_sscanf_p_combination);
+  tcase_add_test(tc_core_p, test_s21_sscanf_p_simple);
+  tcase_add_test(tc_core_p, test_s21_sscanf_p);
+  tcase_add_test(tc_core_p, test_s21_sscanf_p_suppress);
+  tcase_add_test(tc_core_p, test_s21_sscanf_p_combination);
 
-    tcase_add_test(tc_core_p, test_s21_sscanf_p_empty_string);
-    tcase_add_test(tc_core_p, test_s21_sscanf_p_null_pointer);
-    tcase_add_test(tc_core_p, test_s21_sscanf_p_valid_pointer);
-    tcase_add_test(tc_core_p, test_s21_sscanf_p_large_pointer);
-    tcase_add_test(tc_core_p, test_s21_sscanf_p_invalid_pointer);
-    tcase_add_test(tc_core_p, test_s21_sscanf_p_multiple_pointers);
-    tcase_add_test(tc_core_p, test_s21_sscanf_p_empty_format);
-    tcase_add_test(tc_core_p, test_s21_sscanf_p_pointer_with_special_chars);
-    tcase_add_test(tc_core_p, test_s21_sscanf_p_pointer_with_spaces);
+  tcase_add_test(tc_core_p, test_s21_sscanf_p_empty_string);
+  tcase_add_test(tc_core_p, test_s21_sscanf_p_null_pointer);
+  tcase_add_test(tc_core_p, test_s21_sscanf_p_valid_pointer);
+  tcase_add_test(tc_core_p, test_s21_sscanf_p_large_pointer);
+  tcase_add_test(tc_core_p, test_s21_sscanf_p_invalid_pointer);
+  tcase_add_test(tc_core_p, test_s21_sscanf_p_multiple_pointers);
+  tcase_add_test(tc_core_p, test_s21_sscanf_p_empty_format);
+  tcase_add_test(tc_core_p, test_s21_sscanf_p_pointer_with_special_chars);
+  tcase_add_test(tc_core_p, test_s21_sscanf_p_pointer_with_spaces);
 
   return tc_core_p;
 }

@@ -556,7 +556,6 @@ int proc_spec_o(const char *str, va_list args, const Specifiers st_spec) {
 int proc_spec_x(const char *str, va_list args, const Specifiers st_spec) {
   int res = 0;
   int width = get_width(str, st_spec);
-  // long int result = 0;
   long unsigned result = 0;
   char *arg_str = get_arg_width(str, width);
   const char *p = arg_str;
@@ -566,8 +565,6 @@ int proc_spec_x(const char *str, va_list args, const Specifiers st_spec) {
     p += 2;
   }
   step = str_to_luint(p, &result, 16);
-  DEBUG_PRINT("Result after convert to long unsigned int is %ld.\n", result);
-  // DEBUG_PRINT("Result result<0=%d.\n", result<0);
   p += step;
   if (step > 0) {
     if (st_spec.flag != '*') {

@@ -40,6 +40,10 @@ Suite *s21_sprintf_suite(void) {
 
   TCase *tc_core_e = tcase_s21_sprintf_e();
   suite_add_tcase(s, tc_core_e);
+  TCase *tc_core_x = tcase_s21_sprintf_x();
+  suite_add_tcase(s, tc_core_x);
+  TCase *tc_core_g = tcase_s21_sprintf_g();
+  suite_add_tcase(s, tc_core_g);
 
   tc_core = tcase_create("Core");
 

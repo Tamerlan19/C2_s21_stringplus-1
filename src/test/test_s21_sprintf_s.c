@@ -181,6 +181,103 @@ START_TEST(test_s21_sprintf_ls_wide_string) {
 }
 END_TEST
 
+START_TEST(test_s21_sprintf_ls_null_string) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Wide String: %ls";
+    wchar_t *wide_str = NULL; // Строка равна NULL
+    int ret = sprintf(buffer, fmt, wide_str);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, wide_str);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_ls_null_with_width) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Wide String: %10ls";
+    wchar_t *wide_str = NULL; // Строка равна NULL
+    int ret = sprintf(buffer, fmt, wide_str);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, wide_str);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_ls_null_with_left_alignment) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Wide String: %-10ls";
+    wchar_t *wide_str = NULL; // Строка равна NULL
+    int ret = sprintf(buffer, fmt, wide_str);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, wide_str);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_ls_null_with_precision) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Wide String: %.5ls";
+    wchar_t *wide_str = NULL; // Строка равна NULL
+    int ret = sprintf(buffer, fmt, wide_str);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, wide_str);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_ls_null_with_width_and_precision) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Wide String: %10.5ls";
+    wchar_t *wide_str = NULL; // Строка равна NULL
+    int ret = sprintf(buffer, fmt, wide_str);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, wide_str);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_ls_null_with_hash_flag) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Wide String: %#ls";
+    wchar_t *wide_str = NULL; // Строка равна NULL
+    int ret = sprintf(buffer, fmt, wide_str);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, wide_str);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_ls_null_with_zero_padding) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Wide String: %010ls";
+    wchar_t *wide_str = NULL; // Строка равна NULL
+    int ret = sprintf(buffer, fmt, wide_str);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, wide_str);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_ls_null_with_dynamic_width) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Wide String: %*ls";
+    wchar_t *wide_str = NULL; // Строка равна NULL
+    int width = 15;
+    int ret = sprintf(buffer, fmt, width, wide_str);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, width, wide_str);
+    ck_assert_int_eq(ret, ret_s21);
+    ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
 TCase *tcase_s21_sprintf_s(void) {
   TCase *tc_core_s = tcase_create("Spec %s");
 
@@ -197,6 +294,15 @@ TCase *tcase_s21_sprintf_s(void) {
   tcase_add_test(tc_core_s, test_s21_sprintf_s_exceed_width);
   tcase_add_test(tc_core_s, test_s21_sprintf_hs_short_string);
   tcase_add_test(tc_core_s, test_s21_sprintf_ls_wide_string);
+
+  tcase_add_test(tc_core_s, test_s21_sprintf_ls_null_string);
+  tcase_add_test(tc_core_s, test_s21_sprintf_ls_null_with_width);
+  tcase_add_test(tc_core_s, test_s21_sprintf_ls_null_with_left_alignment);
+  tcase_add_test(tc_core_s, test_s21_sprintf_ls_null_with_precision);
+  tcase_add_test(tc_core_s, test_s21_sprintf_ls_null_with_width_and_precision);
+  tcase_add_test(tc_core_s, test_s21_sprintf_ls_null_with_hash_flag);
+  tcase_add_test(tc_core_s, test_s21_sprintf_ls_null_with_zero_padding);
+  tcase_add_test(tc_core_s, test_s21_sprintf_ls_null_with_dynamic_width);
 
   return tc_core_s;
 }

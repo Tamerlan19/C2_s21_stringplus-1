@@ -1172,6 +1172,17 @@ START_TEST(test_s21_trim_tabs_and_newlines) {
 }
 END_TEST
 
+START_TEST(test_s21_trim_default) {
+  const char *src = "\n\t  hello world  \t\n";
+  const char *trim_chars = S21_NULL;
+  void *result = s21_trim(src, trim_chars);
+  ck_assert_ptr_nonnull(result); // Проверяем, что результат не NULL
+  ck_assert_str_eq((char *)result,
+                   "hello world"); // Сравниваем с ожидаемым результатом
+  free(result); // Освобождаем выделенную память
+}
+END_TEST
+
 START_TEST(test_s21_sterror_all) {
   for (int i = -50; i < 200; i++) {
     char *res = strerror(i);
@@ -1493,6 +1504,7 @@ Suite *s21_string_suite(void) {
   tcase_add_test(tc_core, test_s21_trim_src_null);
   tcase_add_test(tc_core, test_s21_trim_empty_string);
   tcase_add_test(tc_core, test_s21_trim_tabs_and_newlines);
+  tcase_add_test(tc_core, test_s21_trim_default);
 
   // tc_debug = tcase_create("Debug");
 

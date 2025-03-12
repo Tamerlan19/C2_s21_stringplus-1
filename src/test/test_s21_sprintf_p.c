@@ -133,6 +133,21 @@ START_TEST(test_s21_sprintf_p_zero_padding_with_width) {
 }
 END_TEST
 
+START_TEST(test_s21_sprintf_p_zero_pointer) {
+  char buffer[1024];
+  char buffer_s21[1024];
+  const char *fmt = "Pointer: %p";
+  // int value = 0;
+  int *ptr = 0x0;
+  int ret = sprintf(buffer, fmt, ptr);
+  int ret_s21 = s21_sprintf(buffer_s21, fmt, ptr);
+  ck_assert_int_eq(ret, ret_s21);
+  ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+
+
 TCase *tcase_s21_sprintf_p(void) {
   TCase *tc_core_p = tcase_create("Spec %p");
 
@@ -146,6 +161,8 @@ TCase *tcase_s21_sprintf_p(void) {
   tcase_add_test(tc_core_p, test_s21_sprintf_p_long_address);
   tcase_add_test(tc_core_p, test_s21_sprintf_p_left_alignment);
   tcase_add_test(tc_core_p, test_s21_sprintf_p_zero_padding_with_width);
+  tcase_add_test(tc_core_p, test_s21_sprintf_p_zero_pointer);
+
 
   return tc_core_p;
 }

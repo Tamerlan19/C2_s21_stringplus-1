@@ -6,12 +6,12 @@
 TCase *tcase_s21_sprintf_d(void);
 TCase *tcase_s21_sprintf_c(void);
 TCase *tcase_s21_sprintf_f(void);
+TCase *tcase_s21_sprintf_o(void);
 TCase *tcase_s21_sprintf_u(void);
 TCase *tcase_s21_sprintf_e(void);
 TCase *tcase_s21_sprintf_x(void);
 TCase *tcase_s21_sprintf_g(void);
 TCase *tcase_s21_sprintf_p(void);
-TCase *tcase_s21_sprintf_o(void);
 TCase *tcase_s21_sprintf_s(void);
 TCase *tcase_s21_sprintf_pcnt(void);
 

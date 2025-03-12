@@ -86,9 +86,9 @@ int s21_sprintf(char *str, const char *format, ...) {
  */
 void handle_int(char **buffer, Specifiers flags, va_list args) {
   long int d;
-  if (flags.specifier == 'h') {
+  if (flags.length == 'h') {
     d = (short int)va_arg(args, int);
-  } else if (flags.specifier == 'l') {
+  } else if (flags.length == 'l') {
     d = va_arg(args, long int);
   } else {
     d = (int)va_arg(args, int);
@@ -812,7 +812,6 @@ if (flags.flag == '*') { // Если точность передана чере�
     void *ptr = va_arg(args, void *); // Извлекаем указатель из списка аргументов
     if (ptr!=S21_NULL){
     uintptr_t num = (uintptr_t)ptr;   // Преобразуем указатель в целое число
-  if (ptr!=S21_NULL){
 
   char tmp[MAX_BUF_SIZE] = {0};
     char *tmp_ptr = tmp + sizeof(tmp) - 1; // Начинаем с конца буфера
@@ -874,11 +873,6 @@ DEBUG_PRINT("tmp_ptr=%s\n",tmp_ptr);
             s21_memcpy(*buffer, tmp_ptr, len);
             *buffer += len;
         }
-    }
-    }else{
-      DEBUG_PRINT("ptr is NULL!\n");
-      s21_memcpy(*buffer, "(nil)", 5);
-      *buffer += 5;
     }
 
   }else{

@@ -124,6 +124,29 @@ START_TEST(test_s21_sprintf_o_large_number) {
 }
 END_TEST
 
+START_TEST(test_s21_sprintf_o_precision_nul) {
+  char buffer[1024];
+  char buffer_s21[1024];
+  const char *fmt = "Octal: %.0o";
+  unsigned int value = 0; // Максимальное значение для unsigned int (восьмеричное: 37777777777)
+  int ret = sprintf(buffer, fmt, value);
+  int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+  ck_assert_int_eq(ret, ret_s21);
+  ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_o_precision_padding) {
+  char buffer[1024];
+  char buffer_s21[1024];
+  const char *fmt = "Octal: %-.5o";
+  unsigned int value = 0; // Максимальное значение для unsigned int (восьмеричное: 37777777777)
+  int ret = sprintf(buffer, fmt, value);
+  int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+  ck_assert_int_eq(ret, ret_s21);
+  ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
 
 
 TCase *tcase_s21_sprintf_o(void) {
@@ -139,6 +162,9 @@ TCase *tcase_s21_sprintf_o(void) {
   tcase_add_test(tc_core_o, test_s21_sprintf_o_hash_zero_value);
   tcase_add_test(tc_core_o, test_s21_sprintf_o_width_zero_padding);
   tcase_add_test(tc_core_o, test_s21_sprintf_o_large_number);
+  tcase_add_test(tc_core_o, test_s21_sprintf_o_precision_nul);
+  tcase_add_test(tc_core_o, test_s21_sprintf_o_precision_padding);
+
 
 
   return tc_core_o;

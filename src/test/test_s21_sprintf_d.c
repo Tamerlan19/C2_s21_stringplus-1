@@ -119,6 +119,33 @@ START_TEST(test_s21_sprintf_ld_long_int) {
 }
 END_TEST
 
+
+START_TEST(test_s21_sprintf_hd_long_int) {
+  char buffer[1024];
+  char buffer_s21[1024];
+  const char *fmt = "Int: %hd";
+  long int value = 112;
+  int ret = sprintf(buffer, fmt, value);
+  int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+  ck_assert_int_eq(ret, ret_s21);
+  ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_d_zero_padding_precision) {
+  char buffer[1024];
+  char buffer_s21[1024];
+  const char *fmt = "Number: %0.5d";
+
+  int ret = sprintf(buffer, fmt, 42);
+  int ret_s21 = s21_sprintf(buffer_s21, fmt, 42);
+
+  ck_assert_int_eq(ret, ret_s21);
+  ck_assert_str_eq(buffer, buffer_s21);
+}
+END_TEST
+
+
 TCase *tcase_s21_sprintf_d(void) {
   TCase *tc_core_d = tcase_create("Spec %d");
 
@@ -132,6 +159,8 @@ TCase *tcase_s21_sprintf_d(void) {
   tcase_add_test(tc_core_d, test_s21_sprintf_hd_short_int_format);
   tcase_add_test(tc_core_d, test_s21_sprintf_ld_long_int);
   tcase_add_test(tc_core_d, test_s21_sprintf_negative_ld_long_int_format);
+  tcase_add_test(tc_core_d, test_s21_sprintf_hd_long_int);
+  tcase_add_test(tc_core_d, test_s21_sprintf_d_zero_padding_precision);
 
   return tc_core_d;
 }

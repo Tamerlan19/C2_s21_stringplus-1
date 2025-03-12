@@ -99,6 +99,7 @@ void handle_int(char **buffer, Specifiers flags, va_list args) {
   long int num = (is_negative) ? -d : d; // Работаем с положительным числом
   int len = 0;
 
+
   if (num == 0) {
     tmp[len++] = '0';
   } else {
@@ -108,9 +109,19 @@ void handle_int(char **buffer, Specifiers flags, va_list args) {
     }
   }
 
+
   // Если число отрицательное, добавляем минус
   if (is_negative) {
     tmp[len++] = '-';
+  }
+
+
+
+  // Разворачиваем строку, так как мы записывали цифры в обратном порядке
+  for (int i = 0, j = len - 1; i < j; i++, j--) {
+    char temp = tmp[i];
+    tmp[i] = tmp[j];
+    tmp[j] = temp;
   }
 
   // Если задана точность, дополняем нулями слева
@@ -125,17 +136,11 @@ void handle_int(char **buffer, Specifiers flags, va_list args) {
     len += padding;
   }
 
-  // Разворачиваем строку, так как мы записывали цифры в обратном порядке
-  for (int i = 0, j = len - 1; i < j; i++, j--) {
-    char temp = tmp[i];
-    tmp[i] = tmp[j];
-    tmp[j] = temp;
-  }
-
   // Определяем общую длину с учетом ширины
   int total_width = flags.width > 0 ? flags.width : 0;
   int padding = total_width > len ? total_width - len : 0;
   DEBUG_PRINT("padding= %d, total_width=%d\n", padding, total_width);
+
 
   // Копируем результат в буфер с учетом ширины
   if (flags.flag == '-') { // Левое выравнивание
@@ -249,10 +254,7 @@ void handle_float(char **buffer, Specifiers flags, va_list args) {
       frac_part -= digit;
     }
 
-  // } else {
-  //   // Если точность не указана, используем значение по умолчанию
-  //   sprintf(tmp, "%f", f); // Можно заменить на ручную реализацию
-  //   len = s21_strlen(tmp);
+
   }
 
 

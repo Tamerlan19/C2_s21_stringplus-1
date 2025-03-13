@@ -610,7 +610,7 @@ END_TEST
 START_TEST(test_s21_sscanf_cmpx_0623) {
   const char *input = "9.45FF-128!";
   unsigned int var1 = 123, var1_s21 = 123;
-  char var2[1024] = "ABC", var2_s21[1024] = "ABC";
+  char var2[1024] = "ABCs", var2_s21[1024] = "ABC";
   unsigned int var3 = 123, var3_s21 = 123;
   const char *fmt = "%9x%s%x!";
 

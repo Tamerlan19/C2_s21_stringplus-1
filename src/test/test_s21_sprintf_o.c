@@ -116,7 +116,8 @@ START_TEST(test_s21_sprintf_o_large_number) {
   char buffer[1024];
   char buffer_s21[1024];
   const char *fmt = "Octal: %o";
-  unsigned int value = 4294967295; // Максимальное значение для unsigned int (восьмеричное: 37777777777)
+  unsigned int value = 4294967295; // Максимальное значение для unsigned int
+                                   // (восьмеричное: 37777777777)
   int ret = sprintf(buffer, fmt, value);
   int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
   ck_assert_int_eq(ret, ret_s21);
@@ -128,7 +129,8 @@ START_TEST(test_s21_sprintf_o_precision_nul) {
   char buffer[1024];
   char buffer_s21[1024];
   const char *fmt = "Octal: %.0o";
-  unsigned int value = 0; // Максимальное значение для unsigned int (восьмеричное: 37777777777)
+  unsigned int value =
+      0; // Максимальное значение для unsigned int (восьмеричное: 37777777777)
   int ret = sprintf(buffer, fmt, value);
   int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
   ck_assert_int_eq(ret, ret_s21);
@@ -140,7 +142,8 @@ START_TEST(test_s21_sprintf_o_precision_padding) {
   char buffer[1024];
   char buffer_s21[1024];
   const char *fmt = "Octal: %-.5o";
-  unsigned int value = 0; // Максимальное значение для unsigned int (восьмеричное: 37777777777)
+  unsigned int value =
+      0; // Максимальное значение для unsigned int (восьмеричное: 37777777777)
   int ret = sprintf(buffer, fmt, value);
   int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
   ck_assert_int_eq(ret, ret_s21);

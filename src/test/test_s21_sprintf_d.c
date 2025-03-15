@@ -187,8 +187,8 @@ START_TEST(test_s21_sprintf_d_negative_zero_flag_with_width_and_negative_number)
     int value = -7;
     int ret = sprintf(buffer, fmt, value);
     int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
-    ck_assert_int_eq(ret, ret_s21);
     ck_assert_str_eq(buffer, buffer_s21);
+    ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
@@ -264,6 +264,9 @@ TCase *tcase_s21_sprintf_d(void) {
   tcase_add_test(tc_core_d, test_s21_sprintf_d_negative_zero_flag_with_width_and_negative_number);
   tcase_add_test(tc_core_d, test_s21_sprintf_d_negative_zero_flag_zero_value);
   tcase_add_test(tc_core_d, test_s21_sprintf_d_negative_zero_flag_large_number);
+  tcase_add_test(tc_core_d, test_s21_sprintf_d_zero_padding_plus_negative);
+  tcase_add_test(tc_core_d, test_s21_sprintf_d_zero_padding_plus);
+
 
   return tc_core_d;
 }

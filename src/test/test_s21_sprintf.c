@@ -1,7 +1,7 @@
-#include "s21_string.h"
 #include <check.h>
 #include <stdio.h>
 #include <string.h>
+#include "../s21_string.h"
 
 TCase *tcase_s21_sprintf_d(void);
 TCase *tcase_s21_sprintf_c(void);

@@ -1,8 +1,8 @@
-#include "s21_string.h"
 #include <check.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "../s21_string.h"
 
 START_TEST(test_s21_strchr_found) {
   const char *str = "Hello, World!";

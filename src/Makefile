@@ -29,16 +29,16 @@ s21_string.a: s21_string.o s21_sprintf.o s21_sscanf.o s21_utils.o
 	ar rcs $(TARGET)$@ $^
 	rm $^
 
-test: clean s21_string.a test_s21_string.c  test_s21_sprintf.c test/*.c
-	$(CC) $(CFLAGS) -o test.exe test.c test_s21_string.c test_s21_sprintf.c test/*.c -L. -l:s21_string.a $(TESTFLAGS)
+test: clean s21_string.a test.c
+	$(CC) $(CFLAGS) -o test.exe test.c test/*.c -L. -l:s21_string.a $(TESTFLAGS)
 	./test.exe
 
 testgen: clean s21_string.a 
-	$(CC) $(CFLAGS) -o test_gen_s21_sscanf.exe test_s21_sscanf_gen.c
+	$(CC) $(CFLAGS) -o test_gen_s21_sscanf.exe test/test_s21_sscanf_gen.c
 	./test_gen_s21_sscanf.exe
 
 test2: s21_string.a 
-	$(CC) $(CFLAGS) -o test_s21_sscanf_gen.exe test_gen_s21_sscanf.c -L. -l:s21_string.a $(TESTFLAGS)
+	$(CC) $(CFLAGS) -o test_s21_sscanf_gen.exe test/test_gen_s21_sscanf.c -L. -l:s21_string.a $(TESTFLAGS)
 	./test_s21_sscanf_gen.exe
 
 gtest: clean s21_string.a testgen test2

@@ -15,6 +15,20 @@ TCase *tcase_s21_sprintf_p(void);
 TCase *tcase_s21_sprintf_s(void);
 TCase *tcase_s21_sprintf_pcnt(void);
 
+
+START_TEST(debug) {
+    char buffer[1024];
+    char buffer_s21[1024];
+    const char *fmt = "Number: %-0d";
+    int value = -42;
+    int ret = sprintf(buffer, fmt, value);
+    int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+    ck_assert_str_eq(buffer, buffer_s21);
+    ck_assert_int_eq(ret, ret_s21);
+}
+END_TEST
+
+
 Suite *s21_sprintf_suite(void) {
   Suite *s;
   TCase *tc_core;
@@ -54,6 +68,7 @@ Suite *s21_sprintf_suite(void) {
   tc_debug = tcase_create("Debug");
   //   tcase_add_test(tc_debug, test_s21_sprintf_o_hash_flag);
   // tcase_add_test(tc_debug, test_s21_sprintf_p_width_zero_padding);
+  tcase_add_test(tc_debug, debug);
   suite_add_tcase(s, tc_debug);
 
   return s;

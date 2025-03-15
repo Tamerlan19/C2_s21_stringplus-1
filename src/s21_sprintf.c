@@ -22,7 +22,8 @@ void handle_pointer(char **buffer, Specifiers flags, va_list args);
 void handle_general(char **buffer, Specifiers flags, va_list args);
 
 void set_width_pading(char **buffer, char *src, Specifiers flags, int len);
-int set_flag_sign(char **buffer, Specifiers flags, int is_negative);
+int set_flag_sign(char **buffer, Specifiers flags, int is_negative, int len);
+int add_sign(char *buffer, Specifiers flags, int is_positive);
 
 int s21_sprintf(char *str, const char *format, ...) {
   va_list args;
@@ -81,19 +82,25 @@ void reverse_string(char *tmp, int len) {
   }
 }
 
-int set_flag_sign(char **buffer, Specifiers flags, int is_positive) {
-  int res = 0;
-  if (flags.flag == ' ' || (flags.flag == '+' && is_positive)) {
-    *(*buffer) = flags.flag;
-    *buffer += 1;
-    res++;
-  } else if (!is_positive) {
-    *(*buffer) = '-';
-    *buffer += 1;
-    res++;
-  }
-  return res;
+int set_flag_sign(char **buffer, Specifiers flags, int is_positive, int len) {
+    int res = 0;
+    *buffer-=len;
+    DEBUG_PRINT("set_flag_sign()=%s\n",*(buffer));
+    if ((flags.flag == ' ' && is_positive) || (flags.flag == '+' && is_positive)) {
+        s21_memmove(*buffer + 1, *buffer, len);
+        (*buffer)[0] = flags.flag;
+        res++;
+    } else if (!is_positive) {
+        s21_memmove(*buffer + 1, *buffer, len);
+        (*buffer)[0] = '-';
+        res++;
+    }
+    DEBUG_PRINT("STR=%s",*buffer);
+    
+
+    return res;
 }
+
 /**
  * @brief Handles the formatting of an integer according to the specified flags.
  *
@@ -128,34 +135,65 @@ void handle_int(char **buffer, Specifiers flags, va_list args) {
   // Если число отрицательное, добавляем минус
   // if (is_negative) {
   //   tmp[len++] = '-';
+  // }else if(flags.flag==' '||  flags.flag=='+'){
+  //   tmp[len++] = flags.flag;
   // }
+  // DEBUG_PRINT("Add sign:%s\n",tmp);
+  
 
-  // Разворачиваем строку, так как мы записывали цифры в обратном порядке
-  // for (int i = 0, j = len - 1; i < j; i++, j--) {
-  //   char temp = tmp[i];
-  //   tmp[i] = tmp[j];
-  //   tmp[j] = temp;
-  // }
   reverse_string(tmp, len);
+  DEBUG_PRINT("Reverse string:%s, len=%d\n",tmp,len);
 
   if (flags.precision >= 0 && len < flags.precision) {
     int padding = flags.precision - len;
-    for (int i = len - 1; i >= 0; i--) {
+    for (int i = len ; i >= 0; i--) {
       tmp[i + padding] = tmp[i]; // Сдвигаем символы вправо
     }
     for (int i = 0; i < padding; i++) {
       tmp[i] = '0'; // Добавляем нули
     }
+
+    if(tmp[padding]=='-'|| tmp[padding]=='+'){
+      // tmp[0]=tmp[padding];
+      // tmp[padding]='0';
+    }
     len += padding;
   }
+
+  DEBUG_PRINT("Process precision:%s\n",tmp);
   // if (flags.flag == ' ' || (flags.flag == '+' && d >= 0)) {
   //   *(*buffer) = flags.flag;
   //   *buffer += 1;
   // }
-  len += set_flag_sign(buffer, flags, (d >= 0));
   set_width_pading(buffer, tmp, flags, len);
+  DEBUG_PRINT("After process set_width_padding: %s\n",*(buffer)-len);
+  *buffer-=len;
+  add_sign(*buffer,flags,(d>=0));
+  // buffer-=len;
+  // set_flag_sign(buffer, flags, (d >= 0),len);
+  // s21_insert(*buffer,"-",len);
+
 
   // *(*buffer) = '\0';
+}
+
+int add_sign(char *buffer, Specifiers flags, int is_positive) {
+    int res = 0;
+    size_t len = s21_strlen(buffer);
+
+    // Проверяем, нужно ли добавить знак
+    if ((flags.flag == '+' && is_positive) || (flags.flag == ' ' && is_positive)) {
+        // Сдвигаем содержимое буфера вправо на 1 символ
+        s21_memmove(buffer + 1, buffer, len + 1); // +1 для учёта нуль-терминатора
+        buffer[0] = (flags.flag == '+') ? '+' : ' ';
+        res = 1; // Знак добавлен
+    } else if (!is_positive) {
+        s21_memmove(buffer + 1, buffer, len + 1);
+        buffer[0] = '-';
+        res = 1; // Знак добавлен
+    }
+
+    return res; // Возвращаем количество добавленных символов
 }
 
 void handle_float(char **buffer, Specifiers flags, va_list args) {
@@ -458,14 +496,27 @@ int add_exp(char *dst, int exp, Specifiers flags) {
   return dst - start;
 }
 
+
+
 void set_width_pading(char **buffer, char *src, Specifiers flags, int len) {
   DEBUG_PRINT("proc_width_pading(%s,%s,%d)\n", *buffer, src, len);
+  DEBUG_PRINT("Flags=%c",flags.flag);
+  // if (*src == '-' && flags.flag == '0') {
+  //   *(*buffer)++ = *src++;
+  //   len--;
+  // }
+  // int sign=0;
+  // if ((*src=='-' || *src=='+') && flags.flag!=' ') {
+  //   *(*buffer)++ = *src++;
+  //   sign++;
+  //   len--;
+  // }
+
+
   int total_width = flags.width > 0 ? flags.width : 0;
   int padding = total_width > len ? total_width - len : 0;
-  if (*src == '-' && flags.flag == '0') {
-    *(*buffer)++ = *src++;
-    len--;
-  }
+  DEBUG_PRINT("total_width=%d, padding= %d\n",total_width, padding);
+
   if (flags.flag == '-') { // Left align
     DEBUG_PRINT("Left align\n");
     s21_memcpy(*buffer, src, len);
@@ -480,6 +531,7 @@ void set_width_pading(char **buffer, char *src, Specifiers flags, int len) {
     s21_memcpy(*buffer, src, len);
     *buffer += len;
   }
+
   *(*buffer) = '\0';
 }
 

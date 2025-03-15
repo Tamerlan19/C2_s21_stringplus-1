@@ -224,8 +224,8 @@ START_TEST(test_s21_sprintf_ls_null_with_precision) {
     wchar_t *wide_str = NULL; // Строка равна NULL
     int ret = sprintf(buffer, fmt, wide_str);
     int ret_s21 = s21_sprintf(buffer_s21, fmt, wide_str);
-    ck_assert_int_eq(ret, ret_s21);
     ck_assert_str_eq(buffer, buffer_s21);
+    ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 

@@ -227,8 +227,8 @@ START_TEST(test_s21_sprintf_Lf_width_precision) {
     long double value = -1.414213562373095048L;
     int ret = sprintf(buffer, fmt, value);
     int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
-    ck_assert_int_eq(ret, ret_s21);
     ck_assert_str_eq(buffer, buffer_s21);
+    ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
@@ -277,8 +277,8 @@ START_TEST(test_s21_sprintf_Lf_dynamic_width) {
     int width = 20;
     int ret = sprintf(buffer, fmt, width, value);
     int ret_s21 = s21_sprintf(buffer_s21, fmt, width, value);
-    ck_assert_int_eq(ret, ret_s21);
     ck_assert_str_eq(buffer, buffer_s21);
+    ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 

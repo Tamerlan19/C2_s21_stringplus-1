@@ -139,8 +139,8 @@ START_TEST(test_s21_sprintf_d_zero_padding_precision) {
   int ret = sprintf(buffer, fmt, 42);
   int ret_s21 = s21_sprintf(buffer_s21, fmt, 42);
 
-  ck_assert_int_eq(ret, ret_s21);
   ck_assert_str_eq(buffer, buffer_s21);
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 

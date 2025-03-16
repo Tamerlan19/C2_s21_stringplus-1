@@ -17,14 +17,14 @@ TCase *tcase_s21_sprintf_pcnt(void);
 
 
 START_TEST(debug) {
-    char buffer[1024];
-    char buffer_s21[1024];
-    const char *fmt = "Number: %-0d";
-    int value = -42;
-    int ret = sprintf(buffer, fmt, value);
-    int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
-    ck_assert_str_eq(buffer, buffer_s21);
-    ck_assert_int_eq(ret, ret_s21);
+  char buffer[1024];
+  char buffer_s21[1024];
+  const char *fmt = "Long Double: %Lf";
+  long double value = 1.7976931348623157e+308L; // Очень большое число
+  int ret = sprintf(buffer, fmt, value);
+  int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+  ck_assert_str_eq(buffer, buffer_s21);
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 

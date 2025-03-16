@@ -22,9 +22,23 @@ void handle_pointer(char **buffer, Specifiers flags, va_list args);
 void handle_general(char **buffer, Specifiers flags, va_list args);
 
 void set_width_pading(char **buffer, char *src, Specifiers flags, int len);
+void set_width_pading_sign(char **buffer, char *src, Specifiers flags, int len, char sign);
 int set_flag_sign(char **buffer, Specifiers flags, int is_negative, int len);
 int add_sign(char *buffer, Specifiers flags, int is_positive);
 
+
+void set_width_argv(Specifiers *flags, va_list args){
+  if (flags->width == -1) {
+    int w = va_arg(args, int);
+    flags->width = w;
+  }
+}
+void set_precission_argv(Specifiers *flags, va_list args){
+  if (flags->precision == -1) {
+    int p = va_arg(args, int);
+    flags->precision = p;
+  }
+}
 int s21_sprintf(char *str, const char *format, ...) {
   va_list args;
   va_start(args, format);
@@ -34,8 +48,10 @@ int s21_sprintf(char *str, const char *format, ...) {
   DEBUG_PRINT("format = %s\n", format);
   while (*ptr) {
     if (*ptr == '%') {
-      Specifiers flags = {'a', -10, -10, '*', '*'};
+      Specifiers flags = {'a','+',' ', -10, -10, '*', '*'};
       ptr += parse_specifiers(ptr, &flags);
+      set_width_argv(&flags,args);
+      set_precission_argv(&flags,args);
       DEBUG_PRINT("RESULT: Specifier=%c, Length=%c, Precision=%i,  Width=%d, "
                   "Flags=%c\n",
                   flags.specifier, flags.length, flags.precision, flags.width,
@@ -118,7 +134,7 @@ void handle_int(char **buffer, Specifiers flags, va_list args) {
   } else {
     d = (int)va_arg(args, int);
   }
-
+  char sign='\0';
   char tmp[300] = {0};
   int is_negative = (d < 0);
   long int num = (is_negative) ? -d : d; // Работаем с положительным числом
@@ -133,11 +149,11 @@ void handle_int(char **buffer, Specifiers flags, va_list args) {
     }
   }
   // Если число отрицательное, добавляем минус
-  // if (is_negative) {
-  //   tmp[len++] = '-';
-  // }else if(flags.flag==' '||  flags.flag=='+'){
-  //   tmp[len++] = flags.flag;
-  // }
+  if (is_negative) {
+    sign = '-';
+  }else if(flags.flag==' ' ||  flags.flag=='+'){
+    sign = flags.flag;
+  }
   // DEBUG_PRINT("Add sign:%s\n",tmp);
   
 
@@ -165,11 +181,11 @@ void handle_int(char **buffer, Specifiers flags, va_list args) {
   //   *(*buffer) = flags.flag;
   //   *buffer += 1;
   // }
-  set_width_pading(buffer, tmp, flags, len);
+  set_width_pading_sign(buffer, tmp, flags, len,sign);
   DEBUG_PRINT("After process set_width_padding: %s\n",*(buffer)-len);
-  *buffer-=len;
-  add_sign(*buffer,flags,(d>=0));
-  // buffer-=len;
+  // *buffer-=len;
+  // add_sign(*buffer,flags,(d>=0));
+  // // buffer-=len;
   // set_flag_sign(buffer, flags, (d >= 0),len);
   // s21_insert(*buffer,"-",len);
 
@@ -284,7 +300,7 @@ void handle_float(char **buffer, Specifiers flags, va_list args) {
 }
 
 void handle_string(char **buffer, Specifiers flags, va_list args) {
-  const char *s = NULL;
+  char *s = NULL;
   wchar_t *ws = NULL;
   int len = 0;
   char tmp[MAX_BUF_SIZE] = {
@@ -292,7 +308,7 @@ void handle_string(char **buffer, Specifiers flags, va_list args) {
 
   if (flags.length == 'l') {
     ws = va_arg(args, wchar_t *);
-    if (ws == NULL) {
+    if (ws == S21_NULL) {
       s = "(null)";
     } else {
       wcstombs(tmp, ws,
@@ -300,8 +316,8 @@ void handle_string(char **buffer, Specifiers flags, va_list args) {
       s = tmp; // Используем tmp как источник данных
     }
   } else {
-    s = va_arg(args, const char *);
-    if (s == NULL) {
+    s = va_arg(args, char *);
+    if (s == S21_NULL) {
       s = "(null)";
     }
   }
@@ -312,23 +328,8 @@ void handle_string(char **buffer, Specifiers flags, va_list args) {
     len = flags.precision;
   }
 
-  int total_width = flags.width > 0 ? flags.width : 0;
-  int padding = total_width > len ? total_width - len : 0;
-
-  // Выравнивание
-  if (flags.flag == '-') {       // Левое выравнивание
-    s21_memcpy(*buffer, s, len); // Копируем строку
-    *buffer += len;
-    s21_memset(*buffer, ' ', padding); // Добавляем пробелы справа
-    *buffer += padding;
-  } else {                             // Правое выравнивание
-    s21_memset(*buffer, ' ', padding); // Добавляем пробелы слева
-    *buffer += padding;
-    s21_memcpy(*buffer, s, len); // Копируем строку
-    *buffer += len;
-  }
-
-  **buffer = '\0';
+  flags.flag_fill=' ';
+  set_width_pading(buffer, s, flags, len);
 }
 
 void handle_unsigned(char **buffer, Specifiers flags, va_list args) {
@@ -398,7 +399,7 @@ void handle_char(char **buffer, Specifiers flags, va_list args) {
   int padding = total_width > len ? total_width - len : 0;
 
   // Выравнивание
-  if (flags.flag == '-') {         // Левое выравнивание
+  if (flags.flag_align == '-') {         // Левое выравнивание
     s21_memcpy(*buffer, tmp, len); // Копируем символ
     *buffer += len;
     s21_memset(*buffer, ' ', padding); // Добавляем пробелы справа
@@ -496,6 +497,58 @@ int add_exp(char *dst, int exp, Specifiers flags) {
   return dst - start;
 }
 
+void set_width_pading_sign(char **buffer, char *src, Specifiers flags, int len, char sign) {
+  DEBUG_PRINT("proc_width_pading(%s,%s,%d,%c)\n", *buffer, src, len,sign);
+  DEBUG_PRINT("Flags=|%c|, flag_Align=|%c|, flag_fill=|%c|\n",flags.flag,flags.flag_align,flags.flag_fill);
+  // if (sign) {
+  //   len++;
+  // }
+  int total_width = flags.width > 0 ? flags.width : 0;
+  int padding = total_width > len ? total_width - len : 0;
+  DEBUG_PRINT("total_width=%d, padding= %d\n",total_width, padding);
+
+  if (flags.flag_align == '-') { // Left align
+    DEBUG_PRINT("Left align\n");
+    if (sign) {
+      *(*buffer)++ =sign; 
+      if(padding>0){
+        padding--;
+      }
+    }
+    s21_memcpy(*buffer, src, len);
+    *buffer += len;
+    s21_memset(*buffer, flags.flag_fill, padding);
+    *buffer += padding;
+  } else { // Rgiht align
+    DEBUG_PRINT("Right align\n");
+    // char fill_char = (flags.flag == '0') ? '0' : ' ';
+    if (flags.flag_fill!=' ') {
+      DEBUG_PRINT("Insert sign=%c\n",sign);
+      if(sign){
+        *(*buffer)++ = sign;
+        if (padding>0){
+          padding--;
+        }
+      }
+      s21_memset(*buffer, flags.flag_fill, padding);
+      *buffer += padding;
+      s21_memcpy(*buffer, src, len);
+    }else{
+      s21_memset(*buffer, flags.flag_fill, padding);
+      *buffer += padding;
+      if (sign){
+        if (padding>0){
+          *buffer-=1;
+        }
+        *(*buffer)++ = sign;
+      }
+      s21_memcpy(*buffer, src, len);
+    }
+    *buffer += len;
+  }
+
+  *(*buffer) = '\0';
+}
 
 
 void set_width_pading(char **buffer, char *src, Specifiers flags, int len) {
@@ -517,7 +570,7 @@ void set_width_pading(char **buffer, char *src, Specifiers flags, int len) {
   int padding = total_width > len ? total_width - len : 0;
   DEBUG_PRINT("total_width=%d, padding= %d\n",total_width, padding);
 
-  if (flags.flag == '-') { // Left align
+  if (flags.flag_align == '-') { // Left align
     DEBUG_PRINT("Left align\n");
     s21_memcpy(*buffer, src, len);
     *buffer += len;
@@ -525,8 +578,8 @@ void set_width_pading(char **buffer, char *src, Specifiers flags, int len) {
     *buffer += padding;
   } else { // Rgiht align
     DEBUG_PRINT("Right align\n");
-    char fill_char = (flags.flag == '0') ? '0' : ' ';
-    s21_memset(*buffer, fill_char, padding);
+    // char fill_char = (flags.flag == '0') ? '0' : ' ';
+    s21_memset(*buffer, flags.flag_fill, padding);
     *buffer += padding;
     s21_memcpy(*buffer, src, len);
     *buffer += len;
@@ -693,14 +746,7 @@ void handle_octal(char **buffer, Specifiers flags, va_list args) {
   unsigned long num, ch; // Используем unsigned long для поддержки 'l'
   char tmp[MAX_BUF_SIZE] = {0}; // Временный буфер для хранения числа
   int len = 0; // Длина числа в строковом представлении
-  if (flags.flag == '*') {
-    int w = va_arg(args, int);
-    flags.width = w;
-  }
-  if (flags.precision == -1) {
-    int p = va_arg(args, int);
-    flags.precision = p;
-  }
+
 
   // Получаем число из va_list с учетом длины
   if (flags.length == 'l') {
@@ -754,14 +800,14 @@ void handle_octal(char **buffer, Specifiers flags, va_list args) {
   int padding = total_width > len ? total_width - len : 0;
 
   // Выравнивание
-  if (flags.flag == '-') { // Левое выравнивание
+  if (flags.flag_align == '-') { // Левое выравнивание
     s21_memcpy(*buffer, ptr, len);
     *buffer += len;
     s21_memset(*buffer, ' ', padding);
     *buffer += padding;
   } else { // Правое выравнивание
-    char fill_char = (flags.flag == '0' && flags.precision < 0) ? '0' : ' ';
-    s21_memset(*buffer, fill_char, padding);
+    // char fill_char = (flags.flag == '0' && flags.precision < 0) ? '0' : ' ';
+    s21_memset(*buffer, flags.flag_fill, padding);
     *buffer += padding;
     s21_memcpy(*buffer, ptr, len);
     *buffer += len;
@@ -772,18 +818,6 @@ void handle_octal(char **buffer, Specifiers flags, va_list args) {
 }
 void handle_pointer(char **buffer, Specifiers flags, va_list args) {
   DEBUG_PRINT("Process handle_pointer()\n");
-
-  if (flags.flag == '*') { // Если точность передана через *
-    flags.width = va_arg(args, int); // Извлекаем значение точности
-  }
-  DEBUG_PRINT("flags.precision=%d\n", flags.precision);
-
-  // Обработка динамической точности
-  if (flags.precision == -1) { // Если точность передана через *
-    flags.precision = va_arg(args, int); // Извлекаем значение точности
-  }
-  DEBUG_PRINT("flags.precision=%d\n", flags.precision);
-
   void *ptr = va_arg(args, void *); // Извлекаем указатель из списка аргументов
   if (ptr != S21_NULL) {
     uintptr_t num = (uintptr_t)ptr; // Преобразуем указатель в целое число
@@ -826,13 +860,13 @@ void handle_pointer(char **buffer, Specifiers flags, va_list args) {
     int total_width = flags.width > 0 ? flags.width : 0;
     int padding = total_width > len ? total_width - len : 0;
     // Выравнивание
-    if (flags.flag == '-') { // Левое выравнивание
+    if (flags.flag_align == '-') { // Левое выравнивание
       s21_memcpy(*buffer, tmp_ptr, len);
       *buffer += len;
       s21_memset(*buffer, ' ', padding);
       *buffer += padding;
     } else { // Правое выравнивание
-      if (flags.flag == '0' && flags.precision < 0) {
+      if (flags.flag_fill == '0' && flags.precision < 0) {
         // Если флаг '0' и точность не указана, заполняем нулями после префикса
         s21_memcpy(*buffer, tmp_ptr, 2); // Копируем "0x"
         *buffer += 2;

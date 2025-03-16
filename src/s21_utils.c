@@ -41,16 +41,26 @@ int parse_specifiers(const char *fmt, Specifiers *st_spec) {
   const char *format = fmt;
   format++;
   DEBUG_PRINT("format=%s\n", format);
-  if ((*(format) == '+' || *(format) == '-' || *(format) == ' ' ||
-       *(format) == '#' || *(format) == '0')) {
+  if (*(format) == '+' || *(format) == '#') {
     st_spec->flag = *(format);
     DEBUG_PRINT(" FLAGS=%c\n", st_spec->flag);
+    format++;
+  }
+  if (*(format) == ' ' || *(format) == '0') {
+    st_spec->flag_fill = *(format);
+    DEBUG_PRINT(" FLAGS=%c\n", st_spec->flag_fill);
+    format++;
+  }
+  if ( *(format) == '-' ) {
+    st_spec->flag_align = *(format);
+    DEBUG_PRINT(" FLAGS=%c\n", st_spec->flag_align);
     format++;
   }
   // Width
   if (*(format) == '*' || is_digit(*(format))) {
     if (*(format) == '*') {
-      st_spec->flag = *(format);
+      // st_spec->flag = *(format); // 2025-03-16 22:51:32 @morrigem:fix get width from argv
+      st_spec->width = -1; // 2025-03-16 22:51:32 @morrigem:fix get width from argv
       format++;
     }
     if (is_digit(*(format))) {

@@ -214,7 +214,7 @@ END_TEST
 START_TEST(test_s21_sprintf_lo_hash_with_width) {
     char buffer[1024];
     char buffer_s21[1024];
-    const char *fmt = "Long Octal: %#+5lo";
+    const char *fmt = "Long Octal: %#5lo";
     unsigned long value = 64; // Восьмеричное представление: 100
     int ret = sprintf(buffer, fmt, value);
     int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
@@ -360,8 +360,8 @@ END_TEST
 START_TEST(test_s21_sprintf_ho_hash_with_width) {
     char buffer[1024];
     char buffer_s21[1024];
-    const char *fmt = "Short Octal: %#+5ho";
-    unsigned short value = 64; // Восьмеричное представление: 100
+    const char *fmt = "Short Octal: %#5ho";
+    unsigned short value = 64;     
     int ret = sprintf(buffer, fmt, value);
     int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
     ck_assert_int_eq(ret, ret_s21);

@@ -52,7 +52,7 @@ int s21_sscanf(const char *str, const char *format, ...) {
       while (*p && *fmt && !stop) {
         while ((*fmt) && !stop) {
           if (*fmt == '%') {
-            Specifiers st_spec = {' ', -10, -1, '*', '*'};
+            Specifiers st_spec = {' ', '+','0',-10, -1, '*', '*'};
             fmt += parse_specifiers(fmt, &st_spec);
             int step = 0;
             if (!(st_spec.specifier == 'c')) {

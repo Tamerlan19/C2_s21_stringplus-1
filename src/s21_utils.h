@@ -25,6 +25,8 @@ typedef unsigned int s21_size_t; // 32-bit
 
 typedef struct {
   char flag;
+  char flag_align;
+  char flag_fill;
   int width;
   int precision;
   char length;

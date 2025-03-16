@@ -19,7 +19,6 @@ TCase *create_s21_sscanf_pcnt_tests(void);
 TCase *create_s21_sscanf_complex_tests(void);
 
 START_TEST(test_s21_sscanf_cmpx_6523) {
-  // const char *input="98  4294967295A4294967295";
   const char *input = "98  11111295A 4294967295";
   unsigned var1 = 123, var1_s21 = 123;
   unsigned var2 = 123, var2_s21 = 123;

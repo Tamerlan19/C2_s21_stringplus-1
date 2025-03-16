@@ -49,7 +49,7 @@ int s21_sprintf(char *str, const char *format, ...) {
   while (*ptr) {
     if (*ptr == '%') {
       Specifiers flags = {'a','+',' ', -10, -10, '*', '*'};
-      ptr += parse_specifiers(ptr, &flags);
+      ptr += parse_specifiers(ptr, &flags, 1);
       set_width_argv(&flags,args);
       set_precission_argv(&flags,args);
       DEBUG_PRINT("RESULT: Specifier=%c, Length=%c, Precision=%i,  Width=%d, "
@@ -216,7 +216,7 @@ void handle_float(char **buffer, Specifiers flags, va_list args) {
   char tmp[MAX_BUF_SIZE] = {0};
   int len = 0;
 
-  double f;
+  long double f;
   if (flags.length == 'L') {
     f = va_arg(args, long double);
   } else {

@@ -10,7 +10,7 @@ endif
 TESTFLAGS = -lcheck -lsubunit -lm
 SRC_DIR =./
 SOURCES =  s21_utils.h  s21_string.h s21_string.c s21_sprintf.c s21_sscanf.c s21_utils.c
-SOURCES_TST = test.c test_s21_string.c test_s21_sscanf.c test_s21_sprintf.c test_s21_sscanf_gen.c test/*.c
+SOURCES_TST = test.c test_s21_sscanf_gen.c test/*.c
 SRCS = test.c s21_string.c test_s21_string.c test_s21_sscanf.c test_s21_sprintf.c s21_sscanf.c s21_sprintf.c s21_utils.c
 OBJS = $(SRCS:.c=.o)
 TARGET = ./

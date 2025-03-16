@@ -34,7 +34,7 @@ typedef struct {
 } Specifiers;
 
 int contains_char(const char *str, char ch);
-int parse_specifiers(const char *format, Specifiers *st_spec);
+int parse_specifiers(const char *format, Specifiers *st_spec, int print);
 void *s21_memmove(void *dest, const void *src, s21_size_t n);
 int is_digit(char c);
 int is_alpha(char c);

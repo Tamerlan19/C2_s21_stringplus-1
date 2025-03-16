@@ -37,11 +37,11 @@ void *s21_memmove(void *dest, const void *src, s21_size_t n) {
  * specifiers.
  * @return The number of characters parsed.
  */
-int parse_specifiers(const char *fmt, Specifiers *st_spec) {
+int parse_specifiers(const char *fmt, Specifiers *st_spec, int print) {
   const char *format = fmt;
   format++;
   DEBUG_PRINT("format=%s\n", format);
-  if (*(format) == '+' || *(format) == '#') {
+  if (*(format) == '+' || *(format) == '#' || (!print && *(format) == '*')) {
     st_spec->flag = *(format);
     DEBUG_PRINT(" FLAGS=%c\n", st_spec->flag);
     format++;
@@ -61,6 +61,7 @@ int parse_specifiers(const char *fmt, Specifiers *st_spec) {
     if (*(format) == '*') {
       // st_spec->flag = *(format); // 2025-03-16 22:51:32 @morrigem:fix get width from argv
       st_spec->width = -1; // 2025-03-16 22:51:32 @morrigem:fix get width from argv
+
       format++;
     }
     if (is_digit(*(format))) {

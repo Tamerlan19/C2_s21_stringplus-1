@@ -53,7 +53,7 @@ int s21_sscanf(const char *str, const char *format, ...) {
         while ((*fmt) && !stop) {
           if (*fmt == '%') {
             Specifiers st_spec = {' ', '+','0',-10, -1, '*', '*'};
-            fmt += parse_specifiers(fmt, &st_spec);
+            fmt += parse_specifiers(fmt, &st_spec,0);
             int step = 0;
             if (!(st_spec.specifier == 'c')) {
               noop_space(&p);

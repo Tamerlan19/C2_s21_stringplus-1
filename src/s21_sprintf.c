@@ -1,8 +1,9 @@
-#include "s21_string.h"
-#include "s21_utils.h"
 #include <limits.h>
 #include <stdint.h>
 #include <wchar.h>
+#include <math.h>
+#include "s21_string.h"
+#include "s21_utils.h"
 // [ ] Удалить импорт библиотеки, использовалась для отладки кода
 // #include <stdio.h>
 
@@ -226,11 +227,16 @@ void handle_float(char **buffer, Specifiers flags, va_list args) {
     flags.precision = 6; // default value fro %f
   }
   if (flags.precision >= 0) {
-    long int int_part = (long int)f;
-    long double frac_part = f - int_part;
+    // long double int_part = (long double)f; // 2025-03-18 18:01:11 @morrigem: change to int
+    // long double int_part = trunc(f);
+    // long double frac_part = (f - int_part);
+    // long double int_part = modfl(f, &frac_part);
+    long double int_part;
+    // long double frac_part = modfl(1.7976931348623157e+38L, &int_part);
+    long double frac_part = modfl(f, &int_part);
 
-    DEBUG_PRINT("int_part= %ld, frac_part= %Lf, f=|%Lf|\n", int_part,
-                (long double)frac_part, (long double)f);
+    DEBUG_PRINT("int_part= %Lf, frac_part= %Lf, f=|%Lf|\n", int_part,
+                frac_part, (long double)f);
 
     if (int_part == 0) {
       tmp[len++] = '0';
@@ -240,10 +246,19 @@ void handle_float(char **buffer, Specifiers flags, va_list args) {
         DEBUG_PRINT("int_part is negative. tmp=%s\n", tmp);
         int_part *= -1;
       }
-      long n = int_part;
-      while (n > 0) {
-        tmp[int_len++] = '0' + (n % 10);
-        n /= 10;
+      // long n = (long) int_part; // 2025-03-18 19:04:51 @morrigem:
+      // long double temp; 
+      // long double n = modfl(int_part / 10, &temp); 
+      // while (n > 0) {
+        while (int_part>0){
+        // tmp[int_len++] = '0' + (int)modfl(int_part / 10, &temp);
+        // // n /= 10;
+        // n = (int)fmodl(int_part, 10)
+        int digit = (int)fmodl(int_part, 10);
+        DEBUG_PRINT("int_part=%Lf\n",int_part);
+        DEBUG_PRINT("Add digit |%d| in string. \n",digit);
+        tmp[int_len++] = digit + '0';
+        int_part = floorl(int_part / 10.0L);
       }
       for (int i = 0; i < int_len / 2; i++) {
         char temp = tmp[i + len];
@@ -727,6 +742,7 @@ int proc_precission_g(double *ch, Specifiers flags) {
 
   return res;
 }
+
 void handle_general(char **buffer, Specifiers flags, va_list args) {
   va_list args_orig;
   va_copy(args_orig, args);

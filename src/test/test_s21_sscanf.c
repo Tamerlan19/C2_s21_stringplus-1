@@ -1,8 +1,8 @@
+#include "../s21_string.h"
 #include <check.h>
 #include <limits.h>
 #include <locale.h>
 #include <stdio.h>
-#include "../s21_string.h"
 
 TCase *create_s21_sscanf_d_tests(void);
 TCase *create_s21_sscanf_c_tests(void);

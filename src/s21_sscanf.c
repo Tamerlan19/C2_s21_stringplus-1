@@ -15,6 +15,9 @@ int proc_spec_o(const char *str, va_list args, const Specifiers st_spec);
 int proc_spec_x(const char *str, va_list args, const Specifiers st_spec);
 int proc_spec_p(const char *str, va_list args, const Specifiers st_spec);
 
+int proc_spec(const char **p, const char *str, va_list args,
+              const Specifiers st_spec, int *stop);
+
 int str_to_int(const char *p, long int *res, int base);
 
 void proc_str(const char **p, int step, Specifiers st_spec, int *res,
@@ -39,10 +42,49 @@ void proc_str(const char **p, int step, Specifiers st_spec, int *res,
   }
 }
 
+int proc_spec(const char **p, const char *str, va_list args,
+              const Specifiers st_spec, int *stop) {
+  int step = 0;
+  if (!(st_spec.specifier == 'c')) {
+    noop_space(p);
+  }
+  if (st_spec.specifier == 'c') {
+    step = proc_spec_c(*p, args, st_spec);
+  } else if (st_spec.specifier == 'd') {
+    step = proc_spec_d(*p, args, st_spec);
+  } else if (st_spec.specifier == 'f' || st_spec.specifier == 'g' ||
+             st_spec.specifier == 'G' || st_spec.specifier == 'e' ||
+             st_spec.specifier == 'E') {
+    step = proc_spec_f(*p, args, st_spec);
+  } else if (st_spec.specifier == 's') {
+    step = proc_spec_s(*p, args, st_spec);
+  } else if (st_spec.specifier == 'u') {
+    step = proc_spec_u(*p, args, st_spec);
+  } else if (st_spec.specifier == 'n') {
+    long int r = *p - str;
+    proc_spec_n(r, args, st_spec);
+  } else if (st_spec.specifier == 'i') {
+    step = proc_spec_i(*p, args, st_spec);
+  } else if (st_spec.specifier == 'o') {
+    step = proc_spec_o(*p, args, st_spec);
+  } else if (st_spec.specifier == 'x' || st_spec.specifier == 'X') {
+    step = proc_spec_x(*p, args, st_spec);
+  } else if (st_spec.specifier == 'p') {
+    step = proc_spec_p(*p, args, st_spec);
+  } else if (st_spec.specifier == '%') {
+    if (*(*p) == '%') {
+      *p += 1;
+    } else {
+      *stop = 1;
+    }
+    step = 0;
+  }
+  return step;
+}
+
 int s21_sscanf(const char *str, const char *format, ...) {
   int res = 0;
   if (*format) {
-
     va_list args;
     va_start(args, format);
     const char *p = str;
@@ -52,46 +94,10 @@ int s21_sscanf(const char *str, const char *format, ...) {
       while (*p && *fmt && !stop) {
         while ((*fmt) && !stop) {
           if (*fmt == '%') {
-            Specifiers st_spec = {' ', '+','0',-10, -1, '*', '*'};
-            fmt += parse_specifiers(fmt, &st_spec,0);
+            Specifiers st_spec = {' ', '+', '0', -10, -1, '*', '*'};
+            fmt += parse_specifiers(fmt, &st_spec, 0);
             int step = 0;
-            if (!(st_spec.specifier == 'c')) {
-              noop_space(&p);
-            }
-            if (st_spec.specifier == 'c') {
-              step = proc_spec_c(p, args, st_spec);
-            } else if (st_spec.specifier == 'd') {
-              step = proc_spec_d(p, args, st_spec);
-            } else if (st_spec.specifier == 'f' || st_spec.specifier == 'g' ||
-                       st_spec.specifier == 'G' || st_spec.specifier == 'e' ||
-                       st_spec.specifier == 'E') {
-              step = proc_spec_f(p, args, st_spec);
-            } else if (st_spec.specifier == 's') {
-              step = proc_spec_s(p, args, st_spec);
-            } else if (st_spec.specifier == 'u') {
-              step = proc_spec_u(p, args, st_spec);
-            } else if (st_spec.specifier == 'n') {
-              long int r = p - str;
-              proc_spec_n(r, args, st_spec);
-            } else if (st_spec.specifier == 'i') {
-              step = proc_spec_i(p, args, st_spec);
-            } else if (st_spec.specifier == 'o') {
-              step = proc_spec_o(p, args, st_spec);
-            } else if (st_spec.specifier == 'x' || st_spec.specifier == 'X') {
-              step = proc_spec_x(p, args, st_spec);
-            } else if (st_spec.specifier == 'p') {
-              step = proc_spec_p(p, args, st_spec);
-            } else if (st_spec.specifier == '%') {
-              // if (is_space(*p)) { // 2025-03-01 11:28:25 @morrigem: comment
-              // 2025-03-01 11:28
-              //   noop_space(&p);
-              // }
-              if (*(p) == '%') {
-                p++;
-              } else
-                stop = 1;
-              step = 0;
-            }
+            step = proc_spec(&p, str, args, st_spec, &stop);
             proc_str(&p, step, st_spec, &res, &stop);
           } else if (*fmt == *p) {
             fmt++;
@@ -109,8 +115,6 @@ int s21_sscanf(const char *str, const char *format, ...) {
           noop_space(&p);
         }
       }
-      // } else { // 2025-03-01 11:29:06 @morrigem: comment 2025-03-01 11:29
-      //   res = -1;
     }
     if (stop == 0) {
       res = -1;
@@ -328,9 +332,6 @@ int proc_spec_f(const char *str, va_list args, const Specifiers st_spec) {
     long int div = 0;
     p++;
     int ost_div = get_number(p, &div);
-    // if (result < 0) { // 2025-03-01 11:30:57 @morrigem: delete in next commit
-    //   div = div * -1;
-    // }
     result = result + div * (1 / s21_pow(10, ost_div));
     p += ost_div;
     init++;

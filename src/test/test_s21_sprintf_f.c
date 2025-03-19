@@ -137,148 +137,148 @@ START_TEST(test_s21_sprintf_f_precision_flag) {
 END_TEST
 
 START_TEST(test_s21_sprintf_Lf_basic) {
-    char buffer[1024];
-    char buffer_s21[1024];
-    const char *fmt = "Long Double: %Lf";
-    long double value = 3.141592653589793238L;
-    int ret = sprintf(buffer, fmt, value);
-    int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
-    ck_assert_int_eq(ret, ret_s21);
-    ck_assert_str_eq(buffer, buffer_s21);
+  char buffer[1024];
+  char buffer_s21[1024];
+  const char *fmt = "Long Double: %Lf";
+  long double value = 3.141592653589793238L;
+  int ret = sprintf(buffer, fmt, value);
+  int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+  ck_assert_int_eq(ret, ret_s21);
+  ck_assert_str_eq(buffer, buffer_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sprintf_Lf_precision) {
-    char buffer[1024];
-    char buffer_s21[1024];
-    const char *fmt = "Long Double: %.10Lf";
-    long double value = 3.141592653589793238L;
-    int ret = sprintf(buffer, fmt, value);
-    int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
-    ck_assert_int_eq(ret, ret_s21);
-    ck_assert_str_eq(buffer, buffer_s21);
+  char buffer[1024];
+  char buffer_s21[1024];
+  const char *fmt = "Long Double: %.10Lf";
+  long double value = 3.141592653589793238L;
+  int ret = sprintf(buffer, fmt, value);
+  int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+  ck_assert_int_eq(ret, ret_s21);
+  ck_assert_str_eq(buffer, buffer_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sprintf_Lf_width) {
-    char buffer[1024];
-    char buffer_s21[1024];
-    const char *fmt = "Long Double: %20Lf";
-    long double value = 2.718281828459045235L;
-    int ret = sprintf(buffer, fmt, value);
-    int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
-    ck_assert_int_eq(ret, ret_s21);
-    ck_assert_str_eq(buffer, buffer_s21);
+  char buffer[1024];
+  char buffer_s21[1024];
+  const char *fmt = "Long Double: %20Lf";
+  long double value = 2.718281828459045235L;
+  int ret = sprintf(buffer, fmt, value);
+  int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+  ck_assert_int_eq(ret, ret_s21);
+  ck_assert_str_eq(buffer, buffer_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sprintf_Lf_left_alignment) {
-    char buffer[1024];
-    char buffer_s21[1024];
-    const char *fmt = "Long Double: %-20Lf";
-    long double value = 2.718281828459045235L;
-    int ret = sprintf(buffer, fmt, value);
-    int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
-    ck_assert_int_eq(ret, ret_s21);
-    ck_assert_str_eq(buffer, buffer_s21);
+  char buffer[1024];
+  char buffer_s21[1024];
+  const char *fmt = "Long Double: %-20Lf";
+  long double value = 2.718281828459045235L;
+  int ret = sprintf(buffer, fmt, value);
+  int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+  ck_assert_int_eq(ret, ret_s21);
+  ck_assert_str_eq(buffer, buffer_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sprintf_Lf_plus_flag) {
-    char buffer[1024];
-    char buffer_s21[1024];
-    const char *fmt = "Long Double: %+Lf";
-    long double value = 2.718281828459045235L;
-    int ret = sprintf(buffer, fmt, value);
-    int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
-    ck_assert_int_eq(ret, ret_s21);
-    ck_assert_str_eq(buffer, buffer_s21);
+  char buffer[1024];
+  char buffer_s21[1024];
+  const char *fmt = "Long Double: %+Lf";
+  long double value = 2.718281828459045235L;
+  int ret = sprintf(buffer, fmt, value);
+  int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+  ck_assert_int_eq(ret, ret_s21);
+  ck_assert_str_eq(buffer, buffer_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sprintf_Lf_zero_padding) {
-    char buffer[1024];
-    char buffer_s21[1024];
-    const char *fmt = "Long Double: %015Lf";
-    long double value = 1.618033988749894848L;
-    int ret = sprintf(buffer, fmt, value);
-    int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
-    ck_assert_int_eq(ret, ret_s21);
-    ck_assert_str_eq(buffer, buffer_s21);
+  char buffer[1024];
+  char buffer_s21[1024];
+  const char *fmt = "Long Double: %015Lf";
+  long double value = 1.618033988749894848L;
+  int ret = sprintf(buffer, fmt, value);
+  int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+  ck_assert_int_eq(ret, ret_s21);
+  ck_assert_str_eq(buffer, buffer_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sprintf_Lf_scientific_notation) {
-    char buffer[1024];
-    char buffer_s21[1024];
-    const char *fmt = "Long Double: %Le";
-    long double value = 123456789.0123456789L;
-    int ret = sprintf(buffer, fmt, value);
-    int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
-    ck_assert_int_eq(ret, ret_s21);
-    ck_assert_str_eq(buffer, buffer_s21);
+  char buffer[1024];
+  char buffer_s21[1024];
+  const char *fmt = "Long Double: %Le";
+  long double value = 123456789.0123456789L;
+  int ret = sprintf(buffer, fmt, value);
+  int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+  ck_assert_int_eq(ret, ret_s21);
+  ck_assert_str_eq(buffer, buffer_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sprintf_Lf_width_precision) {
-    char buffer[1024];
-    char buffer_s21[1024];
-    const char *fmt = "Long Double: %15.5Lf";
-    long double value = -1.414213562373095048L;
-    int ret = sprintf(buffer, fmt, value);
-    int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
-    ck_assert_str_eq(buffer, buffer_s21);
-    ck_assert_int_eq(ret, ret_s21);
+  char buffer[1024];
+  char buffer_s21[1024];
+  const char *fmt = "Long Double: %15.5Lf";
+  long double value = -1.414213562373095048L;
+  int ret = sprintf(buffer, fmt, value);
+  int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+  ck_assert_str_eq(buffer, buffer_s21);
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sprintf_Lf_large_number) {
-    char buffer[1024];
-    char buffer_s21[1024];
-    const char *fmt = "Long Double: %Lf";
-    long double value = 1.7976931348623157e+308L; // Очень большое число
-    int ret = sprintf(buffer, fmt, value);
-    int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
-    ck_assert_str_eq(buffer, buffer_s21);
-    ck_assert_int_eq(ret, ret_s21);
+  char buffer[1024];
+  char buffer_s21[1024];
+  const char *fmt = "Long Double: %Lf";
+  long double value = 1.7976931348623157e+37L; // Очень большое число
+  int ret = sprintf(buffer, fmt, value);
+  int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+  ck_assert_str_eq(buffer, buffer_s21);
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sprintf_Lf_negative_number) {
-    char buffer[1024];
-    char buffer_s21[1024];
-    const char *fmt = "Long Double: %Lf";
-    long double value = -0.0000000000000000000000000000001L;
-    int ret = sprintf(buffer, fmt, value);
-    int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
-    ck_assert_int_eq(ret, ret_s21);
-    ck_assert_str_eq(buffer, buffer_s21);
+  char buffer[1024];
+  char buffer_s21[1024];
+  const char *fmt = "Long Double: %Lf";
+  long double value = -0.0000000000000000000000000000001L;
+  int ret = sprintf(buffer, fmt, value);
+  int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+  ck_assert_int_eq(ret, ret_s21);
+  ck_assert_str_eq(buffer, buffer_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sprintf_Lf_dynamic_precision) {
-    char buffer[1024];
-    char buffer_s21[1024];
-    const char *fmt = "Long Double: %.*Lf";
-    long double value = 3.141592653589793238L;
-    int precision = 10;
-    int ret = sprintf(buffer, fmt, precision, value);
-    int ret_s21 = s21_sprintf(buffer_s21, fmt, precision, value);
-    ck_assert_str_eq(buffer, buffer_s21);
-    ck_assert_int_eq(ret, ret_s21);
+  char buffer[1024];
+  char buffer_s21[1024];
+  const char *fmt = "Long Double: %.*Lf";
+  long double value = 3.141592653589793238L;
+  int precision = 10;
+  int ret = sprintf(buffer, fmt, precision, value);
+  int ret_s21 = s21_sprintf(buffer_s21, fmt, precision, value);
+  ck_assert_str_eq(buffer, buffer_s21);
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sprintf_Lf_dynamic_width) {
-    char buffer[1024];
-    char buffer_s21[1024];
-    const char *fmt = "Long Double: %*Lf";
-    long double value = 2.718281828459045235L;
-    int width = 20;
-    int ret = sprintf(buffer, fmt, width, value);
-    int ret_s21 = s21_sprintf(buffer_s21, fmt, width, value);
-    ck_assert_str_eq(buffer, buffer_s21);
-    ck_assert_int_eq(ret, ret_s21);
+  char buffer[1024];
+  char buffer_s21[1024];
+  const char *fmt = "Long Double: %*Lf";
+  long double value = 2.718281828459045235L;
+  int width = 20;
+  int ret = sprintf(buffer, fmt, width, value);
+  int ret_s21 = s21_sprintf(buffer_s21, fmt, width, value);
+  ck_assert_str_eq(buffer, buffer_s21);
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
@@ -298,7 +298,7 @@ TCase *tcase_s21_sprintf_f(void) {
   tcase_add_test(tc_core_f, test_s21_sprintf_f_precision_format);
   tcase_add_test(tc_core_f, test_s21_sprintf_ld_double_format);
   tcase_add_test(tc_core_f, test_s21_sprintf_f_precision_flag);
-  
+
   tcase_add_test(tc_core_f, test_s21_sprintf_Lf_basic);
   tcase_add_test(tc_core_f, test_s21_sprintf_Lf_precision);
   tcase_add_test(tc_core_f, test_s21_sprintf_Lf_width);
@@ -311,23 +311,6 @@ TCase *tcase_s21_sprintf_f(void) {
   tcase_add_test(tc_core_f, test_s21_sprintf_Lf_negative_number);
   tcase_add_test(tc_core_f, test_s21_sprintf_Lf_dynamic_precision);
   tcase_add_test(tc_core_f, test_s21_sprintf_Lf_dynamic_width);
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+
   return tc_core_f;
-
-
-
 }

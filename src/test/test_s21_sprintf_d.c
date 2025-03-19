@@ -145,74 +145,75 @@ START_TEST(test_s21_sprintf_d_zero_padding_precision) {
 END_TEST
 
 START_TEST(test_s21_sprintf_d_negative_zero_flag_basic) {
-    char buffer[1024];
-    char buffer_s21[1024];
-    const char *fmt = "Number: %-0d";
-    int value = 42;
-    int ret = sprintf(buffer, fmt, value);
-    int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
-    ck_assert_int_eq(ret, ret_s21);
-    ck_assert_str_eq(buffer, buffer_s21);
+  char buffer[1024];
+  char buffer_s21[1024];
+  const char *fmt = "Number: %-0d";
+  int value = 42;
+  int ret = sprintf(buffer, fmt, value);
+  int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+  ck_assert_int_eq(ret, ret_s21);
+  ck_assert_str_eq(buffer, buffer_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sprintf_d_negative_zero_flag_with_width) {
-    char buffer[1024];
-    char buffer_s21[1024];
-    const char *fmt = "Number: %-05d";
-    int value = 7;
-    int ret = sprintf(buffer, fmt, value);
-    int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
-    ck_assert_int_eq(ret, ret_s21);
-    ck_assert_str_eq(buffer, buffer_s21);
+  char buffer[1024];
+  char buffer_s21[1024];
+  const char *fmt = "Number: %-05d";
+  int value = 7;
+  int ret = sprintf(buffer, fmt, value);
+  int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+  ck_assert_int_eq(ret, ret_s21);
+  ck_assert_str_eq(buffer, buffer_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sprintf_d_negative_zero_flag_negative_number) {
-    char buffer[1024];
-    char buffer_s21[1024];
-    const char *fmt = "Number: %-0d";
-    int value = -42;
-    int ret = sprintf(buffer, fmt, value);
-    int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
-    ck_assert_int_eq(ret, ret_s21);
-    ck_assert_str_eq(buffer, buffer_s21);
+  char buffer[1024];
+  char buffer_s21[1024];
+  const char *fmt = "Number: %-0d";
+  int value = -42;
+  int ret = sprintf(buffer, fmt, value);
+  int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+  ck_assert_int_eq(ret, ret_s21);
+  ck_assert_str_eq(buffer, buffer_s21);
 }
 END_TEST
 
-START_TEST(test_s21_sprintf_d_negative_zero_flag_with_width_and_negative_number) {
-    char buffer[1024];
-    char buffer_s21[1024];
-    const char *fmt = "Number: %-08d";
-    int value = -7;
-    int ret = sprintf(buffer, fmt, value);
-    int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
-    ck_assert_str_eq(buffer, buffer_s21);
-    ck_assert_int_eq(ret, ret_s21);
+START_TEST(
+    test_s21_sprintf_d_negative_zero_flag_with_width_and_negative_number) {
+  char buffer[1024];
+  char buffer_s21[1024];
+  const char *fmt = "Number: %-08d";
+  int value = -7;
+  int ret = sprintf(buffer, fmt, value);
+  int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+  ck_assert_str_eq(buffer, buffer_s21);
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sprintf_d_negative_zero_flag_zero_value) {
-    char buffer[1024];
-    char buffer_s21[1024];
-    const char *fmt = "Number: %-05d";
-    int value = 0;
-    int ret = sprintf(buffer, fmt, value);
-    int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
-    ck_assert_int_eq(ret, ret_s21);
-    ck_assert_str_eq(buffer, buffer_s21);
+  char buffer[1024];
+  char buffer_s21[1024];
+  const char *fmt = "Number: %-05d";
+  int value = 0;
+  int ret = sprintf(buffer, fmt, value);
+  int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+  ck_assert_int_eq(ret, ret_s21);
+  ck_assert_str_eq(buffer, buffer_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sprintf_d_negative_zero_flag_large_number) {
-    char buffer[1024];
-    char buffer_s21[1024];
-    const char *fmt = "Number: %-010d";
-    int value = 123456789;
-    int ret = sprintf(buffer, fmt, value);
-    int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
-    ck_assert_int_eq(ret, ret_s21);
-    ck_assert_str_eq(buffer, buffer_s21);
+  char buffer[1024];
+  char buffer_s21[1024];
+  const char *fmt = "Number: %-010d";
+  int value = 123456789;
+  int ret = sprintf(buffer, fmt, value);
+  int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+  ck_assert_int_eq(ret, ret_s21);
+  ck_assert_str_eq(buffer, buffer_s21);
 }
 END_TEST
 
@@ -286,15 +287,17 @@ TCase *tcase_s21_sprintf_d(void) {
 
   tcase_add_test(tc_core_d, test_s21_sprintf_d_negative_zero_flag_basic);
   tcase_add_test(tc_core_d, test_s21_sprintf_d_negative_zero_flag_with_width);
-  tcase_add_test(tc_core_d, test_s21_sprintf_d_negative_zero_flag_negative_number);
-  tcase_add_test(tc_core_d, test_s21_sprintf_d_negative_zero_flag_with_width_and_negative_number);
+  tcase_add_test(tc_core_d,
+                 test_s21_sprintf_d_negative_zero_flag_negative_number);
+  tcase_add_test(
+      tc_core_d,
+      test_s21_sprintf_d_negative_zero_flag_with_width_and_negative_number);
   tcase_add_test(tc_core_d, test_s21_sprintf_d_negative_zero_flag_zero_value);
   tcase_add_test(tc_core_d, test_s21_sprintf_d_negative_zero_flag_large_number);
   tcase_add_test(tc_core_d, test_s21_sprintf_d_zero_padding_plus_negative);
   tcase_add_test(tc_core_d, test_s21_sprintf_d_zero_padding_plus);
   tcase_add_test(tc_core_d, test_s21_sprintf_d_zero_padding_plus2);
   tcase_add_test(tc_core_d, test_s21_sprintf_d_zero_padding_plus3);
-
 
   return tc_core_d;
 }

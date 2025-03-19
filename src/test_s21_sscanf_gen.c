@@ -1,8 +1,8 @@
+#include "s21_string.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "s21_string.h"
 
 #define TEST_COUNT 5000
 #define TEST_VAR 3

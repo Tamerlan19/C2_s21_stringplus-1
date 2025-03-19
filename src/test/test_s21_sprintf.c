@@ -1,7 +1,7 @@
+#include "../s21_string.h"
 #include <check.h>
 #include <stdio.h>
 #include <string.h>
-#include "../s21_string.h"
 
 TCase *tcase_s21_sprintf_d(void);
 TCase *tcase_s21_sprintf_c(void);
@@ -15,16 +15,15 @@ TCase *tcase_s21_sprintf_p(void);
 TCase *tcase_s21_sprintf_s(void);
 TCase *tcase_s21_sprintf_pcnt(void);
 
-
 START_TEST(test_s21_sprintf_Lf_large_number) {
-    char buffer[2024];
-    char buffer_s21[2024];
-    const char *fmt = "Long Double: %5.5Lf";
-    long double value = 1.7976931348623157e+37L; // Очень большое число
-    int ret = sprintf(buffer, fmt, value);
-    int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
-    ck_assert_str_eq(buffer, buffer_s21);
-    ck_assert_int_eq(ret, ret_s21);
+  char buffer[2024];
+  char buffer_s21[2024];
+  const char *fmt = "Long Double: %5.5Lf";
+  long double value = 1.7976931348623157e+37L; // Очень большое число
+  int ret = sprintf(buffer, fmt, value);
+  int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+  ck_assert_str_eq(buffer, buffer_s21);
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 

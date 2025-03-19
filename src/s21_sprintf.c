@@ -1,9 +1,9 @@
-#include <limits.h>
-#include <stdint.h>
-#include <wchar.h>
-#include <math.h>
 #include "s21_string.h"
 #include "s21_utils.h"
+#include <limits.h>
+#include <math.h>
+#include <stdint.h>
+#include <wchar.h>
 // [ ] Удалить импорт библиотеки, использовалась для отладки кода
 // #include <stdio.h>
 
@@ -23,18 +23,20 @@ void handle_pointer(char **buffer, Specifiers flags, va_list args);
 void handle_general(char **buffer, Specifiers flags, va_list args);
 
 void set_width_pading(char **buffer, char *src, Specifiers flags, int len);
-void set_width_pading_sign(char **buffer, char *src, Specifiers flags, int len, char sign);
+void set_width_pading_sign(char **buffer, char *src, Specifiers flags, int len,
+                           char sign);
 int set_flag_sign(char **buffer, Specifiers flags, int is_negative, int len);
 int add_sign(char *buffer, Specifiers flags, int is_positive);
 
+int get_exp(long double ch);
 
-void set_width_argv(Specifiers *flags, va_list args){
+void set_width_argv(Specifiers *flags, va_list args) {
   if (flags->width == -1) {
     int w = va_arg(args, int);
     flags->width = w;
   }
 }
-void set_precission_argv(Specifiers *flags, va_list args){
+void set_precission_argv(Specifiers *flags, va_list args) {
   if (flags->precision == -1) {
     int p = va_arg(args, int);
     flags->precision = p;
@@ -45,14 +47,13 @@ int s21_sprintf(char *str, const char *format, ...) {
   va_start(args, format);
   char *buffer = str;
   const char *ptr = format;
-  DEBUG_PRINT("\n\n\nptr = %s\n", ptr);
-  DEBUG_PRINT("format = %s\n", format);
+  DEBUG_PRINT("\n\n\nptr = %s\nformat = %s\n", ptr, format);
   while (*ptr) {
     if (*ptr == '%') {
-      Specifiers flags = {'a','+',' ', -10, -10, '*', '*'};
+      Specifiers flags = {'a', '+', ' ', -10, -10, '*', '*'};
       ptr += parse_specifiers(ptr, &flags, 1);
-      set_width_argv(&flags,args);
-      set_precission_argv(&flags,args);
+      set_width_argv(&flags, args);
+      set_precission_argv(&flags, args);
       DEBUG_PRINT("RESULT: Specifier=%c, Length=%c, Precision=%i,  Width=%d, "
                   "Flags=%c\n",
                   flags.specifier, flags.length, flags.precision, flags.width,
@@ -100,22 +101,22 @@ void reverse_string(char *tmp, int len) {
 }
 
 int set_flag_sign(char **buffer, Specifiers flags, int is_positive, int len) {
-    int res = 0;
-    *buffer-=len;
-    DEBUG_PRINT("set_flag_sign()=%s\n",*(buffer));
-    if ((flags.flag == ' ' && is_positive) || (flags.flag == '+' && is_positive)) {
-        s21_memmove(*buffer + 1, *buffer, len);
-        (*buffer)[0] = flags.flag;
-        res++;
-    } else if (!is_positive) {
-        s21_memmove(*buffer + 1, *buffer, len);
-        (*buffer)[0] = '-';
-        res++;
-    }
-    DEBUG_PRINT("STR=%s",*buffer);
-    
+  int res = 0;
+  *buffer -= len;
+  DEBUG_PRINT("set_flag_sign()=%s\n", *(buffer));
+  if ((flags.flag == ' ' && is_positive) ||
+      (flags.flag == '+' && is_positive)) {
+    s21_memmove(*buffer + 1, *buffer, len);
+    (*buffer)[0] = flags.flag;
+    res++;
+  } else if (!is_positive) {
+    s21_memmove(*buffer + 1, *buffer, len);
+    (*buffer)[0] = '-';
+    res++;
+  }
+  DEBUG_PRINT("STR=%s", *buffer);
 
-    return res;
+  return res;
 }
 
 /**
@@ -135,88 +136,104 @@ void handle_int(char **buffer, Specifiers flags, va_list args) {
   } else {
     d = (int)va_arg(args, int);
   }
-  char sign='\0';
+
+  char sign = '\0';
   char tmp[300] = {0};
   int is_negative = (d < 0);
-  long int num = (is_negative) ? -d : d; // Работаем с положительным числом
+  long int num = (is_negative) ? -d : d;
   int len = 0;
 
   if (num == 0) {
     tmp[len++] = '0';
   } else {
     while (num > 0) {
-      tmp[len++] = '0' + (num % 10); // Получаем цифру и добавляем её в массив
+      tmp[len++] = '0' + (num % 10);
       num /= 10;
     }
   }
-  // Если число отрицательное, добавляем минус
   if (is_negative) {
     sign = '-';
-  }else if(flags.flag==' ' ||  flags.flag=='+'){
+  } else if (flags.flag == ' ' || flags.flag == '+') {
     sign = flags.flag;
   }
-  // DEBUG_PRINT("Add sign:%s\n",tmp);
-  
 
   reverse_string(tmp, len);
-  DEBUG_PRINT("Reverse string:%s, len=%d\n",tmp,len);
 
   if (flags.precision >= 0 && len < flags.precision) {
     int padding = flags.precision - len;
-    for (int i = len ; i >= 0; i--) {
-      tmp[i + padding] = tmp[i]; // Сдвигаем символы вправо
+    for (int i = len; i >= 0; i--) {
+      tmp[i + padding] = tmp[i];
     }
     for (int i = 0; i < padding; i++) {
-      tmp[i] = '0'; // Добавляем нули
+      tmp[i] = '0';
     }
 
-    if(tmp[padding]=='-'|| tmp[padding]=='+'){
-      // tmp[0]=tmp[padding];
-      // tmp[padding]='0';
-    }
     len += padding;
   }
-
-  DEBUG_PRINT("Process precision:%s\n",tmp);
-  // if (flags.flag == ' ' || (flags.flag == '+' && d >= 0)) {
-  //   *(*buffer) = flags.flag;
-  //   *buffer += 1;
-  // }
-  set_width_pading_sign(buffer, tmp, flags, len,sign);
-  DEBUG_PRINT("After process set_width_padding: %s\n",*(buffer)-len);
-  // *buffer-=len;
-  // add_sign(*buffer,flags,(d>=0));
-  // // buffer-=len;
-  // set_flag_sign(buffer, flags, (d >= 0),len);
-  // s21_insert(*buffer,"-",len);
-
-
-  // *(*buffer) = '\0';
+  set_width_pading_sign(buffer, tmp, flags, len, sign);
 }
 
 int add_sign(char *buffer, Specifiers flags, int is_positive) {
-    int res = 0;
-    size_t len = s21_strlen(buffer);
+  int res = 0;
+  size_t len = s21_strlen(buffer);
 
-    // Проверяем, нужно ли добавить знак
-    if ((flags.flag == '+' && is_positive) || (flags.flag == ' ' && is_positive)) {
-        // Сдвигаем содержимое буфера вправо на 1 символ
-        s21_memmove(buffer + 1, buffer, len + 1); // +1 для учёта нуль-терминатора
-        buffer[0] = (flags.flag == '+') ? '+' : ' ';
-        res = 1; // Знак добавлен
-    } else if (!is_positive) {
-        s21_memmove(buffer + 1, buffer, len + 1);
-        buffer[0] = '-';
-        res = 1; // Знак добавлен
+  if ((flags.flag == '+' && is_positive) ||
+      (flags.flag == ' ' && is_positive)) {
+    s21_memmove(buffer + 1, buffer, len + 1);
+    buffer[0] = (flags.flag == '+') ? '+' : ' ';
+    res = 1;
+  } else if (!is_positive) {
+    s21_memmove(buffer + 1, buffer, len + 1);
+    buffer[0] = '-';
+    res = 1;
+  }
+
+  return res;
+}
+
+int double_int_to_string(char *tmp, long double int_part) {
+  int int_len = 0;
+  if (int_part < 0) {
+    DEBUG_PRINT("int_part is negative. tmp=%s\n", tmp);
+    int_part *= -1;
+  }
+
+  int exp = get_exp(int_part);
+  DEBUG_PRINT("exp=%d\n", exp);
+  if (exp < 19) {
+    while (int_part > 0) {
+      int digit = (int)fmodl(int_part, 10);
+      tmp[int_len++] = '0' + digit;
+      int_part = floorl(int_part / 10);
     }
-
-    return res; // Возвращаем количество добавленных символов
+  } else if (exp <= 38) {
+    DEBUG_PRINT("Process in bigint...\n");
+    __int128_t big_int = (__int128_t)int_part;
+    while (big_int > 0) {
+      tmp[int_len++] = '0' + (big_int % 10);
+      big_int /= 10;
+    }
+  } else {
+    DEBUG_PRINT("Process Extra long double...\n");
+    BigNumber num = convert_long_double_to_big_number(int_part);
+    for (int i = 0; i < num.count; i++) {
+      DEBUG_PRINT("num[%d]=%ld\n", i, num.parts[i]);
+      long int_part = (long)num.parts[i];
+      while (int_part > 0) {
+        int digit = int_part % 10;
+        tmp[int_len++] = '0' + digit;
+        DEBUG_PRINT("Add digit=|%d| in positin=%d\n", digit, int_len)
+        int_part /= 10;
+      }
+    }
+  }
+  reverse_string(tmp, int_len);
+  return int_len;
 }
 
 void handle_float(char **buffer, Specifiers flags, va_list args) {
   char tmp[MAX_BUF_SIZE] = {0};
   int len = 0;
-
   long double f;
   if (flags.length == 'L') {
     f = va_arg(args, long double);
@@ -224,74 +241,41 @@ void handle_float(char **buffer, Specifiers flags, va_list args) {
     f = va_arg(args, double);
   }
   if (flags.precision < 0) {
-    flags.precision = 6; // default value fro %f
+    flags.precision = 6; // default value for %f
   }
-  if (flags.precision >= 0) {
-    // long double int_part = (long double)f; // 2025-03-18 18:01:11 @morrigem: change to int
-    // long double int_part = trunc(f);
-    // long double frac_part = (f - int_part);
-    // long double int_part = modfl(f, &frac_part);
-    long double int_part;
-    // long double frac_part = modfl(1.7976931348623157e+38L, &int_part);
-    long double frac_part = modfl(f, &int_part);
 
-    DEBUG_PRINT("int_part= %Lf, frac_part= %Lf, f=|%Lf|\n", int_part,
-                frac_part, (long double)f);
+  long double int_part;
+  long double frac_part = modfl(f, &int_part);
+  DEBUG_PRINT("int_part= %Lf, frac_part= %Lf, f=|%Lf|\n", int_part, frac_part,
+              (long double)f);
+  if (int_part == 0) {
+    tmp[len++] = '0';
+  } else {
+    if (int_part < 0) {
+      DEBUG_PRINT("int_part is negative. tmp=%s\n", tmp);
+      int_part *= -1;
+    }
+    len += double_int_to_string(tmp, int_part);
+  }
 
-    if (int_part == 0) {
-      tmp[len++] = '0';
+  DEBUG_PRINT("tmp=%s\n", tmp);
+  (frac_part < 0) ? (frac_part *= -1) : (frac_part *= 1);
+  DEBUG_PRINT("frac_part= %Lf\n", frac_part);
+  if (flags.specifier == 'g' || flags.specifier == 'G') {
+    if (frac_part * s21_pow(10, flags.precision) > 1) {
+      flags.precision = flags.precision - len;
     } else {
-      int int_len = 0;
-      if (int_part < 0) {
-        DEBUG_PRINT("int_part is negative. tmp=%s\n", tmp);
-        int_part *= -1;
-      }
-      // long n = (long) int_part; // 2025-03-18 19:04:51 @morrigem:
-      // long double temp; 
-      // long double n = modfl(int_part / 10, &temp); 
-      // while (n > 0) {
-        while (int_part>0){
-        // tmp[int_len++] = '0' + (int)modfl(int_part / 10, &temp);
-        // // n /= 10;
-        // n = (int)fmodl(int_part, 10)
-        int digit = (int)fmodl(int_part, 10);
-        DEBUG_PRINT("int_part=%Lf\n",int_part);
-        DEBUG_PRINT("Add digit |%d| in string. \n",digit);
-        tmp[int_len++] = digit + '0';
-        int_part = floorl(int_part / 10.0L);
-      }
-      for (int i = 0; i < int_len / 2; i++) {
-        char temp = tmp[i + len];
-        tmp[i + len] = tmp[int_len + len - i - 1];
-        tmp[int_len + len - i - 1] = temp;
-      }
-      len += int_len;
-    }
-
-    DEBUG_PRINT("tmp=%s\n", tmp);
-    if (frac_part < 0) {
-      frac_part *= -1;
-    }
-    DEBUG_PRINT("frac_part= %Lf\n", frac_part);
-    if (flags.specifier == 'g' || flags.specifier == 'G') {
-      if (frac_part * s21_pow(10, flags.precision) > 1) {
-        flags.precision = flags.precision - len;
-      } else {
-        while (frac_part * s21_pow(10, flags.precision - 2) < 1) {
-          flags.precision++;
-        }
+      while (frac_part * s21_pow(10, flags.precision - 2) < 1) {
+        flags.precision++;
       }
     }
-    if (flags.precision > 0) {
-      tmp[len++] = '.';
-    }
-
+  }
+  if (flags.precision > 0) {
+    tmp[len++] = '.';
     for (int i = 0; i < flags.precision; i++) {
       frac_part *= 10;
       int digit = (int)frac_part;
-      if (i == flags.precision - 1 &&
-          (frac_part - digit) * 10 >=
-              5.0) { // 2025-02-26 01:24:15 @morrigem: add round
+      if (i == flags.precision - 1 && (frac_part - digit) * 10 >= 5.0) {
         digit = (int)frac_part + 1;
       }
       tmp[len++] = '0' + digit;
@@ -299,18 +283,7 @@ void handle_float(char **buffer, Specifiers flags, va_list args) {
       frac_part -= digit;
     }
   }
-
-  // Добавляем '+' только если флаг установлен
-  if (flags.flag == ' ' || (flags.flag == '+' && f > 0)) {
-    s21_memmove(tmp + 1, tmp, len);
-    tmp[0] = flags.flag;
-    len++;
-  } else if (f < 0) {
-    s21_memmove(tmp + 1, tmp, len);
-    tmp[0] = '-';
-    len++;
-  }
-
+  len += add_sign(tmp, flags, f >= 0);
   set_width_pading(buffer, tmp, flags, len);
 }
 
@@ -343,40 +316,38 @@ void handle_string(char **buffer, Specifiers flags, va_list args) {
     len = flags.precision;
   }
 
-  flags.flag_fill=' ';
+  flags.flag_fill = ' ';
   set_width_pading(buffer, s, flags, len);
 }
 
 void handle_unsigned(char **buffer, Specifiers flags, va_list args) {
-  unsigned long num; // Используем unsigned long для поддержки 'l'
-  char tmp[MAX_BUF_SIZE] = {0}; // Буфер для временного хранения числа
-  int len = 0; // Длина числа в строковом представлении
+  unsigned long num;
+  char tmp[MAX_BUF_SIZE] = {0};
+  int len = 0;
 
   if (flags.length == 'l') {
-    num = va_arg(args, unsigned long); // Для 'l' используем unsigned long
+    num = va_arg(args, unsigned long);
   } else if (flags.length == 'h') {
-    num = (unsigned short)va_arg(
-        args, unsigned int); // Для 'h' используем unsigned short
+    num = (unsigned short)va_arg(args, unsigned int);
   } else {
-    num = va_arg(args, unsigned int); // По умолчанию unsigned int
+    num = va_arg(args, unsigned int);
   }
   int f = num;
-  // Преобразуем число в строку
-  char *ptr = tmp + sizeof(tmp) - 1; // Начинаем с конца массива
-  *ptr = '\0'; // Завершающий нулевой символ
+  char *ptr = tmp + sizeof(tmp) - 1;
+  *ptr = '\0';
   if (num == 0 && flags.precision == 0) {
     len = 0;
   } else {
     do {
-      *--ptr = '0' + (num % 10); // Преобразуем цифру в символ
+      *--ptr = '0' + (num % 10);
       num /= 10;
       len++;
     } while (num > 0);
 
     if (flags.precision >= 0 && len < flags.precision) {
       int pad = flags.precision - len;
-      s21_memmove(ptr + pad, ptr, len); // Сдвигаем число вправо
-      s21_memset(ptr, '0', pad); // Дополняем нулями слева
+      s21_memmove(ptr + pad, ptr, len);
+      s21_memset(ptr, '0', pad);
       len += pad;
     }
   }
@@ -395,40 +366,23 @@ void handle_unsigned(char **buffer, Specifiers flags, va_list args) {
 }
 
 void handle_char(char **buffer, Specifiers flags, va_list args) {
-  char tmp[MB_LEN_MAX] = {0}; // Временный буфер для многобайтового символа
-  int len = 1; // Длина символа (по умолчанию 1)
+  char tmp[MB_LEN_MAX] = {0};
+  int len = 1;
 
   if (flags.length == 'l') {
-    wchar_t wc = va_arg(args, wchar_t); // Извлекаем широкий символ
-    len = wctomb(tmp, wc); // Преобразуем широкий символ в многобайтовый
+    wchar_t wc = va_arg(args, wchar_t);
+    len = wctomb(tmp, wc);
     if (len == -1) {
       tmp[0] = '?';
       len = 1;
     }
   } else {
-    char c = (char)va_arg(args, int); // Извлекаем обычный символ
+    char c = (char)va_arg(args, int);
     tmp[0] = c;
   }
 
-  int total_width = flags.width > 0 ? flags.width : 0;
-  int padding = total_width > len ? total_width - len : 0;
-
-  // Выравнивание
-  if (flags.flag_align == '-') {         // Левое выравнивание
-    s21_memcpy(*buffer, tmp, len); // Копируем символ
-    *buffer += len;
-    s21_memset(*buffer, ' ', padding); // Добавляем пробелы справа
-    *buffer += padding;
-  } else { // Правое выравнивание
-    char fill_char = (flags.flag == '0') ? '0' : ' ';
-    s21_memset(*buffer, fill_char,
-               padding); // Добавляем символы заполнения слева
-    *buffer += padding;
-    s21_memcpy(*buffer, tmp, len); // Копируем символ
-    *buffer += len;
-  }
-
-  **buffer = '\0';
+  flags.flag_fill = ' ';
+  set_width_pading(buffer, tmp, flags, len);
 }
 
 void handle_percent(char **buffer, Specifiers flags) {
@@ -512,21 +466,19 @@ int add_exp(char *dst, int exp, Specifiers flags) {
   return dst - start;
 }
 
-void set_width_pading_sign(char **buffer, char *src, Specifiers flags, int len, char sign) {
-  DEBUG_PRINT("proc_width_pading(%s,%s,%d,%c)\n", *buffer, src, len,sign);
-  DEBUG_PRINT("Flags=|%c|, flag_Align=|%c|, flag_fill=|%c|\n",flags.flag,flags.flag_align,flags.flag_fill);
-  // if (sign) {
-  //   len++;
-  // }
+void set_width_pading_sign(char **buffer, char *src, Specifiers flags, int len,
+                           char sign) {
+  DEBUG_PRINT("proc_width_pading(%s,%s,%d,%c)\n", *buffer, src, len, sign);
+  DEBUG_PRINT("Flags=|%c|, flag_Align=|%c|, flag_fill=|%c|\n", flags.flag,
+              flags.flag_align, flags.flag_fill);
   int total_width = flags.width > 0 ? flags.width : 0;
   int padding = total_width > len ? total_width - len : 0;
-  DEBUG_PRINT("total_width=%d, padding= %d\n",total_width, padding);
 
   if (flags.flag_align == '-') { // Left align
     DEBUG_PRINT("Left align\n");
     if (sign) {
-      *(*buffer)++ =sign; 
-      if(padding>0){
+      *(*buffer)++ = sign;
+      if (padding > 0) {
         padding--;
       }
     }
@@ -536,24 +488,23 @@ void set_width_pading_sign(char **buffer, char *src, Specifiers flags, int len, 
     *buffer += padding;
   } else { // Rgiht align
     DEBUG_PRINT("Right align\n");
-    // char fill_char = (flags.flag == '0') ? '0' : ' ';
-    if (flags.flag_fill!=' ') {
-      DEBUG_PRINT("Insert sign=%c\n",sign);
-      if(sign){
+    if (flags.flag_fill != ' ') {
+      DEBUG_PRINT("Insert sign=%c\n", sign);
+      if (sign) {
         *(*buffer)++ = sign;
-        if (padding>0){
+        if (padding > 0) {
           padding--;
         }
       }
       s21_memset(*buffer, flags.flag_fill, padding);
       *buffer += padding;
       s21_memcpy(*buffer, src, len);
-    }else{
+    } else {
       s21_memset(*buffer, flags.flag_fill, padding);
       *buffer += padding;
-      if (sign){
-        if (padding>0){
-          *buffer-=1;
+      if (sign) {
+        if (padding > 0) {
+          *buffer -= 1;
         }
         *(*buffer)++ = sign;
       }
@@ -561,29 +512,15 @@ void set_width_pading_sign(char **buffer, char *src, Specifiers flags, int len, 
     }
     *buffer += len;
   }
-
   *(*buffer) = '\0';
 }
 
-
 void set_width_pading(char **buffer, char *src, Specifiers flags, int len) {
   DEBUG_PRINT("proc_width_pading(%s,%s,%d)\n", *buffer, src, len);
-  DEBUG_PRINT("Flags=%c",flags.flag);
-  // if (*src == '-' && flags.flag == '0') {
-  //   *(*buffer)++ = *src++;
-  //   len--;
-  // }
-  // int sign=0;
-  // if ((*src=='-' || *src=='+') && flags.flag!=' ') {
-  //   *(*buffer)++ = *src++;
-  //   sign++;
-  //   len--;
-  // }
-
-
+  DEBUG_PRINT("Flags=%c", flags.flag);
   int total_width = flags.width > 0 ? flags.width : 0;
   int padding = total_width > len ? total_width - len : 0;
-  DEBUG_PRINT("total_width=%d, padding= %d\n",total_width, padding);
+  DEBUG_PRINT("total_width=%d, padding= %d\n", total_width, padding);
 
   if (flags.flag_align == '-') { // Left align
     DEBUG_PRINT("Left align\n");
@@ -610,7 +547,7 @@ void handle_exp(char **buffer, Specifiers flags, va_list args) {
   char *tmp = tmp_arr;
   char *tmp_ptr = tmp;
   int exp = 0;
-  int int_part = 0;
+  long int_part = 0;
   int len = 0;
   if (flags.length == 'L') {
     ch = va_arg(args, long double);
@@ -759,39 +696,32 @@ void handle_general(char **buffer, Specifiers flags, va_list args) {
 }
 
 void handle_octal(char **buffer, Specifiers flags, va_list args) {
-  unsigned long num, ch; // Используем unsigned long для поддержки 'l'
-  char tmp[MAX_BUF_SIZE] = {0}; // Временный буфер для хранения числа
-  int len = 0; // Длина числа в строковом представлении
+  unsigned long num, ch;
+  char tmp[MAX_BUF_SIZE] = {0};
+  int len = 0;
 
-
-  // Получаем число из va_list с учетом длины
   if (flags.length == 'l') {
-    num = va_arg(args, unsigned long); // Для 'l' используем unsigned long
+    num = va_arg(args, unsigned long);
   } else if (flags.length == 'h') {
-    num = (unsigned short)va_arg(
-        args, unsigned int); // Для 'h' используем unsigned short
+    num = (unsigned short)va_arg(args, unsigned int);
   } else {
-    num = va_arg(args, unsigned int); // По умолчанию unsigned int
+    num = va_arg(args, unsigned int);
   }
   ch = num;
 
-  // Преобразуем число в восьмеричную строку
-  char *ptr = tmp + sizeof(tmp) - 1; // Начинаем с конца массива
-  *ptr = '\0'; // Завершающий нулевой символ
+  char *ptr = tmp + sizeof(tmp) - 1;
+  *ptr = '\0';
 
   if (num == 0 && flags.precision == 0) {
-    // Если число равно 0 и точность равна 0, результат должен быть пустой
-    // строкой
     len = 0;
   } else {
     do {
-      *--ptr = '0' + (num % 8); // Преобразуем цифру в символ
+      *--ptr = '0' + (num % 8);
       num /= 8;
       len++;
     } while (num > 0);
     DEBUG_PRINT("spec:%%o, len:%d, num=%ld\n", len, num);
 
-    // Применяем точность (precision)
     if (flags.precision >= 0 && len < flags.precision) {
       int pad = flags.precision - len;
       s21_memmove(ptr + pad, ptr, len); // Сдвигаем число вправо
@@ -800,7 +730,6 @@ void handle_octal(char **buffer, Specifiers flags, va_list args) {
     }
   }
 
-  // Добавляем префикс "0", если установлен флаг '#'
   DEBUG_PRINT("spec:%%o, flag:#, len:%d, num=%ld\n", len, num);
   if (flags.flag == '#' && len > 0) {
     DEBUG_PRINT("ADD 0!\n")
@@ -810,39 +739,18 @@ void handle_octal(char **buffer, Specifiers flags, va_list args) {
     len++;
   }
 
-  // Определяем общую длину с учетом ширины
-
-  int total_width = flags.width > 0 ? flags.width : 0;
-  int padding = total_width > len ? total_width - len : 0;
-
-  // Выравнивание
-  if (flags.flag_align == '-') { // Левое выравнивание
-    s21_memcpy(*buffer, ptr, len);
-    *buffer += len;
-    s21_memset(*buffer, ' ', padding);
-    *buffer += padding;
-  } else { // Правое выравнивание
-    // char fill_char = (flags.flag == '0' && flags.precision < 0) ? '0' : ' ';
-    s21_memset(*buffer, flags.flag_fill, padding);
-    *buffer += padding;
-    s21_memcpy(*buffer, ptr, len);
-    *buffer += len;
-  }
-
-  // Завершающий нулевой символ
-  **buffer = '\0';
+  set_width_pading(buffer, ptr, flags, len);
 }
 void handle_pointer(char **buffer, Specifiers flags, va_list args) {
   DEBUG_PRINT("Process handle_pointer()\n");
-  void *ptr = va_arg(args, void *); // Извлекаем указатель из списка аргументов
+  void *ptr = va_arg(args, void *);
   if (ptr != S21_NULL) {
-    uintptr_t num = (uintptr_t)ptr; // Преобразуем указатель в целое число
+    uintptr_t num = (uintptr_t)ptr;
 
     char tmp[MAX_BUF_SIZE] = {0};
-    char *tmp_ptr = tmp + sizeof(tmp) - 1; // Начинаем с конца буфера
-    *tmp_ptr = '\0'; // Завершающий нулевой символ
+    char *tmp_ptr = tmp + sizeof(tmp) - 1;
+    *tmp_ptr = '\0';
 
-    // Преобразуем число в шестнадцатеричную строку
     if (num == 0) {
       *--tmp_ptr = '0';
     } else {
@@ -854,36 +762,30 @@ void handle_pointer(char **buffer, Specifiers flags, va_list args) {
       }
     }
 
-    // Добавляем префикс "0x"
     *--tmp_ptr = 'x';
     *--tmp_ptr = '0';
 
-    // Вычисляем длину строки
     int len = (int)(tmp + sizeof(tmp) - 1 - tmp_ptr);
 
     DEBUG_PRINT("tmp_ptr=%s\n", tmp_ptr);
-    // Применяем точность (precision)
-    if (flags.precision >= 0 &&
-        len - 2 < flags.precision) { // Учитываем длину "0x"
+    if (flags.precision >= 0 && len - 2 < flags.precision) {
       int pad = flags.precision - (len - 2);
       DEBUG_PRINT("pad=%d\n", pad);
-      s21_memmove(tmp_ptr + pad, tmp_ptr, len + 1); // Сдвигаем число вправо
-      s21_memset(tmp_ptr + 2, '0', pad); // Дополняем нулями слева
+      s21_memmove(tmp_ptr + pad, tmp_ptr, len + 1);
+      s21_memset(tmp_ptr + 2, '0', pad);
       len += pad;
     }
     DEBUG_PRINT("tmp_ptr=%s\n", tmp_ptr);
-    // Определяем общую длину с учетом ширины
+
     int total_width = flags.width > 0 ? flags.width : 0;
     int padding = total_width > len ? total_width - len : 0;
-    // Выравнивание
-    if (flags.flag_align == '-') { // Левое выравнивание
+    if (flags.flag_align == '-') {
       s21_memcpy(*buffer, tmp_ptr, len);
       *buffer += len;
       s21_memset(*buffer, ' ', padding);
       *buffer += padding;
-    } else { // Правое выравнивание
+    } else {
       if (flags.flag_fill == '0' && flags.precision < 0) {
-        // Если флаг '0' и точность не указана, заполняем нулями после префикса
         s21_memcpy(*buffer, tmp_ptr, 2); // Копируем "0x"
         *buffer += 2;
         s21_memset(*buffer, '0', padding); // Заполняем нулями
@@ -892,13 +794,13 @@ void handle_pointer(char **buffer, Specifiers flags, va_list args) {
         s21_memcpy(*buffer, tmp_ptr + 2, len - 2); // Копируем остальную часть
         *buffer += len - 2;
       } else {
-        // Иначе заполняем пробелами
         s21_memset(*buffer, ' ', padding);
         *buffer += padding;
         s21_memcpy(*buffer, tmp_ptr, len);
         *buffer += len;
       }
     }
+    // set_width_pading(buffer, ptr, flags, len);
 
   } else {
     s21_memcpy(*buffer, "(nil)", 5);

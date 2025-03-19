@@ -33,6 +33,14 @@ typedef struct {
   char specifier;
 } Specifiers;
 
+#define S21_BASE 1000000000000000000ULL
+
+typedef struct {
+  long unsigned parts[18]; // Блоки числа (по 18 цифр)
+  int count;               // Количество блоков
+} BigNumber;
+
+BigNumber convert_long_double_to_big_number(long double value);
 int contains_char(const char *str, char ch);
 int parse_specifiers(const char *format, Specifiers *st_spec, int print);
 void *s21_memmove(void *dest, const void *src, s21_size_t n);

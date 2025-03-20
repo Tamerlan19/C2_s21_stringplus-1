@@ -6,13 +6,12 @@
 BigNumber convert_long_double_to_big_number(long double value) {
   BigNumber result;
   result.count = 0;
-  for (int i = 0; i <= 18; i++) {
-    result.parts[i] = 0; // Явное обнуление
+  for (int i = 0; i < 18; i++) {
+    result.parts[i] = 0; 
   }
   while (value >= 1.0 && result.count < 18) {
     result.parts[result.count++] = (long)fmodl(value, S21_BASE);
     DEBUG_PRINT("Before delim Value = %Lf\n", value);
-    // value = floorl(value / 100);
     long double tmp;
     modfl(value / S21_BASE, &tmp);
     value = tmp;

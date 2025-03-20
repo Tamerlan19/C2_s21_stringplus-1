@@ -35,6 +35,21 @@ START_TEST(test_s21_sscanf_cmpx_6523) {
   ck_assert_int_eq(ret, ret_s21);
   DEBUG_PRINT("Test test_s21_sscanf_cmpx_6523 is passed.\n");
 }
+
+
+END_TEST
+
+START_TEST(test_s21_sscanf_lo_simple) {
+  const char *input = "655";
+  unsigned x = 10, xr = 10;
+  const char *fmt = "%lo";
+
+  s21_sscanf(input, fmt, &x);
+  sscanf(input, fmt, &xr);
+
+  ck_assert_int_eq(x, xr);
+  ck_assert_int_eq(s21_sscanf(input, fmt, &x), sscanf(input, fmt, &xr));
+}
 END_TEST
 
 Suite *s21_sscanf_suite(void) {
@@ -73,6 +88,7 @@ Suite *s21_sscanf_suite(void) {
   TCase *tc_debug;
   tc_debug = tcase_create("Debug");
   tcase_add_test(tc_debug, test_s21_sscanf_cmpx_6523);
+  tcase_add_test(tc_debug, test_s21_sscanf_lo_simple);
   suite_add_tcase(suite, tc_debug);
 
   return suite;

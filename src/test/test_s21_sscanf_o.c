@@ -17,6 +17,32 @@ START_TEST(test_s21_sscanf_o_simple) {
 }
 END_TEST
 
+START_TEST(test_s21_sscanf_ho_simple) {
+  const char *input = "012";
+  unsigned x = 10, xr = 10;
+  const char *fmt = "%ho";
+
+  s21_sscanf(input, fmt, &x);
+  sscanf(input, fmt, &xr);
+
+  ck_assert_int_eq(x, xr);
+  ck_assert_int_eq(s21_sscanf(input, fmt, &x), sscanf(input, fmt, &xr));
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_lo_simple) {
+  const char *input = "655";
+  unsigned x = 10, xr = 10;
+  const char *fmt = "%lo";
+
+  s21_sscanf(input, fmt, &x);
+  sscanf(input, fmt, &xr);
+
+  ck_assert_int_eq(x, xr);
+  ck_assert_int_eq(s21_sscanf(input, fmt, &x), sscanf(input, fmt, &xr));
+}
+END_TEST
+
 START_TEST(test_s21_sscanf_o) {
   const char str[] = "12345";
   unsigned res1 = 0, res2 = 0;
@@ -201,6 +227,8 @@ TCase *create_s21_sscanf_o_tests(void) {
   TCase *tc_core_o;
   tc_core_o = tcase_create("Specifier= %o");
   tcase_add_test(tc_core_o, test_s21_sscanf_o_simple);
+  tcase_add_test(tc_core_o, test_s21_sscanf_ho_simple);
+  tcase_add_test(tc_core_o, test_s21_sscanf_lo_simple);
   tcase_add_test(tc_core_o, test_s21_sscanf_o_width_star_negative);
   tcase_add_test(tc_core_o, test_s21_sscanf_o_width_star_overflow);
   tcase_add_test(tc_core_o, test_s21_sscanf_o_width_star_max);

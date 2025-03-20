@@ -15,18 +15,6 @@ TCase *tcase_s21_sprintf_p(void);
 TCase *tcase_s21_sprintf_s(void);
 TCase *tcase_s21_sprintf_pcnt(void);
 
-START_TEST(test_s21_sprintf_Lf_large_number) {
-  char buffer[2024];
-  char buffer_s21[2024];
-  const char *fmt = "Long Double: %5.5Lf";
-  long double value = 1.7976931348623157e+37L; // Очень большое число
-  int ret = sprintf(buffer, fmt, value);
-  int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
-  ck_assert_str_eq(buffer, buffer_s21);
-  ck_assert_int_eq(ret, ret_s21);
-}
-END_TEST
-
 Suite *s21_sprintf_suite(void) {
   Suite *s;
   TCase *tc_core;
@@ -62,12 +50,12 @@ Suite *s21_sprintf_suite(void) {
   suite_add_tcase(s, tc_core);
 
   //[ ] удалить отладочные кейсы
-  TCase *tc_debug;
-  tc_debug = tcase_create("Debug");
-  //   tcase_add_test(tc_debug, test_s21_sprintf_o_hash_flag);
-  // tcase_add_test(tc_debug, test_s21_sprintf_p_width_zero_padding);
-  tcase_add_test(tc_debug, test_s21_sprintf_Lf_large_number);
-  suite_add_tcase(s, tc_debug);
+  // TCase *tc_debug;
+  // tc_debug = tcase_create("Debug");
+  // //   tcase_add_test(tc_debug, test_s21_sprintf_o_hash_flag);
+  // // tcase_add_test(tc_debug, test_s21_sprintf_p_width_zero_padding);
+  // tcase_add_test(tc_debug, test_s21_sprintf_Lf_large_number);
+  // suite_add_tcase(s, tc_debug);
 
   return s;
 }

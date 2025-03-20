@@ -22,7 +22,7 @@ int str_to_int(const char *p, long int *res, int base);
 
 void proc_str(const char **p, int step, Specifiers st_spec, int *res,
               int *stop) {
-  DEBUG_PRINT("next_val(): step=%d, res =%d \n", step, *res);
+  DEBUG_PRINT("next_val(): step=%d, res =%d, p=%s \n", step, *res,*p);
   if (step > 0) {
     *p = *p + step;
     if (st_spec.flag != '*') {
@@ -40,6 +40,7 @@ void proc_str(const char **p, int step, Specifiers st_spec, int *res,
     DEBUG_PRINT("Specifiers.flag=%c\n", st_spec.flag);
     *stop = 1;
   }
+  DEBUG_PRINT("next_val(): step=%d, res =%d, p=%s \n", step, *res,*p);
 }
 
 int proc_spec(const char **p, const char *str, va_list args,
@@ -79,6 +80,7 @@ int proc_spec(const char **p, const char *str, va_list args,
     }
     step = 0;
   }
+  DEBUG_PRINT("proc_spec(): step=%d, stop=%d\n", step, *stop);
   return step;
 }
 
@@ -521,6 +523,7 @@ int proc_spec_i(const char *str, va_list args, const Specifiers st_spec) {
 }
 
 int proc_spec_o(const char *str, va_list args, const Specifiers st_spec) {
+  DEBUG_PRINT("Proc_spec_o\n");
   int res = 0;
   int width = get_width(str, st_spec);
   long int result = 0;
@@ -533,11 +536,13 @@ int proc_spec_o(const char *str, va_list args, const Specifiers st_spec) {
   if (step > 0) {
     if (st_spec.flag != '*') {
       if (st_spec.length == 'h') {
-        short int *ch = va_arg(args, short int *);
-        *ch = (short int)result;
+        int *ch = va_arg(args, int *);
+        DEBUG_PRINT("Spec %%o: length=h\n");
+        *ch = (short)result;
       } else if (st_spec.length == 'l') {
-        long int *ch = va_arg(args, long int *);
-        *ch = result;
+        int *ch = va_arg(args, int *);
+        *ch = (int)result;
+        DEBUG_PRINT("Spec %%o: length=%c\n",st_spec.length);
       } else {
         int *ch = va_arg(args, int *);
         *ch = (int)result;
@@ -551,6 +556,7 @@ int proc_spec_o(const char *str, va_list args, const Specifiers st_spec) {
     va_arg(args, short int *);
   }
   free(arg_str);
+  DEBUG_PRINT("22Spec %%o: length=%c, Result=%d\n",st_spec.length,res);
   return res;
 }
 

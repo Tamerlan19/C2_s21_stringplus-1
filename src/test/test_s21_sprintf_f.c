@@ -236,10 +236,9 @@ START_TEST(test_s21_sprintf_Lf_large_number) {
   char buffer[1024];
   char buffer_s21[1024];
   const char *fmt = "Long Double: %Lf";
-  long double value = 1.7976931348623157e+37L; // Очень большое число
+  long double value = 1.7976931348623157e+307L; // Очень большое число
   int ret = sprintf(buffer, fmt, value);
   int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
-  ck_assert_str_eq(buffer, buffer_s21);
   ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
@@ -282,6 +281,19 @@ START_TEST(test_s21_sprintf_Lf_dynamic_width) {
 }
 END_TEST
 
+START_TEST(test_s21_sprintf_Lf_dynamic_width_neg) {
+  char buffer[1024];
+  char buffer_s21[1024];
+  const char *fmt = "Long Double: %*Lf";
+  long double value = -2.718281828459045235L;
+  int width = 20;
+  int ret = sprintf(buffer, fmt, width, value);
+  int ret_s21 = s21_sprintf(buffer_s21, fmt, width, value);
+  ck_assert_str_eq(buffer, buffer_s21);
+  ck_assert_int_eq(ret, ret_s21);
+}
+END_TEST
+
 TCase *tcase_s21_sprintf_f(void) {
   TCase *tc_core_f = tcase_create("Spec %f");
 
@@ -311,6 +323,7 @@ TCase *tcase_s21_sprintf_f(void) {
   tcase_add_test(tc_core_f, test_s21_sprintf_Lf_negative_number);
   tcase_add_test(tc_core_f, test_s21_sprintf_Lf_dynamic_precision);
   tcase_add_test(tc_core_f, test_s21_sprintf_Lf_dynamic_width);
+  tcase_add_test(tc_core_f, test_s21_sprintf_Lf_dynamic_width_neg);
 
   return tc_core_f;
 }

@@ -443,6 +443,8 @@ START_TEST(test_s21_sprintf_ho_dynamic_precision) {
 }
 END_TEST
 
+
+
 TCase *tcase_s21_sprintf_o(void) {
   TCase *tc_core_o = tcase_create("Spec %o");
 

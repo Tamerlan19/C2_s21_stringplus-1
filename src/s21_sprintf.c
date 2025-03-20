@@ -100,24 +100,24 @@ void reverse_string(char *tmp, int len) {
   }
 }
 
-int set_flag_sign(char **buffer, Specifiers flags, int is_positive, int len) {
-  int res = 0;
-  *buffer -= len;
-  DEBUG_PRINT("set_flag_sign()=%s\n", *(buffer));
-  if ((flags.flag == ' ' && is_positive) ||
-      (flags.flag == '+' && is_positive)) {
-    s21_memmove(*buffer + 1, *buffer, len);
-    (*buffer)[0] = flags.flag;
-    res++;
-  } else if (!is_positive) {
-    s21_memmove(*buffer + 1, *buffer, len);
-    (*buffer)[0] = '-';
-    res++;
-  }
-  DEBUG_PRINT("STR=%s", *buffer);
+// int set_flag_sign(char **buffer, Specifiers flags, int is_positive, int len) {
+//   int res = 0;
+//   *buffer -= len;
+//   DEBUG_PRINT("set_flag_sign()=%s\n", *(buffer));
+//   if ((flags.flag == ' ' && is_positive) ||
+//       (flags.flag == '+' && is_positive)) {
+//     s21_memmove(*buffer + 1, *buffer, len);
+//     (*buffer)[0] = flags.flag;
+//     res++;
+//   } else if (!is_positive) {
+//     s21_memmove(*buffer + 1, *buffer, len);
+//     (*buffer)[0] = '-';
+//     res++;
+//   }
+//   DEBUG_PRINT("STR=%s", *buffer);
 
-  return res;
-}
+//   return res;
+// }
 
 /**
  * @brief Handles the formatting of an integer according to the specified flags.
@@ -206,24 +206,33 @@ int double_int_to_string(char *tmp, long double int_part) {
       tmp[int_len++] = '0' + digit;
       int_part = floorl(int_part / 10);
     }
-  } else if (exp <= 38) {
-    DEBUG_PRINT("Process in bigint...\n");
-    __int128_t big_int = (__int128_t)int_part;
-    while (big_int > 0) {
-      tmp[int_len++] = '0' + (big_int % 10);
-      big_int /= 10;
-    }
+  // } else if (exp <= 38) {
+  //   DEBUG_PRINT("Process in bigint...\n");
+  //   __int128_t big_int = (__int128_t)int_part;
+  //   while (big_int > 0) {
+  //     tmp[int_len++] = '0' + (big_int % 10);
+  //     big_int /= 10;
+  //   }
   } else {
     DEBUG_PRINT("Process Extra long double...\n");
     BigNumber num = convert_long_double_to_big_number(int_part);
     for (int i = 0; i < num.count; i++) {
       DEBUG_PRINT("num[%d]=%ld\n", i, num.parts[i]);
       long int_part = (long)num.parts[i];
+      int j=0;
       while (int_part > 0) {
         int digit = int_part % 10;
         tmp[int_len++] = '0' + digit;
-        DEBUG_PRINT("Add digit=|%d| in positin=%d\n", digit, int_len)
+        // DEBUG_PRINT("Add digit=|%d| in positin=%d\n", digit, int_len)
         int_part /= 10;
+        j++;
+      }
+      if (i<num.count-1 && j<18){
+        while (j<18){
+          tmp[int_len++] = '0';
+          j++;
+        }
+
       }
     }
   }
@@ -251,10 +260,10 @@ void handle_float(char **buffer, Specifiers flags, va_list args) {
   if (int_part == 0) {
     tmp[len++] = '0';
   } else {
-    if (int_part < 0) {
-      DEBUG_PRINT("int_part is negative. tmp=%s\n", tmp);
-      int_part *= -1;
-    }
+    // if (int_part < 0) {
+    //   DEBUG_PRINT("int_part is negative. tmp=%s\n", tmp);
+    //   int_part *= -1;
+    // }
     len += double_int_to_string(tmp, int_part);
   }
 
@@ -547,7 +556,7 @@ void handle_exp(char **buffer, Specifiers flags, va_list args) {
   char *tmp = tmp_arr;
   char *tmp_ptr = tmp;
   int exp = 0;
-  long int_part = 0;
+  // long int_part = 0;
   int len = 0;
   if (flags.length == 'L') {
     ch = va_arg(args, long double);
@@ -569,7 +578,7 @@ void handle_exp(char **buffer, Specifiers flags, va_list args) {
       exp++;
     }
   }
-  int_part = (long)ch;
+  long int_part = (long)ch;
   tmp += proc_int_to_str(tmp, int_part, 10);
   *(tmp++) = '.';
 

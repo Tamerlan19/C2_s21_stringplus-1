@@ -18,6 +18,20 @@ TCase *create_s21_sscanf_f_tests(void);
 TCase *create_s21_sscanf_pcnt_tests(void);
 TCase *create_s21_sscanf_complex_tests(void);
 
+START_TEST(test_s21_sscanf_lo_simple) {
+  const char *input = "6652";
+  long unsigned x = 11, x_s21 = 12;
+  const char *fmt = "%lo";
+
+  int ret_s = s21_sscanf(input, fmt, &x_s21);
+  int ret = sscanf(input, fmt, &x);
+
+  ck_assert_int_eq(x, x_s21);
+  ck_assert_int_eq(ret_s,ret);
+
+}
+END_TEST
+
 START_TEST(test_s21_sscanf_cmpx_6523) {
   const char *input = "98  11111295A 4294967295";
   unsigned var1 = 123, var1_s21 = 123;
@@ -35,22 +49,9 @@ START_TEST(test_s21_sscanf_cmpx_6523) {
   ck_assert_int_eq(ret, ret_s21);
   DEBUG_PRINT("Test test_s21_sscanf_cmpx_6523 is passed.\n");
 }
-
-
 END_TEST
 
-START_TEST(test_s21_sscanf_lo_simple) {
-  const char *input = "655";
-  unsigned x = 10, xr = 10;
-  const char *fmt = "%lo";
 
-  s21_sscanf(input, fmt, &x);
-  sscanf(input, fmt, &xr);
-
-  ck_assert_int_eq(x, xr);
-  ck_assert_int_eq(s21_sscanf(input, fmt, &x), sscanf(input, fmt, &xr));
-}
-END_TEST
 
 Suite *s21_sscanf_suite(void) {
   Suite *suite;

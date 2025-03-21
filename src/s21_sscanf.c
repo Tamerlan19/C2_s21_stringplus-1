@@ -22,7 +22,7 @@ int str_to_int(const char *p, long int *res, int base);
 
 void proc_str(const char **p, int step, Specifiers st_spec, int *res,
               int *stop) {
-  DEBUG_PRINT("next_val(): step=%d, res =%d, p=%s \n", step, *res,*p);
+  DEBUG_PRINT("proc_str(): step=%d, res =%d, p=%s \n", step, *res,*p);
   if (step > 0) {
     *p = *p + step;
     if (st_spec.flag != '*') {
@@ -40,7 +40,7 @@ void proc_str(const char **p, int step, Specifiers st_spec, int *res,
     DEBUG_PRINT("Specifiers.flag=%c\n", st_spec.flag);
     *stop = 1;
   }
-  DEBUG_PRINT("next_val(): step=%d, res =%d, p=%s \n", step, *res,*p);
+  DEBUG_PRINT("proc_str(): step=%d, res =%d, p=%s , stop=%d\n", step, *res,*p,*stop);
 }
 
 int proc_spec(const char **p, const char *str, va_list args,
@@ -85,6 +85,7 @@ int proc_spec(const char **p, const char *str, va_list args,
 }
 
 int s21_sscanf(const char *str, const char *format, ...) {
+  DEBUG_PRINT("\n\n\n Call s21_sscanf(): str=%s, format=%s\n",str,format);
   int res = 0;
   if (*format) {
     va_list args;
@@ -111,6 +112,7 @@ int s21_sscanf(const char *str, const char *format, ...) {
             stop = 1;
           }
         }
+        DEBUG_PRINT(" s21_sscanf(): finish process: res=%d, p=%s , fmt=%s\n", res, p, fmt);
         stop = 1;
         if (is_space(*fmt)) {
           noop_space(&fmt);
@@ -119,11 +121,12 @@ int s21_sscanf(const char *str, const char *format, ...) {
       }
     }
     if (stop == 0) {
+      DEBUG_PRINT("Error: The string is not completely read.\n");
       res = -1;
     }
     va_end(args);
   }
-
+  DEBUG_PRINT("finish s21_scanf(): res= %d\n",res);
   return res;
 }
 
@@ -197,7 +200,8 @@ int str_to_int(const char *p, long int *res, int base) {
   }
   p = s21_to_upper(p);
   long int temp = 0;
-  while (*p) {
+  int stop=0;
+  while (*p && !stop) {
     int digit = -1;
 
     if (is_digit(*p))
@@ -205,17 +209,20 @@ int str_to_int(const char *p, long int *res, int base) {
     else if (is_hex(*p))
       digit = (*p - 'A' + 10);
 
-    if (digit < 0 || digit >= base)
+    if (digit < 0 || digit >= base){
       break;
+    }
 
     if (temp > (LONG_MAX - digit) / base) {
       *res = (znak == 1) ? LONG_MAX : LONG_MIN;
+      stop=1;
     }
     temp = (temp * base + digit);
     p++;
     i++;
+  }if (!stop){
+    *res = temp * znak;
   }
-  *res = temp * znak;
   return i;
 }
 
@@ -484,25 +491,22 @@ int proc_spec_u(const char *str, va_list args, const Specifiers st_spec) {
 }
 
 int proc_spec_n(long int result, va_list args, const Specifiers st_spec) {
-  int res = 0;
+  int res = -1;
   if (st_spec.length == 'h') {
     short int *ch = va_arg(args, short int *);
     if (ch != S21_NULL) {
       *ch = (short int)result;
-    } else
-      res = -1;
+    } 
   } else if (st_spec.length == 'l') {
     long int *ch = va_arg(args, long int *);
     if (ch != S21_NULL) {
       *ch = result;
-    } else
-      res = -1;
+    }
   } else {
     int *ch = va_arg(args, int *);
     if (ch != S21_NULL) {
       *ch = (int)result;
-    } else
-      res = -1;
+    }
   }
   return res;
 }
@@ -526,37 +530,31 @@ int proc_spec_o(const char *str, va_list args, const Specifiers st_spec) {
   DEBUG_PRINT("Proc_spec_o\n");
   int res = 0;
   int width = get_width(str, st_spec);
-  long int result = 0;
+  long unsigned int result = 0;
   char *arg_str = get_arg_width(str, width);
   const char *p = arg_str;
   noop_space(&p);
   int step = 0;
-  step = str_to_int(p, &result, 8);
+  step = str_to_luint(p, &result, 8);
   p += step;
   if (step > 0) {
     if (st_spec.flag != '*') {
       if (st_spec.length == 'h') {
-        int *ch = va_arg(args, int *);
-        DEBUG_PRINT("Spec %%o: length=h\n");
-        *ch = (short)result;
+        short unsigned int *ch = va_arg(args, short unsigned int *);
+        *ch = (short unsigned int)result;
       } else if (st_spec.length == 'l') {
-        int *ch = va_arg(args, int *);
-        *ch = (int)result;
-        DEBUG_PRINT("Spec %%o: length=%c\n",st_spec.length);
+        long unsigned int *ch = va_arg(args, long unsigned int *);
+        *ch = result;
       } else {
-        int *ch = va_arg(args, int *);
-        *ch = (int)result;
+        unsigned int *ch = va_arg(args, unsigned int *);
+        *ch = (unsigned int)result;
       }
     }
     res = p - arg_str;
   } else if (st_spec.flag != '*') {
     res = -1;
-  } else {
-    res = 0;
-    va_arg(args, short int *);
   }
   free(arg_str);
-  DEBUG_PRINT("22Spec %%o: length=%c, Result=%d\n",st_spec.length,res);
   return res;
 }
 
@@ -585,8 +583,6 @@ int proc_spec_x(const char *str, va_list args, const Specifiers st_spec) {
         unsigned int *ch = va_arg(args, unsigned int *);
         if (result > 4294967295) {
           *ch = ((unsigned)result) % 4294967296;
-          // *ch = 4294967295;
-          // *ch = (unsigned) result;
         } else {
           *ch = (unsigned)result;
         }
@@ -595,16 +591,13 @@ int proc_spec_x(const char *str, va_list args, const Specifiers st_spec) {
     res = p - arg_str;
   } else if (st_spec.flag != '*') {
     res = -1;
-  } else {
-    res = 0;
-    va_arg(args, short int *);
   }
   free(arg_str);
   return res;
 }
 
 int proc_spec_p(const char *str, va_list args, const Specifiers st_spec) {
-  int res = 0;
+  int res = -1;
   if (str != NULL) {
     const char *p = str;
     if (st_spec.flag != '*') {
@@ -620,8 +613,8 @@ int proc_spec_p(const char *str, va_list args, const Specifiers st_spec) {
             *ch = (void *)address;
             p += conv;
             res = p - str;
-          } else {
-            res = -1;
+          // } else {
+          //   res = -1;
           }
         } else {
           long int address;
@@ -630,12 +623,8 @@ int proc_spec_p(const char *str, va_list args, const Specifiers st_spec) {
           if (conv != 0) {
             *ch = (void *)address;
             res = 0;
-          } else {
-            res = -1;
           }
         }
-      } else {
-        res = -1;
       }
     } else {
       if (*p == '0' && (*(p + 1) == 'x' || *(p + 1) == 'X')) {
@@ -646,13 +635,9 @@ int proc_spec_p(const char *str, va_list args, const Specifiers st_spec) {
         if (conv != 0 && address > 0) {
           p += conv;
           res = p - str;
-        } else {
-          res = -1;
         }
       }
     }
-  } else {
-    res = -1;
   }
   return res;
 }

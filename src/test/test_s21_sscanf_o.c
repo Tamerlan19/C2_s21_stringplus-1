@@ -9,11 +9,11 @@ START_TEST(test_s21_sscanf_o_simple) {
   unsigned x = 10, xr = 10;
   const char *fmt = "%o";
 
-  s21_sscanf(input, fmt, &x);
-  sscanf(input, fmt, &xr);
+  int ret_s21 = s21_sscanf(input, fmt, &x);
+  int ret = sscanf(input, fmt, &xr);
 
   ck_assert_int_eq(x, xr);
-  ck_assert_int_eq(s21_sscanf(input, fmt, &x), sscanf(input, fmt, &xr));
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
@@ -22,24 +22,51 @@ START_TEST(test_s21_sscanf_ho_simple) {
   unsigned x = 10, xr = 10;
   const char *fmt = "%ho";
 
-  s21_sscanf(input, fmt, &x);
-  sscanf(input, fmt, &xr);
+  int ret_s21 = s21_sscanf(input, fmt, &x);
+  int ret = sscanf(input, fmt, &xr);
 
   ck_assert_int_eq(x, xr);
-  ck_assert_int_eq(s21_sscanf(input, fmt, &x), sscanf(input, fmt, &xr));
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_lo_simple) {
   const char *input = "655";
-  unsigned x = 10, xr = 10;
+  long unsigned x = 10, xr = 10;
   const char *fmt = "%lo";
 
   s21_sscanf(input, fmt, &x);
   sscanf(input, fmt, &xr);
 
+  int ret_s21 = s21_sscanf(input, fmt, &x);
+  int ret = sscanf(input, fmt, &xr);
+
   ck_assert_int_eq(x, xr);
-  ck_assert_int_eq(s21_sscanf(input, fmt, &x), sscanf(input, fmt, &xr));
+  ck_assert_int_eq(ret, ret_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_lo_simple_skip) {
+  const char *input = "655";
+  // const char *fmt = "%*lo";
+
+  int ret_s21 = s21_sscanf(input, "%*lo");
+  int ret = sscanf(input, "%*o");
+
+  ck_assert_int_eq(ret, ret_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sscanf_lo_overflow) {
+  const char *input = "65554654686452463358438435138143524583451384138432";
+  long unsigned x=0, x_s21=0;
+  // const char *fmt = "%*lo";
+
+  int ret_s21 = s21_sscanf(input, "%lo",&x_s21);
+  int ret = sscanf(input, "%lo",&x);
+
+  ck_assert_int_eq(x, x_s21);
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
@@ -229,6 +256,8 @@ TCase *create_s21_sscanf_o_tests(void) {
   tcase_add_test(tc_core_o, test_s21_sscanf_o_simple);
   tcase_add_test(tc_core_o, test_s21_sscanf_ho_simple);
   tcase_add_test(tc_core_o, test_s21_sscanf_lo_simple);
+  tcase_add_test(tc_core_o, test_s21_sscanf_lo_simple_skip);
+  tcase_add_test(tc_core_o, test_s21_sscanf_lo_overflow);
   tcase_add_test(tc_core_o, test_s21_sscanf_o_width_star_negative);
   tcase_add_test(tc_core_o, test_s21_sscanf_o_width_star_overflow);
   tcase_add_test(tc_core_o, test_s21_sscanf_o_width_star_max);

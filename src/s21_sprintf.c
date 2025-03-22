@@ -29,7 +29,6 @@ void set_width_pading_sign(char **buffer, const char *src, Specifiers flags,
                            int len, char sign);
 int set_flag_sign(char **buffer, Specifiers flags, int is_negative, int len);
 int add_sign(char *buffer, Specifiers flags, int is_positive);
-
 int get_exp(long double ch);
 
 void set_width_argv(Specifiers *flags, va_list args) {
@@ -103,26 +102,6 @@ void reverse_string(char *tmp, int len) {
   }
 }
 
-// int set_flag_sign(char **buffer, Specifiers flags, int is_positive, int len)
-// {
-//   int res = 0;
-//   *buffer -= len;
-//   DEBUG_PRINT("set_flag_sign()=%s\n", *(buffer));
-//   if ((flags.flag == ' ' && is_positive) ||
-//       (flags.flag == '+' && is_positive)) {
-//     s21_memmove(*buffer + 1, *buffer, len);
-//     (*buffer)[0] = flags.flag;
-//     res++;
-//   } else if (!is_positive) {
-//     s21_memmove(*buffer + 1, *buffer, len);
-//     (*buffer)[0] = '-';
-//     res++;
-//   }
-//   DEBUG_PRINT("STR=%s", *buffer);
-
-//   return res;
-// }
-
 /**
  * @brief Handles the formatting of an integer according to the specified flags.
  *
@@ -142,7 +121,7 @@ void handle_int(char **buffer, Specifiers flags, va_list args) {
   }
 
   char sign = '\0';
-  char tmp[300] = {0};
+  char tmp[1024] = {0};
   int is_negative = (d < 0);
   long int num = (is_negative) ? -d : d;
   int len = 0;
@@ -210,13 +189,6 @@ int double_int_to_string(char *tmp, long double int_part) {
       tmp[int_len++] = '0' + digit;
       int_part = floorl(int_part / 10);
     }
-    // } else if (exp <= 38) {
-    //   DEBUG_PRINT("Process in bigint...\n");
-    //   __int128_t big_int = (__int128_t)int_part;
-    //   while (big_int > 0) {
-    //     tmp[int_len++] = '0' + (big_int % 10);
-    //     big_int /= 10;
-    //   }
   } else {
     DEBUG_PRINT("Process Extra long double...\n");
     BigNumber num = convert_long_double_to_big_number(int_part);
@@ -227,7 +199,6 @@ int double_int_to_string(char *tmp, long double int_part) {
       while (long_part > 0) {
         int digit = long_part % 10;
         tmp[int_len++] = '0' + digit;
-        // DEBUG_PRINT("Add digit=|%d| in positin=%d\n", digit, int_len)
         long_part /= 10;
         j++;
       }
@@ -258,19 +229,11 @@ void handle_float(char **buffer, Specifiers flags, va_list args) {
 
   long double int_part;
   long double frac_part = modfl(f, &int_part);
-  DEBUG_PRINT("int_part= %Lf, frac_part= %Lf, f=|%Lf|\n", int_part, frac_part,
-              (long double)f);
   if (int_part == 0) {
     tmp[len++] = '0';
   } else {
-    // if (int_part < 0) {
-    //   DEBUG_PRINT("int_part is negative. tmp=%s\n", tmp);
-    //   int_part *= -1;
-    // }
     len += double_int_to_string(tmp, int_part);
   }
-
-  DEBUG_PRINT("tmp=%s\n", tmp);
   (frac_part < 0) ? (frac_part *= -1) : (frac_part *= 1);
   DEBUG_PRINT("frac_part= %Lf\n", frac_part);
   if (flags.specifier == 'g' || flags.specifier == 'G') {
@@ -303,17 +266,15 @@ void handle_string(char **buffer, Specifiers flags, va_list args) {
   const char *s = NULL;
   const wchar_t *ws = NULL;
   int len = 0;
-  char tmp[MAX_BUF_SIZE] = {
-      0};  // Объявляем временный буфер для преобразования широких строк
+  char tmp[MAX_BUF_SIZE] = {0};
 
   if (flags.length == 'l') {
     ws = va_arg(args, wchar_t *);
     if (ws == S21_NULL) {
       s = "(null)";
     } else {
-      wcstombs(tmp, ws,
-               MAX_BUF_SIZE);  // Преобразуем широкую строку в многобайтовую
-      s = tmp;  // Используем tmp как источник данных
+      wcstombs(tmp, ws, MAX_BUF_SIZE);
+      s = tmp;
     }
   } else {
     s = va_arg(args, char *);
@@ -344,7 +305,6 @@ void handle_unsigned(char **buffer, Specifiers flags, va_list args) {
   } else {
     num = va_arg(args, unsigned int);
   }
-  int f = num;
   char *ptr = tmp + sizeof(tmp) - 1;
   *ptr = '\0';
   if (num == 0 && flags.precision == 0) {
@@ -362,16 +322,6 @@ void handle_unsigned(char **buffer, Specifiers flags, va_list args) {
       s21_memset(ptr, '0', pad);
       len += pad;
     }
-  }
-
-  if (flags.flag == ' ' || (flags.flag == '+' && f > 0)) {
-    s21_memmove(tmp + 1, tmp, len);
-    // tmp[0] = flags.flag;
-    len++;
-  } else if (f < 0) {
-    s21_memmove(tmp + 1, tmp, len);
-    // tmp[0] = '-';
-    len++;
   }
 
   set_width_pading(buffer, ptr, flags, len);
@@ -552,6 +502,23 @@ void set_width_pading(char **buffer, const char *src, Specifiers flags,
   *(*buffer) = '\0';
 }
 
+int get_precision(const long double ch, Specifiers flags) {
+  long int_part = (long)ch;
+  if (flags.precision < 0) {
+    flags.precision = 6;
+  }
+  if (flags.specifier == 'g' || flags.specifier == 'G') {
+    if (int_part != 0 && ch * s21_pow(10, flags.precision - 1) > 1) {
+      flags.precision--;
+    } else {
+      while (ch * s21_pow(10, flags.precision + 1) < 1) {
+        flags.precision++;
+      }
+    }
+  }
+  return flags.precision;
+}
+
 void handle_exp(char **buffer, Specifiers flags, va_list args) {
   DEBUG_PRINT("Start process void handle_ex()\n");
   long double ch;
@@ -559,16 +526,11 @@ void handle_exp(char **buffer, Specifiers flags, va_list args) {
   char *tmp = tmp_arr;
   char *tmp_ptr = tmp;
   int exp = 0;
-  // long int_part = 0;
-  // int len = 0;
   if (flags.length == 'L') {
     ch = va_arg(args, long double);
   } else {
     ch = va_arg(args, double);
   }
-  DEBUG_PRINT("Get args=|%Lf|\n", ch);
-  // len += set_znak(tmp, flags, &ch);
-  // tmp += len;
   tmp += set_znak(tmp, flags, &ch);
   DEBUG_PRINT("Set znak=|%s|\n", (tmp - 1));
   if (ch < 1) {
@@ -582,31 +544,15 @@ void handle_exp(char **buffer, Specifiers flags, va_list args) {
       exp++;
     }
   }
+
   long int_part = (long)ch;
   tmp += proc_int_to_str(tmp, int_part, 10);
   *(tmp++) = '.';
-
-  ch = ch - int_part;
   long int div_part = 0;
-  if (flags.precision < 0) {
-    flags.precision = 6;
-  }
-  // len = tmp - tmp_ptr;
-  DEBUG_PRINT("handle_exp: div_part=%Lf, flags.precision=%d\n", ch,
-              flags.precision);
-  if (flags.specifier == 'g' || flags.specifier == 'G') {
-    if (int_part != 0 && ch * s21_pow(10, flags.precision - 1) > 1) {
-      flags.precision--;
-    } else {
-      while (ch * s21_pow(10, flags.precision + 1) < 1) {
-        flags.precision++;
-      }
-    }
-  }
 
+  flags.precision = get_precision(ch, flags);
+  ch = ch - int_part;
   ch *= s21_pow(10, flags.precision);
-  DEBUG_PRINT("handle_exp: div_part=%Lf, flags.precision=%d\n", ch,
-              flags.precision);
   div_part = (int)ch;
   if (ch - div_part >= 0.5) {
     div_part++;
@@ -755,66 +701,38 @@ void handle_octal(char **buffer, Specifiers flags, va_list args) {
 
   set_width_pading(buffer, ptr, flags, len);
 }
+
 void handle_pointer(char **buffer, Specifiers flags, va_list args) {
   DEBUG_PRINT("Process handle_pointer()\n");
   void *ptr = va_arg(args, void *);
   if (ptr != S21_NULL) {
     uintptr_t num = (uintptr_t)ptr;
-
     char tmp[MAX_BUF_SIZE] = {0};
-    char *tmp_ptr = tmp + sizeof(tmp) - 1;
-    *tmp_ptr = '\0';
+    char *tmp_ptr = tmp;
+    *tmp_ptr++ = '0';
+    *tmp_ptr++ = 'x';
 
-    // if (num == 0) {
-    //   *--tmp_ptr = '0';
-    // } else {
-    while (num > 0) {
-      int digit = num % 16;
-      char c = (digit < 10) ? ('0' + digit) : ('a' + digit - 10);
-      *--tmp_ptr = c;
-      num /= 16;
-    }
-    // }
+    int len = 0;
+    DEBUG_PRINT("int_to_str(num=%lu, str=%s, base=%d)\n", num, tmp_ptr, 16);
+    len += int_to_str(num, tmp_ptr, 16);
 
-    *--tmp_ptr = 'x';
-    *--tmp_ptr = '0';
-
-    int len = (int)(tmp + sizeof(tmp) - 1 - tmp_ptr);
-
-    DEBUG_PRINT("tmp_ptr=%s\n", tmp_ptr);
-    if (flags.precision >= 0 && len - 2 < flags.precision) {
-      int pad = flags.precision - (len - 2);
+    if (flags.precision >= 0 && len < flags.precision) {
+      int pad = flags.precision - (len);
       DEBUG_PRINT("pad=%d\n", pad);
       s21_memmove(tmp_ptr + pad, tmp_ptr, len + 1);
-      s21_memset(tmp_ptr + 2, '0', pad);
+      s21_memset(tmp_ptr, '0', pad);
       len += pad;
     }
-    DEBUG_PRINT("tmp_ptr=%s\n", tmp_ptr);
+    DEBUG_PRINT("tmp_ptr=%s\n", tmp_ptr - len);
+    tmp_ptr -= 2;
+    s21_memcpy(*buffer, tmp_ptr, 2);
+    len += 2;
 
-    int total_width = flags.width > 0 ? flags.width : 0;
-    int padding = total_width > len ? total_width - len : 0;
-    if (flags.flag_align == '-') {
-      s21_memcpy(*buffer, tmp_ptr, len);
-      *buffer += len;
-      s21_memset(*buffer, ' ', padding);
-      *buffer += padding;
-    } else {
-      if (flags.flag_fill == '0' && flags.precision < 0) {
-        s21_memcpy(*buffer, tmp_ptr, 2);  // Копируем "0x"
-        *buffer += 2;
-        s21_memset(*buffer, '0', padding);  // Заполняем нулями
-        *buffer += padding;
-        DEBUG_PRINT("tmp_ptr=%s\n", tmp_ptr);
-        s21_memcpy(*buffer, tmp_ptr + 2, len - 2);  // Копируем остальную часть
-        *buffer += len - 2;
-      } else {
-        s21_memset(*buffer, ' ', padding);
-        *buffer += padding;
-        s21_memcpy(*buffer, tmp_ptr, len);
-        *buffer += len;
-      }
+    if (flags.flag_fill == '0' && flags.precision < 0) {
+      *buffer += 2;
+      tmp_ptr += 2;
     }
-    // set_width_pading(buffer, ptr, flags, len);
+    set_width_pading(buffer, tmp_ptr, flags, len);
 
   } else {
     s21_memcpy(*buffer, "(nil)", 5);

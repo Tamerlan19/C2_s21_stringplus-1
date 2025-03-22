@@ -27,7 +27,6 @@ int main(void) {
   }
   failed_sum += number_failed;
 
-  //[ ]: Uncomment test case suite
   failed_sum += number_failed;
   sr = srunner_create(s21_sprintf_suite());
   srunner_run_all(sr, CK_NORMAL);
@@ -41,7 +40,6 @@ int main(void) {
   }
   failed_sum = failed_sum + number_failed;
 
-  //[ ]: Uncomment test case suite
   sr = srunner_create(s21_sscanf_suite());
   srunner_run_all(sr, CK_NORMAL);
   number_failed = srunner_ntests_failed(sr);

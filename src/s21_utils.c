@@ -114,43 +114,6 @@ int is_hex(char c) {
   return ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'F'));
 }
 
-void int_to_str(int num, char *str, int base) {
-  int i = 0;
-  int is_negative = 0;
-
-  if (num == 0) {
-    str[i++] = '0';
-    str[i] = '\0';
-    return;
-  }
-
-  if (num < 0 && base == 10) {
-    is_negative = 1;
-    num = -num;
-  }
-
-  while (num > 0) {
-    int digit = num % base;
-    str[i++] = (digit > 9) ? (digit - 10) + 'A' : digit + '0';
-    num /= base;
-  }
-
-  if (is_negative) {
-    str[i++] = '-';
-  }
-
-  str[i] = '\0';
-
-  int start = 0, end = i - 1;
-  while (start < end) {
-    char temp = str[start];
-    str[start] = str[end];
-    str[end] = temp;
-    start++;
-    end--;
-  }
-}
-
 int is_space(char c) { return (c == ' ' || c == '\t' || c == '\n'); }
 
 void noop_space(const char **str) {
@@ -184,4 +147,42 @@ int get_width(const char *str, const Specifiers st_spec) {
   }
 
   return width;
+}
+
+int int_to_str(long long int num, char *str, int base) {
+  int i = 0;
+  int is_negative = 0;
+
+  if (num == 0) {
+    str[i++] = '0';
+    str[i] = '\0';
+  } else {
+    if (num < 0 && base == 10) {
+      is_negative = 1;
+      num = -num;
+    }
+
+    while (num > 0) {
+      int digit = num % base;
+      str[i++] = (digit > 9) ? (digit - 10) + 'a' : digit + '0';
+      num /= base;
+    }
+
+    if (is_negative) {
+      str[i++] = '-';
+    }
+
+    str[i] = '\0';
+
+    int start = 0, end = i - 1;
+    while (start < end) {
+      char temp = str[start];
+      str[start] = str[end];
+      str[end] = temp;
+      start++;
+      end--;
+    }
+  }
+  DEBUG_PRINT("Result: len=%d, string=|%s|\n", i, str);
+  return i;
 }

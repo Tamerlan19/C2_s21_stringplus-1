@@ -46,7 +46,6 @@ Suite *s21_sprintf_suite(void) {
   suite_add_tcase(s, tc_core_pcnt);
 
   tc_core = tcase_create("Core");
-
   suite_add_tcase(s, tc_core);
 
   return s;

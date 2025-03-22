@@ -135,6 +135,42 @@ START_TEST(test_s21_sprintf_lu_long_unsigned) {
 }
 END_TEST
 
+START_TEST(test_s21_sprintf_u_exceed_width_plus) {
+  char buffer[1024];
+  char buffer_s21[1024];
+  const char *fmt = "Unsigned: %5u";
+  unsigned int value = 123456789;
+  int ret = sprintf(buffer, fmt, value);
+  int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+  ck_assert_str_eq(buffer, buffer_s21);
+  ck_assert_int_eq(ret, ret_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_u_exceed_width_negative) {
+  char buffer[1024];
+  char buffer_s21[1024];
+  const char *fmt = "Unsigned: %+5u";
+  unsigned int value = -123456789;
+  int ret = sprintf(buffer, fmt, value);
+  int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+  ck_assert_str_eq(buffer, buffer_s21);
+  ck_assert_int_eq(ret, ret_s21);
+}
+END_TEST
+
+START_TEST(test_s21_sprintf_u_exceed_width_space) {
+  char buffer[1024];
+  char buffer_s21[1024];
+  const char *fmt = "Unsigned: % 5u";
+  unsigned int value = 123456789;
+  int ret = sprintf(buffer, fmt, value);
+  int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
+  ck_assert_str_eq(buffer, buffer_s21);
+  ck_assert_int_eq(ret, ret_s21);
+}
+END_TEST
+
 TCase *tcase_s21_sprintf_u(void) {
   TCase *tc_core_u = tcase_create("Spec %u");
 
@@ -149,6 +185,9 @@ TCase *tcase_s21_sprintf_u(void) {
   tcase_add_test(tc_core_u, test_s21_sprintf_u_width_precision);
   tcase_add_test(tc_core_u, test_s21_sprintf_hu_short_unsigned);
   tcase_add_test(tc_core_u, test_s21_sprintf_lu_long_unsigned);
+  tcase_add_test(tc_core_u, test_s21_sprintf_u_exceed_width_plus);
+  tcase_add_test(tc_core_u, test_s21_sprintf_u_exceed_width_negative);
+  tcase_add_test(tc_core_u, test_s21_sprintf_u_exceed_width_space);
 
   return tc_core_u;
 }

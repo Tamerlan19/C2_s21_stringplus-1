@@ -17,25 +17,25 @@ END_TEST
 
 START_TEST(test_s21_sscanf_hu_simple) {
   const char *input = "12345";
-  unsigned short hu = 0;
+  unsigned short hu = 0, hu_s21 = 0;
 
-  int result_s21 = s21_sscanf(input, "%hu", &hu);
+  int result_s21 = s21_sscanf(input, "%hu", &hu_s21);
   int result_std = sscanf(input, "%hu", &hu);
 
   ck_assert_int_eq(result_s21, result_std);
-  ck_assert_uint_eq(hu, 12345);
+  ck_assert_uint_eq(hu, hu_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_hu_width) {
   const char *input = "123456789";
-  unsigned short hu = 0;
+  unsigned short hu = 0, hu_s21 = 0;
 
-  int result_s21 = s21_sscanf(input, "%4hu", &hu);
+  int result_s21 = s21_sscanf(input, "%4hu", &hu_s21);
   int result_std = sscanf(input, "%4hu", &hu);
 
+  ck_assert_uint_eq(hu, hu_s21);
   ck_assert_int_eq(result_s21, result_std);
-  ck_assert_uint_eq(hu, 1234);
 }
 END_TEST
 
@@ -46,44 +46,44 @@ START_TEST(test_s21_sscanf_hu_flag_star) {
   int result_s21 = s21_sscanf(input, fmt, &hu_s21);
   int result_std = sscanf(input, fmt, &hu);
 
-  ck_assert_int_eq(result_s21, result_std);
   ck_assert_uint_eq(hu, hu_s21);
+  ck_assert_int_eq(result_s21, result_std);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_hu_overflow) {
   const char *input = "65536";
-  unsigned short hu = 0;
+  unsigned short hu = 0, hu_s21 = 0;
 
-  int result_s21 = s21_sscanf(input, "%hu", &hu);
+  int result_s21 = s21_sscanf(input, "%hu", &hu_s21);
   int result_std = sscanf(input, "%hu", &hu);
 
   ck_assert_int_eq(result_s21, result_std);
-  ck_assert_uint_eq(hu, 0);
+  ck_assert_uint_eq(hu, hu_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_lu_simple) {
   const char *input = "1234567890";
-  unsigned long lu = 0;
+  unsigned long lu = 0, lu_s21 = 0;
 
-  int result_s21 = s21_sscanf(input, "%lu", &lu);
+  int result_s21 = s21_sscanf(input, "%lu", &lu_s21);
   int result_std = sscanf(input, "%lu", &lu);
 
   ck_assert_int_eq(result_s21, result_std);
-  ck_assert_uint_eq(lu, 1234567890);
+  ck_assert_uint_eq(lu, lu_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_lu_width) {
   const char *input = "123456789012345";
-  unsigned long lu = 0;
+  unsigned long lu = 0, lu_s21 = 0;
 
-  int result_s21 = s21_sscanf(input, "%10lu", &lu);
+  int result_s21 = s21_sscanf(input, "%10lu", &lu_s21);
   int result_std = sscanf(input, "%10lu", &lu);
 
   ck_assert_int_eq(result_s21, result_std);
-  ck_assert_uint_eq(lu, 1234567890);
+  ck_assert_uint_eq(lu, lu_s21);
 }
 END_TEST
 
@@ -103,27 +103,27 @@ END_TEST
 START_TEST(test_s21_sscanf_lu_overflow) {
   const char *input = "18446744073709551616";
 
-  unsigned long lu = 0;
+  unsigned long lu = 0, lu_s21 = 0;
 
-  int result_s21 = s21_sscanf(input, "%lu", &lu);
+  int result_s21 = s21_sscanf(input, "%lu", &lu_s21);
   int result_std = sscanf(input, "%lu", &lu);
 
   ck_assert_int_eq(result_s21, result_std);
-  ck_assert_uint_eq(lu, ULONG_MAX);
+  ck_assert_uint_eq(lu, lu_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_hu_and_lu_combination) {
   const char *input = "12345 67890";
-  unsigned short hu = 0;
-  unsigned long lu = 0;
+  unsigned short hu = 0, hu_s21 = 0;
+  unsigned long lu = 0, lu_s21 = 0;
 
-  int result_s21 = s21_sscanf(input, "%hu %lu", &hu, &lu);
+  int result_s21 = s21_sscanf(input, "%hu %lu", &hu_s21, &lu_s21);
   int result_std = sscanf(input, "%hu %lu", &hu, &lu);
 
   ck_assert_int_eq(result_s21, result_std);
-  ck_assert_uint_eq(hu, 12345);
-  ck_assert_uint_eq(lu, 67890);
+  ck_assert_uint_eq(hu, hu_s21);
+  ck_assert_uint_eq(lu, lu_s21);
 }
 END_TEST
 
@@ -143,52 +143,52 @@ END_TEST
 
 START_TEST(test_s21_sscanf_hu_and_lu_with_star_flag) {
   const char *input = "12345 67890";
-  unsigned long lu = 0;
+  unsigned long lu = 0, lu_s21 = 0;
   const char *fmt = "%*hu %lu";
 
-  int result_s21 = s21_sscanf(input, fmt, &lu);
+  int result_s21 = s21_sscanf(input, fmt, &lu_s21);
   int result_std = sscanf(input, fmt, &lu);
 
   ck_assert_int_eq(result_s21, result_std);
-  ck_assert_uint_eq(lu, 67890);
+  ck_assert_uint_eq(lu, lu_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_hu_and_lu_with_spaces) {
   const char *input = "  12345   67890";
-  unsigned short hu = 0;
-  unsigned long lu = 0;
+  unsigned short hu = 0, hu_s21 = 0;
+  unsigned long lu = 0, lu_s21 = 0;
 
-  int result_s21 = s21_sscanf(input, "%hu%lu", &hu, &lu);
+  int result_s21 = s21_sscanf(input, "%hu%lu", &hu_s21, &lu_s21);
   int result_std = sscanf(input, "%hu%lu", &hu, &lu);
 
   ck_assert_int_eq(result_s21, result_std);
-  ck_assert_uint_eq(hu, 12345);
-  ck_assert_uint_eq(lu, 67890);
+  ck_assert_uint_eq(hu, hu_s21);
+  ck_assert_uint_eq(lu, lu_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_hu_with_zero_flag) {
   const char *input = "012345";
-  unsigned short hu = 0;
+  unsigned short hu = 0, hu_s21 = 0;
 
-  int result_s21 = s21_sscanf(input, "%hu", &hu);
+  int result_s21 = s21_sscanf(input, "%hu", &hu_s21);
   int result_std = sscanf(input, "%hu", &hu);
 
   ck_assert_int_eq(result_s21, result_std);
-  ck_assert_uint_eq(hu, 12345);
+  ck_assert_uint_eq(hu, hu_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_lu_with_zero_flag) {
   const char *input = "01234567890";
-  unsigned long lu = 0;
+  unsigned long lu = 0, lu_s21 = 0;
 
-  int result_s21 = s21_sscanf(input, "%lu", &lu);
+  int result_s21 = s21_sscanf(input, "%lu", &lu_s21);
   int result_std = sscanf(input, "%lu", &lu);
 
   ck_assert_int_eq(result_s21, result_std);
-  ck_assert_uint_eq(lu, 1234567890);
+  ck_assert_uint_eq(lu, lu_s21);
 }
 END_TEST
 

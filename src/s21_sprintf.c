@@ -1,9 +1,10 @@
-#include "s21_string.h"
-#include "s21_utils.h"
 #include <limits.h>
 #include <math.h>
 #include <stdint.h>
 #include <wchar.h>
+
+#include "s21_string.h"
+#include "s21_utils.h"
 // [ ] Удалить импорт библиотеки, использовалась для отладки кода
 // #include <stdio.h>
 
@@ -22,9 +23,10 @@ void handle_octal(char **buffer, Specifiers flags, va_list args);
 void handle_pointer(char **buffer, Specifiers flags, va_list args);
 void handle_general(char **buffer, Specifiers flags, va_list args);
 
-void set_width_pading(char **buffer, char *src, Specifiers flags, int len);
-void set_width_pading_sign(char **buffer, char *src, Specifiers flags, int len,
-                           char sign);
+void set_width_pading(char **buffer, const char *src, Specifiers flags,
+                      int len);
+void set_width_pading_sign(char **buffer, const char *src, Specifiers flags,
+                           int len, char sign);
 int set_flag_sign(char **buffer, Specifiers flags, int is_negative, int len);
 int add_sign(char *buffer, Specifiers flags, int is_positive);
 
@@ -54,10 +56,11 @@ int s21_sprintf(char *str, const char *format, ...) {
       ptr += parse_specifiers(ptr, &flags, 1);
       set_width_argv(&flags, args);
       set_precission_argv(&flags, args);
-      DEBUG_PRINT("RESULT: Specifier=%c, Length=%c, Precision=%i,  Width=%d, "
-                  "Flags=%c\n",
-                  flags.specifier, flags.length, flags.precision, flags.width,
-                  flags.flag);
+      DEBUG_PRINT(
+          "RESULT: Specifier=%c, Length=%c, Precision=%i,  Width=%d, "
+          "Flags=%c\n",
+          flags.specifier, flags.length, flags.precision, flags.width,
+          flags.flag);
       char spec = *ptr;
       if (flags.specifier == 'c') {
         handle_char(&buffer, flags, args);
@@ -100,7 +103,8 @@ void reverse_string(char *tmp, int len) {
   }
 }
 
-// int set_flag_sign(char **buffer, Specifiers flags, int is_positive, int len) {
+// int set_flag_sign(char **buffer, Specifiers flags, int is_positive, int len)
+// {
 //   int res = 0;
 //   *buffer -= len;
 //   DEBUG_PRINT("set_flag_sign()=%s\n", *(buffer));
@@ -206,33 +210,32 @@ int double_int_to_string(char *tmp, long double int_part) {
       tmp[int_len++] = '0' + digit;
       int_part = floorl(int_part / 10);
     }
-  // } else if (exp <= 38) {
-  //   DEBUG_PRINT("Process in bigint...\n");
-  //   __int128_t big_int = (__int128_t)int_part;
-  //   while (big_int > 0) {
-  //     tmp[int_len++] = '0' + (big_int % 10);
-  //     big_int /= 10;
-  //   }
+    // } else if (exp <= 38) {
+    //   DEBUG_PRINT("Process in bigint...\n");
+    //   __int128_t big_int = (__int128_t)int_part;
+    //   while (big_int > 0) {
+    //     tmp[int_len++] = '0' + (big_int % 10);
+    //     big_int /= 10;
+    //   }
   } else {
     DEBUG_PRINT("Process Extra long double...\n");
     BigNumber num = convert_long_double_to_big_number(int_part);
     for (int i = 0; i < num.count; i++) {
-      DEBUG_PRINT("num[%d]=%ld\n", i, num.parts[i]);
-      long int_part = (long)num.parts[i];
-      int j=0;
-      while (int_part > 0) {
-        int digit = int_part % 10;
+      DEBUG_PRINT("num[%d]=%lu\n", i, num.parts[i]);
+      long long_part = (long)num.parts[i];
+      int j = 0;
+      while (long_part > 0) {
+        int digit = long_part % 10;
         tmp[int_len++] = '0' + digit;
         // DEBUG_PRINT("Add digit=|%d| in positin=%d\n", digit, int_len)
-        int_part /= 10;
+        long_part /= 10;
         j++;
       }
-      if (i<num.count-1 && j<18){
-        while (j<18){
+      if (i < num.count - 1 && j < 18) {
+        while (j < 18) {
           tmp[int_len++] = '0';
           j++;
         }
-
       }
     }
   }
@@ -250,7 +253,7 @@ void handle_float(char **buffer, Specifiers flags, va_list args) {
     f = va_arg(args, double);
   }
   if (flags.precision < 0) {
-    flags.precision = 6; // default value for %f
+    flags.precision = 6;  // default value for %f
   }
 
   long double int_part;
@@ -297,11 +300,11 @@ void handle_float(char **buffer, Specifiers flags, va_list args) {
 }
 
 void handle_string(char **buffer, Specifiers flags, va_list args) {
-  char *s = NULL;
-  wchar_t *ws = NULL;
+  const char *s = NULL;
+  const wchar_t *ws = NULL;
   int len = 0;
   char tmp[MAX_BUF_SIZE] = {
-      0}; // Объявляем временный буфер для преобразования широких строк
+      0};  // Объявляем временный буфер для преобразования широких строк
 
   if (flags.length == 'l') {
     ws = va_arg(args, wchar_t *);
@@ -309,8 +312,8 @@ void handle_string(char **buffer, Specifiers flags, va_list args) {
       s = "(null)";
     } else {
       wcstombs(tmp, ws,
-               MAX_BUF_SIZE); // Преобразуем широкую строку в многобайтовую
-      s = tmp; // Используем tmp как источник данных
+               MAX_BUF_SIZE);  // Преобразуем широкую строку в многобайтовую
+      s = tmp;  // Используем tmp как источник данных
     }
   } else {
     s = va_arg(args, char *);
@@ -363,11 +366,11 @@ void handle_unsigned(char **buffer, Specifiers flags, va_list args) {
 
   if (flags.flag == ' ' || (flags.flag == '+' && f > 0)) {
     s21_memmove(tmp + 1, tmp, len);
-    tmp[0] = flags.flag;
+    // tmp[0] = flags.flag;
     len++;
   } else if (f < 0) {
     s21_memmove(tmp + 1, tmp, len);
-    tmp[0] = '-';
+    // tmp[0] = '-';
     len++;
   }
 
@@ -396,7 +399,6 @@ void handle_char(char **buffer, Specifiers flags, va_list args) {
 
 void handle_percent(char **buffer, Specifiers flags) {
   if (flags.specifier == '%') {
-
     *(*buffer)++ = '%';
     **buffer = '\0';
   }
@@ -475,15 +477,15 @@ int add_exp(char *dst, int exp, Specifiers flags) {
   return dst - start;
 }
 
-void set_width_pading_sign(char **buffer, char *src, Specifiers flags, int len,
-                           char sign) {
+void set_width_pading_sign(char **buffer, const char *src, Specifiers flags,
+                           int len, char sign) {
   DEBUG_PRINT("proc_width_pading(%s,%s,%d,%c)\n", *buffer, src, len, sign);
   DEBUG_PRINT("Flags=|%c|, flag_Align=|%c|, flag_fill=|%c|\n", flags.flag,
               flags.flag_align, flags.flag_fill);
   int total_width = flags.width > 0 ? flags.width : 0;
   int padding = total_width > len ? total_width - len : 0;
 
-  if (flags.flag_align == '-') { // Left align
+  if (flags.flag_align == '-') {  // Left align
     DEBUG_PRINT("Left align\n");
     if (sign) {
       *(*buffer)++ = sign;
@@ -495,7 +497,7 @@ void set_width_pading_sign(char **buffer, char *src, Specifiers flags, int len,
     *buffer += len;
     s21_memset(*buffer, flags.flag_fill, padding);
     *buffer += padding;
-  } else { // Rgiht align
+  } else {  // Rgiht align
     DEBUG_PRINT("Right align\n");
     if (flags.flag_fill != ' ') {
       DEBUG_PRINT("Insert sign=%c\n", sign);
@@ -524,20 +526,21 @@ void set_width_pading_sign(char **buffer, char *src, Specifiers flags, int len,
   *(*buffer) = '\0';
 }
 
-void set_width_pading(char **buffer, char *src, Specifiers flags, int len) {
+void set_width_pading(char **buffer, const char *src, Specifiers flags,
+                      int len) {
   DEBUG_PRINT("proc_width_pading(%s,%s,%d)\n", *buffer, src, len);
   DEBUG_PRINT("Flags=%c", flags.flag);
   int total_width = flags.width > 0 ? flags.width : 0;
   int padding = total_width > len ? total_width - len : 0;
   DEBUG_PRINT("total_width=%d, padding= %d\n", total_width, padding);
 
-  if (flags.flag_align == '-') { // Left align
+  if (flags.flag_align == '-') {  // Left align
     DEBUG_PRINT("Left align\n");
     s21_memcpy(*buffer, src, len);
     *buffer += len;
     s21_memset(*buffer, ' ', padding);
     *buffer += padding;
-  } else { // Rgiht align
+  } else {  // Rgiht align
     DEBUG_PRINT("Right align\n");
     // char fill_char = (flags.flag == '0') ? '0' : ' ';
     s21_memset(*buffer, flags.flag_fill, padding);
@@ -557,15 +560,16 @@ void handle_exp(char **buffer, Specifiers flags, va_list args) {
   char *tmp_ptr = tmp;
   int exp = 0;
   // long int_part = 0;
-  int len = 0;
+  // int len = 0;
   if (flags.length == 'L') {
     ch = va_arg(args, long double);
   } else {
     ch = va_arg(args, double);
   }
   DEBUG_PRINT("Get args=|%Lf|\n", ch);
-  len += set_znak(tmp, flags, &ch);
-  tmp += len;
+  // len += set_znak(tmp, flags, &ch);
+  // tmp += len;
+  tmp += set_znak(tmp, flags, &ch);
   DEBUG_PRINT("Set znak=|%s|\n", (tmp - 1));
   if (ch < 1) {
     while (ch < 1) {
@@ -587,7 +591,7 @@ void handle_exp(char **buffer, Specifiers flags, va_list args) {
   if (flags.precision < 0) {
     flags.precision = 6;
   }
-  len = tmp - tmp_ptr;
+  // len = tmp - tmp_ptr;
   DEBUG_PRINT("handle_exp: div_part=%Lf, flags.precision=%d\n", ch,
               flags.precision);
   if (flags.specifier == 'g' || flags.specifier == 'G') {
@@ -641,10 +645,10 @@ void handle_hex(char **buffer, Specifiers flags, va_list args) {
     tmp += flags.precision - len;
   }
   if (flags.specifier == 'x') {
-    char *r = (char *)s21_to_lower(tmp_ptr);
+    const char *r = (char *)s21_to_lower(tmp_ptr);
     s21_memcpy(tmp_ptr, r, tmp - tmp_ptr);
   } else {
-    char *r = (char *)s21_to_upper(tmp_ptr);
+    const char *r = (char *)s21_to_upper(tmp_ptr);
     s21_memcpy(tmp_ptr, r, tmp - tmp_ptr);
   }
   set_width_pading(buffer, tmp_ptr, flags, tmp - tmp_ptr);
@@ -671,9 +675,9 @@ int get_exp(long double ch) {
 
 int proc_precission_g(double *ch, Specifiers flags) {
   int res = 0;
-  int i = 0;
   int val = 0;
   if (*ch < 1) {
+    int i = 0;
     while (val <= flags.precision) {
       int digit = (long)*ch * 10;
       *ch *= 10;
@@ -702,6 +706,7 @@ void handle_general(char **buffer, Specifiers flags, va_list args) {
   } else {
     handle_float(buffer, flags, args);
   }
+  va_end(args_orig);
 }
 
 void handle_octal(char **buffer, Specifiers flags, va_list args) {
@@ -729,17 +734,17 @@ void handle_octal(char **buffer, Specifiers flags, va_list args) {
       num /= 8;
       len++;
     } while (num > 0);
-    DEBUG_PRINT("spec:%%o, len:%d, num=%ld\n", len, num);
+    DEBUG_PRINT("spec:%%o, len:%d, num=%lu\n", len, num);
 
     if (flags.precision >= 0 && len < flags.precision) {
       int pad = flags.precision - len;
-      s21_memmove(ptr + pad, ptr, len); // Сдвигаем число вправо
-      s21_memset(ptr, '0', pad); // Дополняем нулями слева
+      s21_memmove(ptr + pad, ptr, len);  // Сдвигаем число вправо
+      s21_memset(ptr, '0', pad);  // Дополняем нулями слева
       len += pad;
     }
   }
 
-  DEBUG_PRINT("spec:%%o, flag:#, len:%d, num=%ld\n", len, num);
+  DEBUG_PRINT("spec:%%o, flag:#, len:%d, num=%lu\n", len, num);
   if (flags.flag == '#' && len > 0) {
     DEBUG_PRINT("ADD 0!\n")
     if (ch != 0) {
@@ -760,16 +765,16 @@ void handle_pointer(char **buffer, Specifiers flags, va_list args) {
     char *tmp_ptr = tmp + sizeof(tmp) - 1;
     *tmp_ptr = '\0';
 
-    if (num == 0) {
-      *--tmp_ptr = '0';
-    } else {
-      while (num > 0) {
-        int digit = num % 16;
-        char c = (digit < 10) ? ('0' + digit) : ('a' + digit - 10);
-        *--tmp_ptr = c;
-        num /= 16;
-      }
+    // if (num == 0) {
+    //   *--tmp_ptr = '0';
+    // } else {
+    while (num > 0) {
+      int digit = num % 16;
+      char c = (digit < 10) ? ('0' + digit) : ('a' + digit - 10);
+      *--tmp_ptr = c;
+      num /= 16;
     }
+    // }
 
     *--tmp_ptr = 'x';
     *--tmp_ptr = '0';
@@ -795,12 +800,12 @@ void handle_pointer(char **buffer, Specifiers flags, va_list args) {
       *buffer += padding;
     } else {
       if (flags.flag_fill == '0' && flags.precision < 0) {
-        s21_memcpy(*buffer, tmp_ptr, 2); // Копируем "0x"
+        s21_memcpy(*buffer, tmp_ptr, 2);  // Копируем "0x"
         *buffer += 2;
-        s21_memset(*buffer, '0', padding); // Заполняем нулями
+        s21_memset(*buffer, '0', padding);  // Заполняем нулями
         *buffer += padding;
         DEBUG_PRINT("tmp_ptr=%s\n", tmp_ptr);
-        s21_memcpy(*buffer, tmp_ptr + 2, len - 2); // Копируем остальную часть
+        s21_memcpy(*buffer, tmp_ptr + 2, len - 2);  // Копируем остальную часть
         *buffer += len - 2;
       } else {
         s21_memset(*buffer, ' ', padding);

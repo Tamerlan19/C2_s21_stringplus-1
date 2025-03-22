@@ -1,11 +1,11 @@
-#include "../s21_string.h"
 #include <check.h>
 #include <limits.h>
 #include <locale.h>
 #include <stdio.h>
 
-START_TEST(test_s21_sscanf_c) {
+#include "../s21_string.h"
 
+START_TEST(test_s21_sscanf_c) {
   char c;
   int count = s21_sscanf("A", "%c", &c);
   ck_assert_int_eq(count, 1);
@@ -88,7 +88,7 @@ START_TEST(test_s21_sscanf_c_edge) {
   ck_assert_int_eq(count, 1);
 
   wchar_t wc;
-  count = s21_sscanf("\xFF", "%1lc", &wc); // Невалидный UTF-8
+  count = s21_sscanf("\xFF", "%1lc", &wc);
   ck_assert_int_eq(count, EOF);
 }
 END_TEST
@@ -110,7 +110,6 @@ START_TEST(s21_test_sscanf_c_four_chars) {
 
   int result = s21_sscanf(input, "%c%c%c%c", &c1, &c2, &c3, &c4);
   int result_r = sscanf(input, "%c%c%c%c", &c1_r, &c2_r, &c3_r, &c4_r);
-  // ck_assert_int_eq(result, 4);
   ck_assert_int_eq(c1, c1_r);
   ck_assert_int_eq(c2, c2_r);
   ck_assert_int_eq(c3, c3_r);
@@ -134,7 +133,7 @@ END_TEST
 
 START_TEST(s21_test_sscanf_c_wide_char) {
   setlocale(LC_ALL, "en_US.utf8");
-  const char *input = "Ωβγ"; // UTF-8 представление 'Ω', 'β', 'γ'
+  const char *input = "Ωβγ";
   wchar_t wc;
 
   int result = s21_sscanf(input, "%lc", &wc);
@@ -146,7 +145,7 @@ END_TEST
 
 START_TEST(s21_test_sscanf_c_wide_chars_with_width) {
   setlocale(LC_ALL, "en_US.utf8");
-  const char *input = "Ωβγδ"; // UTF-8 представление 'Ω', 'β', 'γ', 'δ'
+  const char *input = "Ωβγδ";
   wchar_t wc[2];
 
   int result = s21_sscanf(input, "%2lc", wc);

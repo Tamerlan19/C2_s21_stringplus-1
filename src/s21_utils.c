@@ -1,13 +1,15 @@
 #include "s21_utils.h"
-#include "s21_string.h"
+
 #include <math.h>
+
+#include "s21_string.h"
 
 // Разбивает число на блоки по 18 цифр
 BigNumber convert_long_double_to_big_number(long double value) {
   BigNumber result;
   result.count = 0;
   for (int i = 0; i < 18; i++) {
-    result.parts[i] = 0; 
+    result.parts[i] = 0;
   }
   while (value >= 1.0 && result.count < 18) {
     result.parts[result.count++] = (long)fmodl(value, S21_BASE);
@@ -23,7 +25,7 @@ BigNumber convert_long_double_to_big_number(long double value) {
 int contains_char(const char *str, char ch) {
   while (*str) {
     if (*str == ch) {
-      return 1; // Найден символ
+      return 1;  // Найден символ
     }
     str++;
   }

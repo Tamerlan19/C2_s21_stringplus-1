@@ -1,26 +1,27 @@
 #ifndef S21_LIB_UTIL
 #define S21_LIB_UTIL
-#include "s21_string.h"
 #include <locale.h>
+
+#include "s21_string.h"
 
 #ifdef DEBUG
 #include <stdio.h>
-#define DEBUG_PRINT(fmt, ...)                                                  \
-  {                                                                            \
-    printf("DEBUG (%s:%d %s): " fmt, __FILE__, __LINE__, __func__,             \
-           ##__VA_ARGS__);                                                     \
+#define DEBUG_PRINT(fmt, ...)                                      \
+  {                                                                \
+    printf("DEBUG (%s:%d %s): " fmt, __FILE__, __LINE__, __func__, \
+           ##__VA_ARGS__);                                         \
   }
 #else
-#define DEBUG_PRINT(fmt, ...)                                                  \
+#define DEBUG_PRINT(fmt, ...) \
   {}
 #endif
 
 #ifdef _WIN64
-typedef unsigned long s21_size_t; // 64-bit Windows
+typedef unsigned long s21_size_t;  // 64-bit Windows
 #elif __x86_64__ || __ppc64__ || __aarch64__
-typedef unsigned long s21_size_t; // 64-bit Linux/macOS
+typedef unsigned long s21_size_t;  // 64-bit Linux/macOS
 #else
-typedef unsigned int s21_size_t; // 32-bit
+typedef unsigned int s21_size_t;  // 32-bit
 #endif
 
 typedef struct {
@@ -36,8 +37,8 @@ typedef struct {
 #define S21_BASE 1000000000000000000ULL
 
 typedef struct {
-  long unsigned parts[18]; // Блоки числа (по 18 цифр)
-  int count;               // Количество блоков
+  long unsigned parts[18];  // Блоки числа (по 18 цифр)
+  int count;                // Количество блоков
 } BigNumber;
 
 BigNumber convert_long_double_to_big_number(long double value);

@@ -1,8 +1,9 @@
-#include "../s21_string.h"
 #include <check.h>
 #include <limits.h>
 #include <locale.h>
 #include <stdio.h>
+
+#include "../s21_string.h"
 
 TCase *create_s21_sscanf_d_tests(void);
 TCase *create_s21_sscanf_c_tests(void);
@@ -27,8 +28,7 @@ START_TEST(test_s21_sscanf_lo_simple) {
   int ret = sscanf(input, fmt, &x);
 
   ck_assert_int_eq(x, x_s21);
-  ck_assert_int_eq(ret_s,ret);
-
+  ck_assert_int_eq(ret_s, ret);
 }
 END_TEST
 
@@ -50,8 +50,6 @@ START_TEST(test_s21_sscanf_cmpx_6523) {
   DEBUG_PRINT("Test test_s21_sscanf_cmpx_6523 is passed.\n");
 }
 END_TEST
-
-
 
 Suite *s21_sscanf_suite(void) {
   Suite *suite;

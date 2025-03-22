@@ -14,6 +14,7 @@ SOURCES_TST = test.c test_s21_sscanf_gen.c test/*.c
 SRCS = test.c s21_string.c test_s21_string.c test_s21_sscanf.c test_s21_sprintf.c s21_sscanf.c s21_sprintf.c s21_utils.c
 OBJS = $(SRCS:.c=.o)
 TARGET = ./
+CLANG_FILE="../materials/linters/.clang-format"
 
 
 
@@ -71,14 +72,14 @@ clean:
 style:
 	@for src in $(SOURCES) $(SOURCES_TST); do \
 		echo "###Formatting $$src..." ; \
-		clang-format -i "$(SRC_DIR)/$$src" ; \
+		clang-format -i "$(SRC_DIR)/$$src" --style=file:$(CLANG_FILE); \
 	done
 	@echo "Done"
 
 check-style:
 	@for src in $(SOURCES) $(SOURCES_TST); do \
 		echo "###Check format for file $$src..." ; \
-		clang-format -n "$(SRC_DIR)/$$src" ; \
+		clang-format -n "$(SRC_DIR)/$$src" --style=file:$(CLANG_FILE); \
 	done
 	@echo "Style check passed."
 

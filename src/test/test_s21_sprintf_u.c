@@ -1,6 +1,8 @@
-#include "../s21_string.h"
 #include <check.h>
 #include <stdio.h>
+
+#include "../s21_string.h"
+
 START_TEST(test_s21_sprintf_u_basic) {
   char buffer[1024];
   char buffer_s21[1024];
@@ -89,7 +91,7 @@ START_TEST(test_s21_sprintf_u_large_number) {
   char buffer[1024];
   char buffer_s21[1024];
   const char *fmt = "Unsigned: %u";
-  unsigned int value = 4294967295; // Максимальное значение для unsigned int
+  unsigned int value = 4294967295;
   int ret = sprintf(buffer, fmt, value);
   int ret_s21 = s21_sprintf(buffer_s21, fmt, value);
   ck_assert_int_eq(ret, ret_s21);
@@ -113,8 +115,7 @@ START_TEST(test_s21_sprintf_hu_short_unsigned) {
   char buffer[1024];
   char buffer_s21[1024];
   const char *fmt = "Short Unsigned: %hu";
-  unsigned short int short_uvalue =
-      65535; // Максимальное значение для unsigned short
+  unsigned short int short_uvalue = 65535;
   int ret = sprintf(buffer, fmt, short_uvalue);
   int ret_s21 = s21_sprintf(buffer_s21, fmt, short_uvalue);
   ck_assert_int_eq(ret, ret_s21);
@@ -126,8 +127,7 @@ START_TEST(test_s21_sprintf_lu_long_unsigned) {
   char buffer[1024];
   char buffer_s21[1024];
   const char *fmt = "Long Unsigned: %lu";
-  unsigned long int long_uvalue =
-      4294967295UL; // Максимальное значение для unsigned long
+  unsigned long int long_uvalue = 4294967295UL;
   int ret = sprintf(buffer, fmt, long_uvalue);
   int ret_s21 = s21_sprintf(buffer_s21, fmt, long_uvalue);
   ck_assert_int_eq(ret, ret_s21);
@@ -137,6 +137,7 @@ END_TEST
 
 TCase *tcase_s21_sprintf_u(void) {
   TCase *tc_core_u = tcase_create("Spec %u");
+
   tcase_add_test(tc_core_u, test_s21_sprintf_u_basic);
   tcase_add_test(tc_core_u, test_s21_sprintf_u_width);
   tcase_add_test(tc_core_u, test_s21_sprintf_u_precision);
@@ -148,5 +149,6 @@ TCase *tcase_s21_sprintf_u(void) {
   tcase_add_test(tc_core_u, test_s21_sprintf_u_width_precision);
   tcase_add_test(tc_core_u, test_s21_sprintf_hu_short_unsigned);
   tcase_add_test(tc_core_u, test_s21_sprintf_lu_long_unsigned);
+
   return tc_core_u;
 }

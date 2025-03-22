@@ -1,6 +1,7 @@
+#include <limits.h>
+
 #include "s21_string.h"
 #include "s21_utils.c"
-#include <limits.h>
 
 long double s21_pow(int x, int y);
 int get_number(const char *p, long int *res);
@@ -22,7 +23,7 @@ int str_to_int(const char *p, long int *res, int base);
 
 void proc_str(const char **p, int step, Specifiers st_spec, int *res,
               int *stop) {
-  DEBUG_PRINT("proc_str(): step=%d, res =%d, p=%s \n", step, *res,*p);
+  DEBUG_PRINT("proc_str(): step=%d, res =%d, p=%s \n", step, *res, *p);
   if (step > 0) {
     *p = *p + step;
     if (st_spec.flag != '*') {
@@ -40,7 +41,8 @@ void proc_str(const char **p, int step, Specifiers st_spec, int *res,
     DEBUG_PRINT("Specifiers.flag=%c\n", st_spec.flag);
     *stop = 1;
   }
-  DEBUG_PRINT("proc_str(): step=%d, res =%d, p=%s , stop=%d\n", step, *res,*p,*stop);
+  DEBUG_PRINT("proc_str(): step=%d, res =%d, p=%s , stop=%d\n", step, *res, *p,
+              *stop);
 }
 
 int proc_spec(const char **p, const char *str, va_list args,
@@ -85,7 +87,7 @@ int proc_spec(const char **p, const char *str, va_list args,
 }
 
 int s21_sscanf(const char *str, const char *format, ...) {
-  DEBUG_PRINT("\n\n\n Call s21_sscanf(): str=%s, format=%s\n",str,format);
+  DEBUG_PRINT("\n\n\n Call s21_sscanf(): str=%s, format=%s\n", str, format);
   int res = 0;
   if (*format) {
     va_list args;
@@ -112,7 +114,8 @@ int s21_sscanf(const char *str, const char *format, ...) {
             stop = 1;
           }
         }
-        DEBUG_PRINT(" s21_sscanf(): finish process: res=%d, p=%s , fmt=%s\n", res, p, fmt);
+        DEBUG_PRINT(" s21_sscanf(): finish process: res=%d, p=%s , fmt=%s\n",
+                    res, p, fmt);
         stop = 1;
         if (is_space(*fmt)) {
           noop_space(&fmt);
@@ -126,7 +129,7 @@ int s21_sscanf(const char *str, const char *format, ...) {
     }
     va_end(args);
   }
-  DEBUG_PRINT("finish s21_scanf(): res= %d\n",res);
+  DEBUG_PRINT("finish s21_scanf(): res= %d\n", res);
   return res;
 }
 
@@ -200,7 +203,7 @@ int str_to_int(const char *p, long int *res, int base) {
   }
   p = s21_to_upper(p);
   long int temp = 0;
-  int stop=0;
+  int stop = 0;
   while (*p && !stop) {
     int digit = -1;
 
@@ -209,18 +212,19 @@ int str_to_int(const char *p, long int *res, int base) {
     else if (is_hex(*p))
       digit = (*p - 'A' + 10);
 
-    if (digit < 0 || digit >= base){
-      break;
+    if ((digit < 0 || digit >= base)) {
+      stop = 2;
+    } else {
+      if (temp > (LONG_MAX - digit) / base) {
+        *res = (znak == 1) ? LONG_MAX : LONG_MIN;
+        stop = 1;
+      }
+      temp = (temp * base + digit);
+      p++;
+      i++;
     }
-
-    if (temp > (LONG_MAX - digit) / base) {
-      *res = (znak == 1) ? LONG_MAX : LONG_MIN;
-      stop=1;
-    }
-    temp = (temp * base + digit);
-    p++;
-    i++;
-  }if (!stop){
+  }
+  if (stop != 1) {
     *res = temp * znak;
   }
   return i;
@@ -236,8 +240,9 @@ int str_to_luint(const char *p, long unsigned *res, int base) {
     i++;
   }
   p = s21_to_upper(p);
-  long int temp = 0;
-  while (*p) {
+  long unsigned int temp = 0;
+  int stop = 0;
+  while (*p && !stop) {
     int digit = -1;
 
     if (is_digit(*p))
@@ -245,17 +250,21 @@ int str_to_luint(const char *p, long unsigned *res, int base) {
     else if (is_hex(*p))
       digit = (*p - 'A' + 10);
 
-    if (digit < 0 || digit >= base)
-      break;
-
-    if (temp > (LONG_MAX - digit) / base) {
-      *res = (znak == 1) ? LONG_MAX : LONG_MIN;
+    if (digit < 0 || digit >= base) {
+      stop = 2;
+    } else {
+      if (temp > (ULONG_MAX - digit) / base) {
+        *res = (znak == 1) ? ULONG_MAX : 0;
+        stop = 1;
+      }
+      temp = (temp * base + digit);
+      p++;
+      i++;
     }
-    temp = (temp * base + digit);
-    p++;
-    i++;
   }
-  *res = temp * znak;
+  if (stop != 1) {
+    *res = temp * znak;
+  }
   return i;
 }
 
@@ -271,8 +280,7 @@ int proc_spec_c(const char *str, va_list args, const Specifiers st_spec) {
         if (st_spec.length == 'l') {
           wchar_t dummy;
           for (int i = 0; i < width && *p; i++) {
-            if (read_wchar(&p, &dummy) != 0)
-              break;
+            if (read_wchar(&p, &dummy) != 0) break;
           }
         } else {
           p += width;
@@ -312,7 +320,7 @@ int proc_spec_wchar(const char **p, wchar_t *ch) {
       DEBUG_PRINT("Error: Invalid multibyte sequence.\n");
       break;
     }
-    DEBUG_PRINT("mbr_res=%lu, char=|%lc| \n", (unsigned long)mbr_res, *(ch));
+    // DEBUG_PRINT("mbr_res=%lu, char=|%lc| \n", (unsigned long)mbr_res, *(ch));
     *p += mbr_res;
     ch++;
     res += mbr_res;
@@ -373,10 +381,10 @@ int proc_spec_f(const char *str, va_list args, const Specifiers st_spec) {
   return r;
 }
 int proc_spec_s(const char *str, va_list args, const Specifiers st_spec) {
-  int res = 0, i = 0;
+  int res = 0;
   int width = get_width(str, st_spec);
   if (width > 0) {
-
+    int i = 0;
     char *arg_str = get_arg_width(str, width);
     const char *p = arg_str;
     noop_space(&p);
@@ -387,8 +395,7 @@ int proc_spec_s(const char *str, va_list args, const Specifiers st_spec) {
           i += proc_spec_wchar(&p, ch);
 
         } else {
-          for (; *p && !(is_space(*p)); i++, p++)
-            ;
+          for (; *p && !(is_space(*p)); i++, p++);
         }
         res = 0;
       } else {
@@ -496,7 +503,7 @@ int proc_spec_n(long int result, va_list args, const Specifiers st_spec) {
     short int *ch = va_arg(args, short int *);
     if (ch != S21_NULL) {
       *ch = (short int)result;
-    } 
+    }
   } else if (st_spec.length == 'l') {
     long int *ch = va_arg(args, long int *);
     if (ch != S21_NULL) {
@@ -613,8 +620,8 @@ int proc_spec_p(const char *str, va_list args, const Specifiers st_spec) {
             *ch = (void *)address;
             p += conv;
             res = p - str;
-          // } else {
-          //   res = -1;
+            // } else {
+            //   res = -1;
           }
         } else {
           long int address;

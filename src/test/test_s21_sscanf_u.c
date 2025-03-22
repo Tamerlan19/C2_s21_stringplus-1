@@ -1,8 +1,9 @@
-#include "../s21_string.h"
 #include <check.h>
 #include <limits.h>
 #include <locale.h>
 #include <stdio.h>
+
+#include "../s21_string.h"
 
 START_TEST(test_s21_sscanf_u_width_star_negative) {
   const char str[] = "-12345";
@@ -39,14 +40,14 @@ START_TEST(test_s21_sscanf_hu_width) {
 END_TEST
 
 START_TEST(test_s21_sscanf_hu_flag_star) {
-  const char *input = "12345";
-  unsigned short hu = 0;
+  const char *input = "255";
+  unsigned short hu = 0, hu_s21 = 0;
   const char *fmt = "%*hu %hu";
-  int result_s21 = s21_sscanf(input, fmt, &hu);
+  int result_s21 = s21_sscanf(input, fmt, &hu_s21);
   int result_std = sscanf(input, fmt, &hu);
 
   ck_assert_int_eq(result_s21, result_std);
-  ck_assert_uint_eq(hu, 0);
+  ck_assert_uint_eq(hu, hu_s21);
 }
 END_TEST
 
@@ -88,14 +89,14 @@ END_TEST
 
 START_TEST(test_s21_sscanf_lu_flag_star) {
   const char *input = "1234567890";
-  unsigned long lu = 0;
+  unsigned long lu = 22, lu_s21 = 22;
   const char *fmt = "%*lu %lu";
 
-  int result_s21 = s21_sscanf(input, fmt, &lu);
+  int result_s21 = s21_sscanf(input, fmt, &lu_s21);
   int result_std = sscanf(input, fmt, &lu);
 
   ck_assert_int_eq(result_s21, result_std);
-  ck_assert_uint_eq(lu, 0);
+  ck_assert_uint_eq(lu, lu_s21);
 }
 END_TEST
 
@@ -349,7 +350,7 @@ START_TEST(test_s21_sscanf_u_width_star) {
 END_TEST
 
 START_TEST(test_s21_sscanf_u_width_star_zero) {
-  const char str[] = "0";
+  const char str[] = "1111156";
   unsigned int res_s21 = {0}, res2 = {0};
   const char *fmt = "%*5u%u";
 

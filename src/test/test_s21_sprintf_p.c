@@ -1,6 +1,7 @@
-#include "../s21_string.h"
 #include <check.h>
 #include <stdio.h>
+
+#include "../s21_string.h"
 
 START_TEST(test_s21_sprintf_p_basic) {
   char buffer[1024];
@@ -46,7 +47,7 @@ START_TEST(test_s21_sprintf_p_dynamic_width) {
   const char *fmt = "Pointer: %*p";
   int value = 42;
   int *ptr = &value;
-  int width = 20; // Динамическая ширина
+  int width = 20;
   int ret = sprintf(buffer, fmt, width, ptr);
   int ret_s21 = s21_sprintf(buffer_s21, fmt, width, ptr);
   ck_assert_int_eq(ret, ret_s21);
@@ -73,7 +74,7 @@ START_TEST(test_s21_sprintf_p_dynamic_precision) {
   const char *fmt = "Pointer: %.*p";
   int value = 42;
   int *ptr = &value;
-  int precision = 16; // Динамическая точность
+  int precision = 16;
   int ret = sprintf(buffer, fmt, precision, ptr);
   int ret_s21 = s21_sprintf(buffer_s21, fmt, precision, ptr);
   ck_assert_int_eq(ret, ret_s21);
@@ -137,7 +138,6 @@ START_TEST(test_s21_sprintf_p_zero_pointer) {
   char buffer[1024];
   char buffer_s21[1024];
   const char *fmt = "Pointer: %p";
-  // int value = 0;
   int *ptr = 0x0;
   int ret = sprintf(buffer, fmt, ptr);
   int ret_s21 = s21_sprintf(buffer_s21, fmt, ptr);

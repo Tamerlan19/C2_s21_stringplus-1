@@ -1,6 +1,7 @@
 #include <check.h>
 #include <stdio.h>
 #include <string.h>
+
 #include "../s21_string.h"
 
 TCase *tcase_s21_sprintf_d(void);
@@ -35,7 +36,6 @@ Suite *s21_sprintf_suite(void) {
   suite_add_tcase(s, tc_core_o);
   TCase *tc_core_p = tcase_s21_sprintf_p();
   suite_add_tcase(s, tc_core_p);
-
   TCase *tc_core_e = tcase_s21_sprintf_e();
   suite_add_tcase(s, tc_core_e);
   TCase *tc_core_x = tcase_s21_sprintf_x();
@@ -46,15 +46,7 @@ Suite *s21_sprintf_suite(void) {
   suite_add_tcase(s, tc_core_pcnt);
 
   tc_core = tcase_create("Core");
-
   suite_add_tcase(s, tc_core);
-
-  //[ ] удалить отладочные кейсы
-  TCase *tc_debug;
-  tc_debug = tcase_create("Debug");
-  //   tcase_add_test(tc_debug, test_s21_sprintf_o_hash_flag);
-  // tcase_add_test(tc_debug, test_s21_sprintf_p_width_zero_padding);
-  suite_add_tcase(s, tc_debug);
 
   return s;
 }

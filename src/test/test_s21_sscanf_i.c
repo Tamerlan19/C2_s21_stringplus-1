@@ -1,8 +1,9 @@
-#include "../s21_string.h"
 #include <check.h>
 #include <limits.h>
 #include <locale.h>
 #include <stdio.h>
+
+#include "../s21_string.h"
 
 START_TEST(test_s21_sscanf_i) {
   const char str[] = "12345";
@@ -187,6 +188,7 @@ END_TEST
 TCase *create_s21_sscanf_i_tests(void) {
   TCase *tc_core_i;
   tc_core_i = tcase_create("Specifier= %i");
+
   tcase_add_test(tc_core_i, test_s21_sscanf_i_width_star_negative);
   tcase_add_test(tc_core_i, test_s21_sscanf_i_width_star_overflow);
   tcase_add_test(tc_core_i, test_s21_sscanf_i_width_star_max);

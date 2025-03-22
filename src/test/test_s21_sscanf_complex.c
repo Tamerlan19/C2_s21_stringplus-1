@@ -1,16 +1,15 @@
-#include "../s21_string.h"
 #include <check.h>
 #include <limits.h>
 #include <locale.h>
 #include <stdio.h>
 
+#include "../s21_string.h"
+
 static int compare_wstrings(const wchar_t *a, const wchar_t *b) {
   setlocale(LC_ALL, "en_US.utf8");
   wprintf(L"a=|%ls| b=|%ls|\n", a, b);
-  if (a == NULL && b == NULL)
-    return 1;
-  if (a == NULL || b == NULL)
-    return 0;
+  if (a == NULL && b == NULL) return 1;
+  if (a == NULL || b == NULL) return 0;
   return wcscmp(a, b) == 0;
 }
 
@@ -206,14 +205,10 @@ START_TEST(test_s21_sscanf_cmpx_0850) {
   int ret = sscanf(input, fmt, &var1, var2, &var3);
   int ret_s21 = s21_sscanf(input, fmt, &var1_s21, var2_s21, &var3_s21);
 
-  DEBUG_PRINT("ret=%d,ret_s21=%d\n", ret, ret_s21);
   ck_assert_int_eq(var1, var1_s21);
   ck_assert_str_eq(var2, var2_s21);
   ck_assert_double_eq_tol(var3, var3_s21, 10 - 6);
   ck_assert_int_eq(ret, ret_s21);
-  DEBUG_PRINT("Test test_s21_sscanf_cmpx_0850 is passed.\n");
-  // Assertion 'fabsl(var3_s21 - var3) < 10-6' failed: var3 == 1.19468e+06,
-  // var3_s21 == 0, 10-6 == 4
 }
 END_TEST
 
@@ -227,12 +222,10 @@ START_TEST(test_s21_sscanf_cmpx_2214) {
   int ret = sscanf(input, fmt, &var1, &var2, var3);
   int ret_s21 = s21_sscanf(input, fmt, &var1_s21, &var2_s21, var3_s21);
 
-  DEBUG_PRINT("ret=%d,ret_s21=%d\n", ret, ret_s21);
   ck_assert_int_eq(var1, var1_s21);
   ck_assert_double_eq_tol(var2, var2_s21, 10 - 6);
   ck_assert_str_eq(var3, var3_s21);
   ck_assert_int_eq(ret, ret_s21);
-  DEBUG_PRINT("Test test_s21_sscanf_cmpx_2214 is passed.\n");
 }
 END_TEST
 
@@ -246,12 +239,10 @@ START_TEST(test_s21_sscanf_cmpx_2388) {
   int ret = sscanf(input, fmt, &var1, var2, &var3);
   int ret_s21 = s21_sscanf(input, fmt, &var1_s21, var2_s21, &var3_s21);
 
-  DEBUG_PRINT("ret=%d,ret_s21=%d\n", ret, ret_s21);
   ck_assert_int_eq(var1, var1_s21);
   ck_assert(compare_wstrings(var2, var2_s21));
   ck_assert_double_eq_tol(var3, var3_s21, 10 - 6);
   ck_assert_int_eq(ret, ret_s21);
-  DEBUG_PRINT("Test test_s21_sscanf_cmpx_2388 is passed.\n");
 }
 END_TEST
 
@@ -265,12 +256,10 @@ START_TEST(test_s21_sscanf_cmpx_2506) {
   int ret = sscanf(input, fmt, &var1, &var2, var3);
   int ret_s21 = s21_sscanf(input, fmt, &var1_s21, &var2_s21, var3_s21);
 
-  DEBUG_PRINT("ret=%d,ret_s21=%d\n", ret, ret_s21);
   ck_assert_int_eq(var1, var1_s21);
   ck_assert_double_eq_tol(var2, var2_s21, 10 - 6);
   ck_assert_str_eq(var3, var3_s21);
   ck_assert_int_eq(ret, ret_s21);
-  DEBUG_PRINT("Test test_s21_sscanf_cmpx_2506 is passed.\n");
 }
 END_TEST
 
@@ -284,12 +273,10 @@ START_TEST(test_s21_sscanf_cmpx_2733) {
   int ret = sscanf(input, fmt, &var1, &var2, var3);
   int ret_s21 = s21_sscanf(input, fmt, &var1_s21, &var2_s21, var3_s21);
 
-  DEBUG_PRINT("ret=%d,ret_s21=%d\n", ret, ret_s21);
   ck_assert_double_eq_tol(var1, var1_s21, 10 - 6);
   ck_assert_double_eq_tol(var2, var2_s21, 10 - 6);
   ck_assert_str_eq(var3, var3_s21);
   ck_assert_int_eq(ret, ret_s21);
-  DEBUG_PRINT("Test test_s21_sscanf_cmpx_2733 is passed.\n");
 }
 END_TEST
 
@@ -302,11 +289,9 @@ START_TEST(test_s21_sscanf_cmpx_3234) {
   int ret = sscanf(input, fmt, &var2, var3);
   int ret_s21 = s21_sscanf(input, fmt, &var2_s21, var3_s21);
 
-  DEBUG_PRINT("ret=%d,ret_s21=%d\n", ret, ret_s21);
   ck_assert_double_eq_tol(var2, var2_s21, 10 - 6);
   ck_assert_str_eq(var3, var3_s21);
   ck_assert_int_eq(ret, ret_s21);
-  DEBUG_PRINT("Test test_s21_sscanf_cmpx_3234 is passed.\n");
 }
 END_TEST
 
@@ -317,24 +302,13 @@ START_TEST(test_s21_sscanf_cmpx_4106) {
   char var3[1024] = "A", var3_s21[1024] = "A";
   const char *fmt = "%1E\t%e %3c  ";
 
-  /*
-    const char *input="255  456789 3.14159A";
-  unsigned int var2=123,var2_s21=123;
-  char var3[1024]="A",var3_s21[1024]="A";
-  const char *fmt="%3x%6cA";
-*/
-
   int ret = sscanf(input, fmt, &var1, &var2, var3);
   int ret_s21 = s21_sscanf(input, fmt, &var1_s21, &var2_s21, var3_s21);
 
-  DEBUG_PRINT("ret=%d,ret_s21=%d\n", ret, ret_s21);
   ck_assert_double_eq_tol(var1, var1_s21, 10 - 6);
   ck_assert_double_eq_tol(var2, var2_s21, 10 - 6);
   ck_assert_str_eq(var3, var3_s21);
   ck_assert_int_eq(ret, ret_s21);
-  DEBUG_PRINT("Test test_s21_sscanf_cmpx_4106 is passed.\n");
-  // test_s21_sscanf.c:3034:F:Debug:test_s21_sscanf_cmpx_4106:0: Assertion 'var3
-  // == var3_s21' failed: var3 == "429", var3_s21 == "   42"
 }
 END_TEST
 
@@ -347,11 +321,9 @@ START_TEST(test_s21_sscanf_cmpx_6148) {
   int ret = sscanf(input, fmt, &var1, &var2);
   int ret_s21 = s21_sscanf(input, fmt, &var1_s21, &var2_s21);
 
-  DEBUG_PRINT("ret=%d,ret_s21=%d\n", ret, ret_s21);
   ck_assert_double_eq_tol(var1, var1_s21, 10 - 6);
   ck_assert_int_eq(var2, var2_s21);
   ck_assert_int_eq(ret, ret_s21);
-  DEBUG_PRINT("Test test_s21_sscanf_cmpx_6148 is passed.\n");
 }
 END_TEST
 
@@ -365,17 +337,14 @@ START_TEST(test_s21_sscanf_cmpx_6203) {
   int ret = sscanf(input, fmt, &var1, &var2, &var3);
   int ret_s21 = s21_sscanf(input, fmt, &var1_s21, &var2_s21, &var3_s21);
 
-  DEBUG_PRINT("ret=%d,ret_s21=%d\n", ret, ret_s21);
   ck_assert_double_eq_tol(var1, var1_s21, 10 - 6);
   ck_assert_double_eq_tol(var2, var2_s21, 10 - 6);
   ck_assert_int_eq(var3, var3_s21);
   ck_assert_int_eq(ret, ret_s21);
-  DEBUG_PRINT("Test test_s21_sscanf_cmpx_6203 is passed.\n");
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_cmpx_6523) {
-  // const char *input="98  4294967295A4294967295";
   const char *input = "98  11111295 A4294967295";
   unsigned var1 = 123, var1_s21 = 123;
   unsigned var2 = 123, var2_s21 = 123;
@@ -427,8 +396,6 @@ START_TEST(test_s21_sscanf_cmpx_7445) {
   ck_assert_int_eq(var3, var3_s21);
   ck_assert_int_eq(ret, ret_s21);
   DEBUG_PRINT("Test test_s21_sscanf_cmpx_7445 is passed.\n");
-  // test_s21_sscanf.c:3120:F:Debug:test_s21_sscanf_cmpx_7445:0: Assertion 'var3
-  // == var3_s21' failed: var3 == -123, var3_s21 == 4
 }
 END_TEST
 
@@ -449,8 +416,6 @@ START_TEST(test_s21_sscanf_cmpx_9707) {
   ck_assert_double_eq_tol(var3, var3_s21, 10 - 6);
   ck_assert_int_eq(ret, ret_s21);
   DEBUG_PRINT("Test test_s21_sscanf_cmpx_9707 is passed.\n");
-  // test_s21_sscanf.c:3138:F:Debug:test_s21_sscanf_cmpx_9707:0: Assertion 'var2
-  // == var2_s21' failed: var2 == "A", var2_s21 == ""
 }
 END_TEST
 
@@ -468,16 +433,10 @@ START_TEST(test_s21_sscanf_cmpx_9721) {
   ck_assert_int_eq(var3, var3_s21);
   ck_assert_int_eq(ret, ret_s21);
   DEBUG_PRINT("Test test_s21_sscanf_cmpx_9721 is passed.\n");
-  // test_s21_sscanf.c:3154:F:Debug:test_s21_sscanf_cmpx_9721:0: Assertion 'var3
-  // == var3_s21' failed: var3 == 3, var3_s21 == -3
 }
 END_TEST
 
 START_TEST(test_s21_sscanf_cmpx_0032) {
-  // const char *input="4294967295 3.14_1.23A";
-  // unsigned int var1=123,var1_s21=123;
-  // int var3=-123,var3_s21=-123;
-  // const char *fmt="%X %9iA";
   const char *input = "0xFFFFFFFF 556A";
   unsigned var1 = 123, var1_s21 = 123;
   int var3 = 123, var3_s21 = 123;
@@ -529,8 +488,6 @@ START_TEST(test_s21_sscanf_cmpx_2446) {
   ck_assert_int_eq(var3, var3_s21);
   ck_assert_int_eq(ret, ret_s21);
   DEBUG_PRINT("Test test_s21_sscanf_cmpx_2446 is passed.\n");
-  // test_gen_s21_sscanf.c:42072:F:Core:test_s21_sscanf_cmpx_2446:0: Assertion
-  // 'var1 == var1_s21' failed: var1 == 2492887701, var1_s21 == 4294967295
 }
 END_TEST
 
@@ -546,7 +503,6 @@ START_TEST(test_s21_sscanf_cmpx_8369) {
 
   DEBUG_PRINT("ret=%d,ret_s21=%d\n", ret, ret_s21);
   ck_assert_int_eq(var1, var1_s21);
-  // ck_assert_int_eq(var2, fmt[6]);
   ck_assert(compare_wstrings(var2, var2_s21));
   ck_assert_int_eq(var3, var3_s21);
   ck_assert_int_eq(ret, ret_s21);
@@ -709,10 +665,10 @@ START_TEST(test_s21_sscanf_cmpx_1686) {
   unsigned int var1 = 123, var1_s21 = 123;
   char var2[1024] = "A", var2_s21[1024] = "A";
   unsigned int var3 = 123, var3_s21 = 123;
-  const char *fmt = "%o.%50c  %10u:";
 
-  int ret = sscanf(input, fmt, &var1, var2, &var3);
-  int ret_s21 = s21_sscanf(input, fmt, &var1_s21, var2_s21, &var3_s21);
+  int ret = sscanf(input, "%o.%50c  %10u:", &var1, var2, &var3);
+  int ret_s21 =
+      s21_sscanf(input, "%o.%50c  %10u:", &var1_s21, var2_s21, &var3_s21);
 
   DEBUG_PRINT("ret=%d,ret_s21=%d\n", ret, ret_s21);
   ck_assert_int_eq(var1, var1_s21);

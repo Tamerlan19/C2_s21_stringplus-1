@@ -1,17 +1,14 @@
 #include "s21_string.h"
+
 #include <locale.h>
 #include <stdarg.h>
-
-// Specifiers parse_specifiers(const char *format);
-// char *s21_strcpy(char *dest, const char *src);
-// char *s21_strcat(char *destination, const char *append);
 
 typedef struct {
   int errnum;
   const char *message;
 } S21_Error;
 
-#ifdef __APPLE__ // macOS
+#ifdef __APPLE__  // macOS
 static const S21_Error S21_ERROR_MESSAGES[] = {
     {0, "Undefined error: 0"},
     {1, "Operation not permitted"},
@@ -53,7 +50,7 @@ static const S21_Error S21_ERROR_MESSAGES[] = {
     {37, "Operation already in progress"},
     {38, "Socket operation on non-socket"}};
 
-#elif defined(__linux__) // Linux
+#elif defined(__linux__)  // Linux
 S21_Error error_list[] = {
     {0, "Success"},
     {1, "Operation not permitted"},
@@ -206,17 +203,17 @@ void *s21_memchr(const void *str, int c, s21_size_t n) {
 }
 
 int s21_memcmp(const void *str1, const void *str2, size_t n) {
-  if (str1 && str2) { // Проверяем, что оба указателя не NULL
+  if (str1 && str2) {  // Проверяем, что оба указателя не NULL
     const unsigned char *s1 = (const unsigned char *)str1;
     const unsigned char *s2 = (const unsigned char *)str2;
 
     for (s21_size_t i = 0; i < n; i++) {
-      if (s1[i] != s2[i]) { // Сравниваем байты
-        return (int)(s1[i] - s2[i]); // Возвращаем разницу между байтами
+      if (s1[i] != s2[i]) {  // Сравниваем байты
+        return (int)(s1[i] - s2[i]);  // Возвращаем разницу между байтами
       }
     }
   }
-  return 0; // Если все байты совпадают или n == 0, возвращаем 0
+  return 0;  // Если все байты совпадают или n == 0, возвращаем 0
 }
 
 void *s21_memcpy(void *dest, const void *src, s21_size_t n) {
@@ -233,21 +230,21 @@ void *s21_memcpy(void *dest, const void *src, s21_size_t n) {
 }
 
 void *s21_memset(void *str, int c, s21_size_t n) {
-  if (str) { // Проверяем, что указатель не NULL
+  if (str) {  // Проверяем, что указатель не NULL
     unsigned char *ptr =
-        (unsigned char *)str; // Преобразуем указатель к типу unsigned char*
+        (unsigned char *)str;  // Преобразуем указатель к типу unsigned char*
     unsigned char value =
-        (unsigned char)c; // Преобразуем значение c к unsigned char
+        (unsigned char)c;  // Преобразуем значение c к unsigned char
 
     for (s21_size_t i = 0; i < n; i++) {
-      ptr[i] = value; // Записываем значение в каждый байт
+      ptr[i] = value;  // Записываем значение в каждый байт
     }
   }
-  return str; // Возвращаем исходный указатель
+  return str;  // Возвращаем исходный указатель
 }
 
 char *s21_strncat(char *dest, const char *src, s21_size_t n) {
-  if (dest && src) { // Проверяем, что обе строки не NULL
+  if (dest && src) {  // Проверяем, что обе строки не NULL
     char *dest_end = dest;
     // Находим конец строки dest
     while (*dest_end) {
@@ -260,7 +257,7 @@ char *s21_strncat(char *dest, const char *src, s21_size_t n) {
     // Добавляем завершающий нулевой символ
     *dest_end = '\0';
   }
-  return dest; // Возвращаем указатель на dest
+  return dest;  // Возвращаем указатель на dest
 }
 
 char *s21_strchr(const char *str, int ch) {
@@ -268,8 +265,7 @@ char *s21_strchr(const char *str, int ch) {
   if (str != S21_NULL) {
     for (; *str != '\0' && *str != ch; str++) {
     }
-    if (*str == ch)
-      rtn = (char *)str;
+    if (*str == ch) rtn = (char *)str;
   }
   return rtn;
 }
@@ -304,7 +300,7 @@ char *s21_strncpy(char *dest, const char *src, s21_size_t n) {
 s21_size_t s21_strcspn(const char *str1, const char *str2) {
   s21_size_t count = 0;
 
-  if (str1 && str2) { // Проверяем, что обе строки не NULL
+  if (str1 && str2) {  // Проверяем, что обе строки не NULL
     while (*str1 && !contains_char(str2, *str1)) {
       count++;
       str1++;
@@ -336,8 +332,7 @@ char *s21_strerror(int errnum) {
 
 s21_size_t s21_strlen(const char *str) {
   s21_size_t len = 0;
-  for (; *(str + len); len++)
-    ;
+  for (; *(str + len); len++);
   return len;
 }
 
@@ -391,7 +386,7 @@ char *s21_strstr(const char *haystack, const char *needle) {
     }
   }
   if (haystack ==
-      needle) { // 2025-02-27 01:22:26 @morrigem:add from check empty test
+      needle) {  // 2025-02-27 01:22:26 @morrigem:add from check empty test
     res = (char *)haystack;
   }
   return res;
@@ -405,7 +400,7 @@ char *s21_strtok(char *str, const char *delim) {
     if (*str != '\0') {
       res = str;
       t = s21_strpbrk(str, delim);
-      if (t - str == 0) { // delimiter in the begin of string
+      if (t - str == 0) {  // delimiter in the begin of string
         t = s21_strpbrk(++str, delim);
       }
       if (t - str > 0) {
@@ -434,7 +429,6 @@ void *s21_to_upper(const char *str) {
     s21_size_t length = s21_strlen(str);
     char *result = (char *)malloc(length + 1);
     if (result != S21_NULL) {
-
       for (s21_size_t i = 0; i < length; i++) {
         if (str[i] >= 'a' && str[i] <= 'z') {
           result[i] = str[i] - 32;
@@ -452,11 +446,9 @@ void *s21_to_upper(const char *str) {
 void *s21_to_lower(const char *str) {
   void *res = S21_NULL;
   if (str != S21_NULL) {
-
     size_t length = s21_strlen(str);
     char *result = (char *)malloc(length + 1);
     if (result != S21_NULL) {
-
       for (s21_size_t i = 0; i < length; i++) {
         if (str[i] >= 'A' && str[i] <= 'Z') {
           result[i] = str[i] + 32;

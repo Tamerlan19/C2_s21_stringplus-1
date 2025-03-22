@@ -1,8 +1,9 @@
-#include "../s21_string.h"
 #include <check.h>
 #include <limits.h>
 #include <locale.h>
 #include <stdio.h>
+
+#include "../s21_string.h"
 
 START_TEST(test_s21_sscanf_n_simple) {
   const char *input = "HelloWorld";

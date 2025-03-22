@@ -1,6 +1,7 @@
-#include "../s21_string.h"
 #include <check.h>
 #include <stdio.h>
+
+#include "../s21_string.h"
 
 START_TEST(test_s21_sprintf_c_simple_char) {
   char buffer[256];
@@ -90,5 +91,6 @@ TCase *tcase_s21_sprintf_c(void) {
   tcase_add_test(tc_core_c, test_s21_sprintf_c_min_width_one);
   tcase_add_test(tc_core_c, test_s21_sprintf_c_negative_width);
   tcase_add_test(tc_core_c, test_s21_sprintf_c_width);
+
   return tc_core_c;
 }

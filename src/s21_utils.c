@@ -1,10 +1,31 @@
 #include "s21_utils.h"
+
+#include <math.h>
+
 #include "s21_string.h"
+
+// Разбивает число на блоки по 18 цифр
+BigNumber convert_long_double_to_big_number(long double value) {
+  BigNumber result;
+  result.count = 0;
+  for (int i = 0; i < 18; i++) {
+    result.parts[i] = 0;
+  }
+  while (value >= 1.0 && result.count < 18) {
+    result.parts[result.count++] = (long)fmodl(value, S21_BASE);
+    DEBUG_PRINT("Before delim Value = %Lf\n", value);
+    long double tmp;
+    modfl(value / S21_BASE, &tmp);
+    value = tmp;
+    DEBUG_PRINT("After delim  Value = %Lf\n", value);
+  }
+  return result;
+}
 
 int contains_char(const char *str, char ch) {
   while (*str) {
     if (*str == ch) {
-      return 1; // Найден символ
+      return 1;  // Найден символ
     }
     str++;
   }
@@ -37,32 +58,30 @@ void *s21_memmove(void *dest, const void *src, s21_size_t n) {
  * specifiers.
  * @return The number of characters parsed.
  */
-int parse_specifiers(const char *fmt, Specifiers *st_spec) {
+int parse_specifiers(const char *fmt, Specifiers *st_spec, int print) {
   const char *format = fmt;
   format++;
-  DEBUG_PRINT("format=%s\n", format);
-  if ((*(format) == '+' || *(format) == '-' || *(format) == ' ' ||
-       *(format) == '#' || *(format) == '0')) {
-    st_spec->flag = *(format);
-    DEBUG_PRINT(" FLAGS=%c\n", st_spec->flag);
-    format++;
+  if (*(format) == '+' || *(format) == '#' || (!print && *(format) == '*')) {
+    st_spec->flag = *(format++);
   }
-  // Width
+  if (*(format) == ' ' || *(format) == '0') {
+    st_spec->flag_fill = *(format++);
+  }
+  if (*(format) == '-') {
+    st_spec->flag_align = *(format++);
+  }
   if (*(format) == '*' || is_digit(*(format))) {
     if (*(format) == '*') {
-      st_spec->flag = *(format);
+      st_spec->width = -1;
       format++;
     }
     if (is_digit(*(format))) {
       st_spec->width = 0;
       while (is_digit(*(format))) {
-        st_spec->width = st_spec->width * 10 + *(format) - '0';
-        format++;
+        st_spec->width = st_spec->width * 10 + *(format++) - '0';
       }
     }
-    DEBUG_PRINT("Width=%i\n", st_spec->width);
   }
-  // Precision
   if (*(format) == '.') {
     format++;
     st_spec->precision = 0;
@@ -71,38 +90,21 @@ int parse_specifiers(const char *fmt, Specifiers *st_spec) {
       format++;
     } else {
       while (is_digit(*(format))) {
-        st_spec->precision = st_spec->precision * 10 + *(format) - '0';
-        format++;
+        st_spec->precision = st_spec->precision * 10 + *(format++) - '0';
       }
     }
-    DEBUG_PRINT(" Precision=%i\n", st_spec->precision);
   }
-
-  // Length
   if (*(format) == 'h' || *(format) == 'l' || *(format) == 'L') {
-    st_spec->length = *(format);
-    format++;
-    DEBUG_PRINT(" Length=%c\n", st_spec->length);
+    st_spec->length = *(format++);
   }
-
-  // Specifiers
   if (*format == 'c' || *format == 'd' || *format == 'i' || *format == 'f' ||
       *format == 's' || *format == 'u' || *format == '%' || *format == 'g' ||
       *format == 'G' || *format == 'e' || *format == 'E' || *format == 'x' ||
       *format == 'X' || *format == 'o' || *format == 'p' || *format == 'n') {
-    st_spec->specifier = *format;
-    format++;
-    DEBUG_PRINT("Specifier=%c\n", st_spec->specifier);
+    st_spec->specifier = *(format++);
   } else {
     st_spec->specifier = '0';
   }
-  DEBUG_PRINT("RESULT: parse_specifiers()=%td Specifier=%c, Length=%c, "
-              "Precision=%i,  Width=%d, Flags=%c\n",
-              format - fmt, st_spec->specifier, st_spec->length,
-              st_spec->precision, st_spec->width, st_spec->flag);
-  DEBUG_PRINT(" fmt_length=%lu, format_length=%lu\n",
-              (unsigned long)s21_strlen(fmt),
-              (unsigned long)s21_strlen(format));
   return format - fmt;
 }
 
@@ -110,43 +112,6 @@ int is_digit(char c) { return (c >= '0' && c <= '9'); }
 
 int is_hex(char c) {
   return ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'F'));
-}
-
-void int_to_str(int num, char *str, int base) {
-  int i = 0;
-  int is_negative = 0;
-
-  if (num == 0) {
-    str[i++] = '0';
-    str[i] = '\0';
-    return;
-  }
-
-  if (num < 0 && base == 10) {
-    is_negative = 1;
-    num = -num;
-  }
-
-  while (num > 0) {
-    int digit = num % base;
-    str[i++] = (digit > 9) ? (digit - 10) + 'A' : digit + '0';
-    num /= base;
-  }
-
-  if (is_negative) {
-    str[i++] = '-';
-  }
-
-  str[i] = '\0';
-
-  int start = 0, end = i - 1;
-  while (start < end) {
-    char temp = str[start];
-    str[start] = str[end];
-    str[end] = temp;
-    start++;
-    end--;
-  }
 }
 
 int is_space(char c) { return (c == ' ' || c == '\t' || c == '\n'); }
@@ -182,4 +147,42 @@ int get_width(const char *str, const Specifiers st_spec) {
   }
 
   return width;
+}
+
+int int_to_str(long long int num, char *str, int base) {
+  int i = 0;
+  int is_negative = 0;
+
+  if (num == 0) {
+    str[i++] = '0';
+    str[i] = '\0';
+  } else {
+    if (num < 0 && base == 10) {
+      is_negative = 1;
+      num = -num;
+    }
+
+    while (num > 0) {
+      int digit = num % base;
+      str[i++] = (digit > 9) ? (digit - 10) + 'a' : digit + '0';
+      num /= base;
+    }
+
+    if (is_negative) {
+      str[i++] = '-';
+    }
+
+    str[i] = '\0';
+
+    int start = 0, end = i - 1;
+    while (start < end) {
+      char temp = str[start];
+      str[start] = str[end];
+      str[end] = temp;
+      start++;
+      end--;
+    }
+  }
+  DEBUG_PRINT("Result: len=%d, string=|%s|\n", i, str);
+  return i;
 }

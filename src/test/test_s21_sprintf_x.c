@@ -1,6 +1,7 @@
-#include "../s21_string.h"
 #include <check.h>
 #include <stdio.h>
+
+#include "../s21_string.h"
 
 START_TEST(test_s21_sprintf_x_simple) {
   char buffer[1024] = {0};
@@ -77,7 +78,7 @@ END_TEST
 START_TEST(test_s21_sprintf_x_width_precision_large) {
   char buffer[1024] = {0};
   char original_buffer[1024] = {0};
-  unsigned long value = 1235687999999999;
+  unsigned int value = 139137023;
   const char *fmt = "Number: %20.5x";
   int ret_s21 = s21_sprintf(buffer, fmt, value);
   int ret = sprintf(original_buffer, fmt, value);

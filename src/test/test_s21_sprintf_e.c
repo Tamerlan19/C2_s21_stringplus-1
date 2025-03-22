@@ -1,6 +1,7 @@
-#include "../s21_string.h"
 #include <check.h>
 #include <stdio.h>
+
+#include "../s21_string.h"
 
 START_TEST(test_s21_sprintf_e_simple) {
   char buffer[1024] = {0};
@@ -171,7 +172,7 @@ END_TEST
 START_TEST(test_s21_sprintf_e_sign_space) {
   char buffer[1024] = {0};
   char original_buffer[1024] = {0};
-  long double value = 1.7976931348623157e+308L;
+  double value = 1.7976931348623157e+308L;
   const char *fmt = "Number: % 14.3e";
   int ret_s21 = s21_sprintf(buffer, fmt, value);
   int ret = sprintf(original_buffer, fmt, value);
@@ -183,7 +184,7 @@ END_TEST
 START_TEST(test_s21_sprintf_e_sign_plus) {
   char buffer[1024] = {0};
   char original_buffer[1024] = {0};
-  long double value = 1.7976931348623157e+308L;
+  double value = 1.7976931348623157e+308L;
   const char *fmt = "Number: %+14.3e";
   int ret_s21 = s21_sprintf(buffer, fmt, value);
   int ret = sprintf(original_buffer, fmt, value);
@@ -211,5 +212,6 @@ TCase *tcase_s21_sprintf_e(void) {
   tcase_add_test(tc_core_e, test_s21_sprintf_E_simple);
   tcase_add_test(tc_core_e, test_s21_sprintf_e_sign_space);
   tcase_add_test(tc_core_e, test_s21_sprintf_e_sign_plus);
+
   return tc_core_e;
 }

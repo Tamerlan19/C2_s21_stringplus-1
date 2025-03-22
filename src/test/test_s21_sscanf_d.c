@@ -1,13 +1,13 @@
-#include "../s21_string.h"
 #include <check.h>
 #include <limits.h>
 #include <locale.h>
 #include <stdio.h>
 
+#include "../s21_string.h"
+
 START_TEST(test_s21_sscanf_d_simple) {
   const char *input = "123";
   int x = 0, xr = 0;
-  // const char *fmt = "%d";
   int ret_s21 = s21_sscanf(input, "%d", &x);
   int ret = sscanf(input, "%d", &xr);
   ck_assert_int_eq(x, xr);
@@ -85,7 +85,7 @@ END_TEST
 
 START_TEST(test_s21_sscanf_d_merge_string_start) {
   const char *input = "qwerty123";
-  int x = 1, xr = 1; // var is not change value
+  int x = 1, xr = 1;
   const char *fmt = "%d";
   int ret_s21 = s21_sscanf(input, fmt, &x);
   int ret = sscanf(input, fmt, &xr);
@@ -106,7 +106,7 @@ START_TEST(test_s21_sscanf_d_empty) {
 END_TEST
 
 START_TEST(test_s21_sscanf_d_max) {
-  const char *input = "2147483647"; // INT_MAX
+  const char *input = "2147483647";
   int x = 0, xr = 0;
   const char *fmt = "%d";
   int ret_s21 = s21_sscanf(input, fmt, &x);
@@ -117,7 +117,7 @@ START_TEST(test_s21_sscanf_d_max) {
 END_TEST
 
 START_TEST(test_s21_sscanf_d_min) {
-  const char *input = " -2147483648"; // INT_MIN
+  const char *input = " -2147483648";
   int x = 0, xr = 0;
   const char *fmt = "%d";
   int ret_s21 = s21_sscanf(input, fmt, &x);
@@ -128,8 +128,7 @@ START_TEST(test_s21_sscanf_d_min) {
 END_TEST
 
 START_TEST(test_s21_sscanf_d_max_over) {
-  const char *input = "2147483657"; // INT_MAX +10. Oveflow: Result
-                                    // s21_scanf=-2147483639, sscanf=-2147483639
+  const char *input = "2147483657";
   int x = 0, xr = 0;
   const char *fmt = "%d";
   int ret_s21 = s21_sscanf(input, fmt, &x);
@@ -253,7 +252,7 @@ START_TEST(test_s21_sscanf_hd) {
 END_TEST
 
 START_TEST(test_s21_sscanf_ld) {
-  const char *input = "21474836480"; // Значение больше INT_MAX
+  const char *input = "21474836480";
   long value = 0;
   int result = s21_sscanf(input, "%ld", &value);
   ck_assert_int_eq(result, 1);

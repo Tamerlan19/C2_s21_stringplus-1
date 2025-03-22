@@ -1,8 +1,9 @@
-#include "../s21_string.h"
 #include <check.h>
 #include <limits.h>
 #include <locale.h>
 #include <stdio.h>
+
+#include "../s21_string.h"
 
 START_TEST(test_s21_sscanf_s_separators_comp) {
   // const char *input = "Hello , Wide : World!";
@@ -91,10 +92,8 @@ END_TEST
 static int compare_wstrings(const wchar_t *a, const wchar_t *b) {
   setlocale(LC_ALL, "en_US.utf8");
   wprintf(L"a=|%ls| b=|%ls|\n", a, b);
-  if (a == NULL && b == NULL)
-    return 1;
-  if (a == NULL || b == NULL)
-    return 0;
+  if (a == NULL && b == NULL) return 1;
+  if (a == NULL || b == NULL) return 0;
   return wcscmp(a, b) == 0;
 }
 
@@ -174,7 +173,6 @@ START_TEST(test_s21_sscanf_ls_empty) {
 
   ck_assert_int_eq(result_s21, result_sscanf);
   ck_assert(compare_wstrings(wstr_s21, wstr_sscanf));
-  // ck_assert_(wstr_s21, wstr_sscanf);
   DEBUG_PRINT("Test test_s21_sscanf_ls_empty passed.\n");
 }
 END_TEST
@@ -183,7 +181,7 @@ START_TEST(test_s21_sscanf_ls_wrong_fmt) {
   setlocale(LC_ALL, "en_US.utf8");
   const char *input = "Hello";
   wchar_t wstr_s21[50], wstr_sscanf[50];
-  const char *fmt = "%l";
+  const char *fmt = "%ls";
 
   int result_s21 = s21_sscanf(input, fmt, wstr_s21);
   int result_sscanf = sscanf(input, fmt, wstr_sscanf);

@@ -2,6 +2,7 @@
 #include <limits.h>
 #include <locale.h>
 #include <stdio.h>
+
 #include "../s21_string.h"
 
 TCase *create_s21_sscanf_d_tests(void);
@@ -18,8 +19,20 @@ TCase *create_s21_sscanf_f_tests(void);
 TCase *create_s21_sscanf_pcnt_tests(void);
 TCase *create_s21_sscanf_complex_tests(void);
 
+START_TEST(test_s21_sscanf_lo_simple) {
+  const char *input = "6652";
+  long unsigned x = 11, x_s21 = 12;
+  const char *fmt = "%lo";
+
+  int ret_s = s21_sscanf(input, fmt, &x_s21);
+  int ret = sscanf(input, fmt, &x);
+
+  ck_assert_int_eq(x, x_s21);
+  ck_assert_int_eq(ret_s, ret);
+}
+END_TEST
+
 START_TEST(test_s21_sscanf_cmpx_6523) {
-  // const char *input="98  4294967295A4294967295";
   const char *input = "98  11111295A 4294967295";
   unsigned var1 = 123, var1_s21 = 123;
   unsigned var2 = 123, var2_s21 = 123;
@@ -74,6 +87,7 @@ Suite *s21_sscanf_suite(void) {
   TCase *tc_debug;
   tc_debug = tcase_create("Debug");
   tcase_add_test(tc_debug, test_s21_sscanf_cmpx_6523);
+  tcase_add_test(tc_debug, test_s21_sscanf_lo_simple);
   suite_add_tcase(suite, tc_debug);
 
   return suite;

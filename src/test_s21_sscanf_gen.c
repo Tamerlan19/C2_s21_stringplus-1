@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+
 #include "s21_string.h"
 
 #define TEST_COUNT 5000
@@ -234,7 +235,7 @@ int set_fmt_flags(spec_type *fmt) {
   }
   // printf("DEBUG: after add legth flags: res_fmt=%s\n", res_fmt);
 
-  strcat(res_fmt, spec); // add specifiers
+  strcat(res_fmt, spec);  // add specifiers
 
   memmove(fmt->spec, res_fmt, strlen(res_fmt));
   // printf("DEBUG: spec=%s\n", fmt->spec);
@@ -266,7 +267,6 @@ spec_type get_fmt(int t) {
       // {"p", "unsigned int ", "0x123ABC"},
   };
   if (t <= SPEC_COUNTS) {
-
     set_input_str(&spec[t]);
     set_fmt_flags(&spec[t]);
   }
@@ -350,8 +350,9 @@ const char *get_separator(int i) {
 }
 
 void insert_header(FILE *file) {
-  fprintf(file, "#include \"s21_string.h\"\n#include <check.h>\n#include "
-                "<stdio.h>\n#include <wchar.h>\n#include <locale.h>\n\n");
+  fprintf(file,
+          "#include \"s21_string.h\"\n#include <check.h>\n#include "
+          "<stdio.h>\n#include <wchar.h>\n#include <locale.h>\n\n");
 }
 
 void insert_cmp_wstrings(FILE *file) {
@@ -379,7 +380,7 @@ int main(void) {
   insert_header(file);
   // insert_cmp_wstrings(file);
   int stop = 0;
-  for (int i = 0; n < TEST_COUNT && !(stop); i++) { // specifiers
+  for (int i = 0; n < TEST_COUNT && !(stop); i++) {  // specifiers
     spec_type fmt_arr[50];
     char test_name[50];
     sprintf(test_name, "test_s21_sscanf_cmpx_%04d", n + 1);
@@ -394,7 +395,7 @@ int main(void) {
     int max_var = TEST_VAR;
     for (int vrs = 0, i = 0; i < max_var; i++) {
       int random_number = rand() % SPEC_COUNTS;
-      int s = rand() % 15; // separator
+      int s = rand() % 15;  // separator
       const char *spr = get_separator(s);
       fmt_spr[i] = malloc(11);
       strncpy(fmt_spr[i], spr, strlen(spr));
@@ -428,7 +429,8 @@ int main(void) {
     get_var(fmt_arr, vars, args_sscanf, args_sscanf_s21, args_fmt, checks,
             fmt_spr);
 
-    fprintf(file, "\nSTART_TEST(%s) {\n\
+    fprintf(file,
+            "\nSTART_TEST(%s) {\n\
   const char *input=\"%s\";\n\
 %s\
   const char *fmt=\"%s\";\n\n\
@@ -449,7 +451,8 @@ END_TEST \n\
     }
   }
 
-  fprintf(file, "\nSuite *s21_sscanf_gen_suite(void) {\n\
+  fprintf(file,
+          "\nSuite *s21_sscanf_gen_suite(void) {\n\
   Suite *s;\n\
   TCase *tc_core;\n\
   s = suite_create(\"s21_sscanf_gen\");\n\
@@ -459,10 +462,12 @@ END_TEST \n\
             r + 1);
   }
 
-  fprintf(file, "\n  suite_add_tcase(s, tc_core);\n\
+  fprintf(file,
+          "\n  suite_add_tcase(s, tc_core);\n\
   return s;\n}");
 
-  fprintf(file, "\n\n\nint main(void) {\n\
+  fprintf(file,
+          "\n\n\nint main(void) {\n\
   SRunner *sr;\n\
   sr = srunner_create(s21_sscanf_gen_suite());\n\
   srunner_run_all(sr, CK_NORMAL);\n\

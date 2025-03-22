@@ -10,10 +10,11 @@ endif
 TESTFLAGS = -lcheck -lsubunit -lm
 SRC_DIR =./
 SOURCES =  s21_utils.h  s21_string.h s21_string.c s21_sprintf.c s21_sscanf.c s21_utils.c
-SOURCES_TST = test.c test_s21_string.c test_s21_sscanf.c test_s21_sprintf.c test_s21_sscanf_gen.c test/*.c
+SOURCES_TST = test.c test_s21_sscanf_gen.c test/*.c
 SRCS = test.c s21_string.c test_s21_string.c test_s21_sscanf.c test_s21_sprintf.c s21_sscanf.c s21_sprintf.c s21_utils.c
 OBJS = $(SRCS:.c=.o)
 TARGET = ./
+CLANG_FILE="../materials/linters/.clang-format"
 
 
 
@@ -49,7 +50,7 @@ gcov_report: clean
 	$(CC) $(CFLAGS) -fprofile-arcs -ftest-coverage -c s21_sscanf.c -o s21_sscanf.o
 	# $(CC) $(CFLAGS) -fprofile-arcs -ftest-coverage -c s21_utils.c -o s21_utils.o
 	ar rcs $(TARGET)s21_string.a s21_string.o s21_sprintf.o s21_sscanf.o
-	$(CC) $(CFLAGS)  -fprofile-arcs -ftest-coverage  -o test.exe -o test.exe test.c test_s21_string.c test_s21_sprintf.c test/*.c  -L. -l:s21_string.a $(TESTFLAGS)
+	$(CC) $(CFLAGS)  -fprofile-arcs -ftest-coverage  -o test.exe -o test.exe test.c test/*.c  -L. -l:s21_string.a $(TESTFLAGS)
 	./test.exe
 	gcov s21_string.c s21_sprintf.c s21_sscanf.c
 	lcov --exclude "test*.c"   --capture --directory ./ --output-file flt-coverage.info
@@ -71,14 +72,14 @@ clean:
 style:
 	@for src in $(SOURCES) $(SOURCES_TST); do \
 		echo "###Formatting $$src..." ; \
-		clang-format -i "$(SRC_DIR)/$$src" ; \
+		clang-format -i "$(SRC_DIR)/$$src" --style=file:$(CLANG_FILE); \
 	done
 	@echo "Done"
 
 check-style:
 	@for src in $(SOURCES) $(SOURCES_TST); do \
 		echo "###Check format for file $$src..." ; \
-		clang-format -n "$(SRC_DIR)/$$src" ; \
+		clang-format -n "$(SRC_DIR)/$$src" --style=file:$(CLANG_FILE); \
 	done
 	@echo "Style check passed."
 

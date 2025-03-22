@@ -1,6 +1,7 @@
-#include "../s21_string.h"
 #include <check.h>
 #include <stdio.h>
+
+#include "../s21_string.h"
 
 START_TEST(test_s21_sprintf_basic_string) {
   char buffer[1024];
@@ -139,7 +140,7 @@ START_TEST(test_s21_sprintf_hs_short_string) {
   char buffer[1024];
   char buffer_s21[1024];
   const char *fmt = "Short String: %hs";
-  char short_str[6] = "Hello"; // Массив char вместо строки
+  char short_str[6] = "Hello";
   int ret = sprintf(buffer, fmt, short_str);
   int ret_s21 = s21_sprintf(buffer_s21, fmt, short_str);
   ck_assert_int_eq(ret, ret_s21);
@@ -152,129 +153,121 @@ START_TEST(test_s21_sprintf_ls_wide_string) {
 
   wchar_t buffer[1024];
   char buffer_s21[1024];
-  wchar_t buffer_s21_wide[1024]; // Буфер для преобразования buffer_s21 в wide
-                                 // string
-
+  wchar_t buffer_s21_wide[1024];
   const char *fmt_narrow = "Wide String: %ls";
   wchar_t fmt_wide[1024];
-  mbstowcs(fmt_wide, fmt_narrow,
-           strlen(fmt_narrow) + 1); // Конвертируем формат в wchar_t
+  mbstowcs(fmt_wide, fmt_narrow, strlen(fmt_narrow) + 1);
 
-  wchar_t wide_str[] = L"Привет"; // Строка широких символов
+  wchar_t wide_str[] = L"Привет";
 
-  int ret =
-      swprintf(buffer, 1024, fmt_wide, wide_str); // Форматируем wide string
-  s21_sprintf(buffer_s21, fmt_narrow,
-              wide_str); // Форматируем с помощью s21_sprintf
+  int ret = swprintf(buffer, 1024, fmt_wide, wide_str);
+  s21_sprintf(buffer_s21, fmt_narrow, wide_str);
 
-  // Преобразуем buffer_s21 в wide string
   size_t converted = mbstowcs(buffer_s21_wide, buffer_s21, 1024);
   if (converted == (size_t)-1) {
     printf("Ошибка преобразования buffer_s21 в wide string\n");
-    ck_abort(); // Аборт теста с сообщением об ошибке
+    ck_abort();
   }
 
-  // Проверяем длину строки
   ck_assert_int_eq(ret, wcslen(buffer));
-  // Сравниваем wide строки
   ck_assert_int_eq(wcscmp(buffer, buffer_s21_wide), 0);
 }
 END_TEST
 
 START_TEST(test_s21_sprintf_ls_null_string) {
-    char buffer[1024];
-    char buffer_s21[1024];
-    const char *fmt = "Wide String: %ls";
-    wchar_t *wide_str = NULL; // Строка равна NULL
-    int ret = sprintf(buffer, fmt, wide_str);
-    int ret_s21 = s21_sprintf(buffer_s21, fmt, wide_str);
-    ck_assert_int_eq(ret, ret_s21);
-    ck_assert_str_eq(buffer, buffer_s21);
+  char buffer[1024];
+  char buffer_s21[1024];
+  const char *fmt = "Wide String: %ls";
+  wchar_t *wide_str = NULL;
+  int ret = sprintf(buffer, fmt, wide_str);
+  int ret_s21 = s21_sprintf(buffer_s21, fmt, wide_str);
+  ck_assert_int_eq(ret, ret_s21);
+  ck_assert_str_eq(buffer, buffer_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sprintf_ls_null_with_width) {
-    char buffer[1024];
-    char buffer_s21[1024];
-    const char *fmt = "Wide String: %10ls";
-    wchar_t *wide_str = NULL; // Строка равна NULL
-    int ret = sprintf(buffer, fmt, wide_str);
-    int ret_s21 = s21_sprintf(buffer_s21, fmt, wide_str);
-    ck_assert_int_eq(ret, ret_s21);
-    ck_assert_str_eq(buffer, buffer_s21);
+  char buffer[1024];
+  char buffer_s21[1024];
+  const char *fmt = "Wide String: %10ls";
+  wchar_t *wide_str = NULL;
+  int ret = sprintf(buffer, fmt, wide_str);
+  int ret_s21 = s21_sprintf(buffer_s21, fmt, wide_str);
+  ck_assert_int_eq(ret, ret_s21);
+  ck_assert_str_eq(buffer, buffer_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sprintf_ls_null_with_left_alignment) {
-    char buffer[1024];
-    char buffer_s21[1024];
-    const char *fmt = "Wide String: %-10ls";
-    wchar_t *wide_str = NULL; // Строка равна NULL
-    int ret = sprintf(buffer, fmt, wide_str);
-    int ret_s21 = s21_sprintf(buffer_s21, fmt, wide_str);
-    ck_assert_int_eq(ret, ret_s21);
-    ck_assert_str_eq(buffer, buffer_s21);
+  char buffer[1024];
+  char buffer_s21[1024];
+  const char *fmt = "Wide String: %-10ls";
+  wchar_t *wide_str = NULL;
+  int ret = sprintf(buffer, fmt, wide_str);
+  int ret_s21 = s21_sprintf(buffer_s21, fmt, wide_str);
+  ck_assert_int_eq(ret, ret_s21);
+  ck_assert_str_eq(buffer, buffer_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sprintf_ls_null_with_precision) {
-    char buffer[1024];
-    char buffer_s21[1024];
-    const char *fmt = "Wide String: %.5ls";
-    wchar_t *wide_str = NULL; // Строка равна NULL
-    int ret = sprintf(buffer, fmt, wide_str);
-    int ret_s21 = s21_sprintf(buffer_s21, fmt, wide_str);
-    ck_assert_int_eq(ret, ret_s21);
-    ck_assert_str_eq(buffer, buffer_s21);
+  char buffer[1024];
+  char buffer_s21[1024];
+  const char *fmt = "Wide String: %.6ls";
+  wchar_t *wide_str = NULL;
+  int ret = sprintf(buffer, fmt, wide_str);
+  int ret_s21 = s21_sprintf(buffer_s21, fmt, wide_str);
+  ck_assert_str_eq(buffer, buffer_s21);
+  ck_assert_int_eq(ret, ret_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sprintf_ls_null_with_width_and_precision) {
-    char buffer[1024];
-    char buffer_s21[1024];
-    const char *fmt = "Wide String: %10.5ls";
-    wchar_t *wide_str = NULL; // Строка равна NULL
-    int ret = sprintf(buffer, fmt, wide_str);
-    int ret_s21 = s21_sprintf(buffer_s21, fmt, wide_str);
-    ck_assert_int_eq(ret, ret_s21);
-    ck_assert_str_eq(buffer, buffer_s21);
+  char buffer[1024];
+  char buffer_s21[1024];
+  const char *fmt = "Wide String: %10.6ls";
+  wchar_t *wide_str = NULL;
+  int ret = sprintf(buffer, fmt, wide_str);
+  int ret_s21 = s21_sprintf(buffer_s21, fmt, wide_str);
+  ck_assert_int_eq(ret, ret_s21);
+  ck_assert_str_eq(buffer, buffer_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sprintf_ls_null_with_hash_flag) {
-    char buffer[1024];
-    char buffer_s21[1024];
-    const char *fmt = "Wide String: %#ls";
-    wchar_t *wide_str = NULL; // Строка равна NULL
-    int ret = sprintf(buffer, fmt, wide_str);
-    int ret_s21 = s21_sprintf(buffer_s21, fmt, wide_str);
-    ck_assert_int_eq(ret, ret_s21);
-    ck_assert_str_eq(buffer, buffer_s21);
+  char buffer[1024];
+  char buffer_s21[1024];
+  const char *fmt = "Wide String: %#ls";
+  wchar_t *wide_str = NULL;
+  int ret = sprintf(buffer, fmt, wide_str);
+  int ret_s21 = s21_sprintf(buffer_s21, fmt, wide_str);
+  ck_assert_int_eq(ret, ret_s21);
+  ck_assert_str_eq(buffer, buffer_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sprintf_ls_null_with_zero_padding) {
-    char buffer[1024];
-    char buffer_s21[1024];
-    const char *fmt = "Wide String: %010ls";
-    wchar_t *wide_str = NULL; // Строка равна NULL
-    int ret = sprintf(buffer, fmt, wide_str);
-    int ret_s21 = s21_sprintf(buffer_s21, fmt, wide_str);
-    ck_assert_int_eq(ret, ret_s21);
-    ck_assert_str_eq(buffer, buffer_s21);
+  char buffer[1024];
+  char buffer_s21[1024];
+  const char *fmt = "Wide String: %010ls";
+  wchar_t *wide_str = NULL;
+  int ret = sprintf(buffer, fmt, wide_str);
+  int ret_s21 = s21_sprintf(buffer_s21, fmt, wide_str);
+  ck_assert_int_eq(ret, ret_s21);
+  ck_assert_str_eq(buffer, buffer_s21);
 }
 END_TEST
 
 START_TEST(test_s21_sprintf_ls_null_with_dynamic_width) {
-    char buffer[1024];
-    char buffer_s21[1024];
-    const char *fmt = "Wide String: %*ls";
-    wchar_t *wide_str = NULL; // Строка равна NULL
-    int width = 15;
-    int ret = sprintf(buffer, fmt, width, wide_str);
-    int ret_s21 = s21_sprintf(buffer_s21, fmt, width, wide_str);
-    ck_assert_int_eq(ret, ret_s21);
-    ck_assert_str_eq(buffer, buffer_s21);
+  char buffer[1024];
+  char buffer_s21[1024];
+  const char *fmt = "Wide String: %*ls";
+  wchar_t *wide_str = NULL;
+  int width = 15;
+  int ret = sprintf(buffer, fmt, width, wide_str);
+  int ret_s21 = s21_sprintf(buffer_s21, fmt, width, wide_str);
+  ck_assert_int_eq(ret, ret_s21);
+  ck_assert_str_eq(buffer, buffer_s21);
 }
 END_TEST
 

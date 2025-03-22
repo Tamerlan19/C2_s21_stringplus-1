@@ -80,6 +80,24 @@ START_TEST(test_s21_sprintf_c_negative_width) {
 }
 END_TEST
 
+START_TEST(test_s21_sprintf_lc) {
+  setlocale(LC_ALL, "en_US.utf8");
+  char input[50] = "Hello, Wide: ";
+  char input_s21[50] = "Hello, Wide: ";
+  wchar_t wchr = L'Ω';
+  const char *fmt = "%lc";
+
+  int result_s21 = s21_sprintf(input_s21, fmt, wchr);
+  int result = sprintf(input, fmt, wchr);
+
+  ck_assert_str_eq(input,input_s21);
+  ck_assert_int_eq(result_s21, result);
+  DEBUG_PRINT("Test test_s21_sscanf_ls_separators passed.\n");
+}
+END_TEST
+
+
+
 TCase *tcase_s21_sprintf_c(void) {
   TCase *tc_core_c = tcase_create("Spec %c");
 
@@ -91,6 +109,7 @@ TCase *tcase_s21_sprintf_c(void) {
   tcase_add_test(tc_core_c, test_s21_sprintf_c_min_width_one);
   tcase_add_test(tc_core_c, test_s21_sprintf_c_negative_width);
   tcase_add_test(tc_core_c, test_s21_sprintf_c_width);
+  tcase_add_test(tc_core_c, test_s21_sprintf_lc);
 
   return tc_core_c;
 }

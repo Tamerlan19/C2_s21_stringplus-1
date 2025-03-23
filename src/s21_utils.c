@@ -4,7 +4,6 @@
 
 #include "s21_string.h"
 
-// Разбивает число на блоки по 18 цифр
 BigNumber convert_long_double_to_big_number(long double value) {
   BigNumber result;
   result.count = 0;
@@ -25,7 +24,7 @@ BigNumber convert_long_double_to_big_number(long double value) {
 int contains_char(const char *str, char ch) {
   while (*str) {
     if (*str == ch) {
-      return 1;  // Найден символ
+      return 1;
     }
     str++;
   }
@@ -151,12 +150,12 @@ int get_width(const char *str, const Specifiers st_spec) {
 
 int int_to_str(long long int num, char *str, int base) {
   int i = 0;
-  int is_negative = 0;
 
   if (num == 0) {
     str[i++] = '0';
     str[i] = '\0';
   } else {
+    int is_negative = 0;
     if (num < 0 && base == 10) {
       is_negative = 1;
       num = -num;

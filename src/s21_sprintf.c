@@ -5,8 +5,6 @@
 
 #include "s21_string.h"
 #include "s21_utils.h"
-// [ ] Удалить импорт библиотеки, использовалась для отладки кода
-// #include <stdio.h>
 
 #define MAX_BUF_SIZE 1024
 
@@ -492,7 +490,6 @@ void set_width_pading(char **buffer, const char *src, Specifiers flags,
     *buffer += padding;
   } else {  // Rgiht align
     DEBUG_PRINT("Right align\n");
-    // char fill_char = (flags.flag == '0') ? '0' : ' ';
     s21_memset(*buffer, flags.flag_fill, padding);
     *buffer += padding;
     s21_memcpy(*buffer, src, len);
@@ -684,8 +681,8 @@ void handle_octal(char **buffer, Specifiers flags, va_list args) {
 
     if (flags.precision >= 0 && len < flags.precision) {
       int pad = flags.precision - len;
-      s21_memmove(ptr + pad, ptr, len);  // Сдвигаем число вправо
-      s21_memset(ptr, '0', pad);  // Дополняем нулями слева
+      s21_memmove(ptr + pad, ptr, len);
+      s21_memset(ptr, '0', pad);
       len += pad;
     }
   }

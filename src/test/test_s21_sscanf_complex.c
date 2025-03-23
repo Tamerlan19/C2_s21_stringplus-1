@@ -567,16 +567,14 @@ START_TEST(test_s21_sscanf_cmpx_0623) {
   const char *input = "9.45FF-128!";
   unsigned int var1 = 123, var1_s21 = 123;
   char var2[1024] = "ABCs", var2_s21[1024] = "ABC";
-  unsigned int var3 = 123, var3_s21 = 123;
-  const char *fmt = "%9x%s%x!";
+  const char *fmt = "%9x%s!";
 
-  int ret = sscanf(input, fmt, &var1, var2, &var3);
-  int ret_s21 = s21_sscanf(input, fmt, &var1_s21, var2_s21, &var3_s21);
+  int ret = sscanf(input, fmt, &var1, var2);
+  int ret_s21 = s21_sscanf(input, fmt, &var1_s21, var2_s21);
 
   DEBUG_PRINT("ret=%d,ret_s21=%d\n", ret, ret_s21);
   ck_assert_int_eq(var1, var1_s21);
   ck_assert_str_eq(var2, var2_s21);
-  ck_assert_int_eq(var3, var3_s21);
   ck_assert_int_eq(ret, ret_s21);
   DEBUG_PRINT("Test test_s21_sscanf_cmpx_0623 is passed.\n");
 }

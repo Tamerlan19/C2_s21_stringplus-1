@@ -82,21 +82,19 @@ END_TEST
 
 START_TEST(test_s21_sprintf_lc) {
   setlocale(LC_ALL, "en_US.utf8");
-  char input[50] = "Hello, Wide: ";
-  char input_s21[50] = "Hello, Wide: ";
-  wchar_t wchr = L'Ω';
-  const char *fmt = "%lc";
+  char input[50] = {0};
+  char input_s21[50] = {0};
+  unsigned long wchr = L'Ω';
+  const char *fmt = "Hello, Wide: %lc";
 
   int result_s21 = s21_sprintf(input_s21, fmt, wchr);
   int result = sprintf(input, fmt, wchr);
 
-  ck_assert_str_eq(input,input_s21);
+  ck_assert_str_eq(input, input_s21);
   ck_assert_int_eq(result_s21, result);
   DEBUG_PRINT("Test test_s21_sscanf_ls_separators passed.\n");
 }
 END_TEST
-
-
 
 TCase *tcase_s21_sprintf_c(void) {
   TCase *tc_core_c = tcase_create("Spec %c");

@@ -37,8 +37,8 @@ typedef struct {
 #define S21_BASE 1000000000000000000ULL
 
 typedef struct {
-  long unsigned parts[18];  // Блоки числа (по 18 цифр)
-  int count;                // Количество блоков
+  long unsigned parts[18];
+  int count;
 } BigNumber;
 
 BigNumber convert_long_double_to_big_number(long double value);

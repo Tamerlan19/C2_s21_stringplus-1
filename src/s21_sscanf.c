@@ -320,7 +320,6 @@ int proc_spec_wchar(const char **p, wchar_t *ch) {
       DEBUG_PRINT("Error: Invalid multibyte sequence.\n");
       break;
     }
-    // DEBUG_PRINT("mbr_res=%lu, char=|%lc| \n", (unsigned long)mbr_res, *(ch));
     *p += mbr_res;
     ch++;
     res += mbr_res;
@@ -467,13 +466,11 @@ int proc_spec_d(const char *str, va_list args, const Specifiers st_spec) {
 int proc_spec_u(const char *str, va_list args, const Specifiers st_spec) {
   int res = 0;
   int width = get_width(str, st_spec);
-  // long int result = 0;
   long unsigned result = 0;
   char *arg_str = get_arg_width(str, width);
   const char *p = arg_str;
   noop_space(&p);
   int step = 0;
-  // step = get_number(p, &result);
   step = str_to_luint(p, &result, 10);
   p += step;
   if (step > 0) {
@@ -620,8 +617,6 @@ int proc_spec_p(const char *str, va_list args, const Specifiers st_spec) {
             *ch = (void *)address;
             p += conv;
             res = p - str;
-            // } else {
-            //   res = -1;
           }
         } else {
           long int address;

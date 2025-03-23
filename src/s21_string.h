@@ -32,18 +32,12 @@ char *s21_strpbrk(const char *str1, const char *str2);
 char *s21_strrchr(const char *str, int c);
 char *s21_strstr(const char *haystack, const char *needle);
 char *s21_strtok(char *str, const char *delim);
-// Объявления функций
-void *s21_to_upper(const char *str);  // Преобразует строку в верхний регистр
-void *s21_to_lower(const char *str);  // Преобразует строку в нижний регистр
-void *s21_insert(const char *src, const char *str,
-                 size_t start_index);  // Вставляет строку в указанную позицию
-void *s21_trim(const char *src,
-               const char *trim_chars);  // Удаляет указанные символы с начала и
-                                         // конца строки
-
+void *s21_to_upper(const char *str);
+void *s21_to_lower(const char *str);
+void *s21_insert(const char *src, const char *str, size_t start_index);
+void *s21_trim(const char *src, const char *trim_chars);
 int s21_sprintf(char *str, const char *format, ...);
 int s21_sscanf(const char *str, const char *format, ...);
-
 char *s21_strerror(int errnum);
 
 #endif

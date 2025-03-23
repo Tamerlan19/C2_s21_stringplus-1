@@ -195,7 +195,6 @@ void *s21_memchr(const void *str, int c, s21_size_t n) {
   unsigned char *ptr = (unsigned char *)str;
   for (s21_size_t i = 0; i < n && !res; i++) {
     if (ptr[i] == (unsigned char)c) {
-      // return (void *)(ptr + i);
       res = (void *)(ptr + i);
     }
   }
@@ -203,61 +202,53 @@ void *s21_memchr(const void *str, int c, s21_size_t n) {
 }
 
 int s21_memcmp(const void *str1, const void *str2, size_t n) {
-  if (str1 && str2) {  // Проверяем, что оба указателя не NULL
+  if (str1 && str2) {
     const unsigned char *s1 = (const unsigned char *)str1;
     const unsigned char *s2 = (const unsigned char *)str2;
 
     for (s21_size_t i = 0; i < n; i++) {
-      if (s1[i] != s2[i]) {  // Сравниваем байты
-        return (int)(s1[i] - s2[i]);  // Возвращаем разницу между байтами
+      if (s1[i] != s2[i]) {
+        return (int)(s1[i] - s2[i]);
       }
     }
   }
-  return 0;  // Если все байты совпадают или n == 0, возвращаем 0
+  return 0;
 }
 
 void *s21_memcpy(void *dest, const void *src, s21_size_t n) {
-  // Приводим указатели к типу char* для побайтового копирования
   char *d = (char *)dest;
   const char *s = (const char *)src;
 
-  // Копируем n байт из src в dest
   for (size_t i = 0; i < n; i++) {
     d[i] = s[i];
   }
-  // Возвращаем указатель на dest
   return dest;
 }
 
 void *s21_memset(void *str, int c, s21_size_t n) {
-  if (str) {  // Проверяем, что указатель не NULL
-    unsigned char *ptr =
-        (unsigned char *)str;  // Преобразуем указатель к типу unsigned char*
-    unsigned char value =
-        (unsigned char)c;  // Преобразуем значение c к unsigned char
+  if (str) {
+    unsigned char *ptr = (unsigned char *)str;
+    unsigned char value = (unsigned char)c;
 
     for (s21_size_t i = 0; i < n; i++) {
-      ptr[i] = value;  // Записываем значение в каждый байт
+      ptr[i] = value;
     }
   }
-  return str;  // Возвращаем исходный указатель
+  return str;
 }
 
 char *s21_strncat(char *dest, const char *src, s21_size_t n) {
-  if (dest && src) {  // Проверяем, что обе строки не NULL
+  if (dest && src) {
     char *dest_end = dest;
-    // Находим конец строки dest
     while (*dest_end) {
       dest_end++;
     }
-    // Копируем символы из src в dest, пока не достигнем n или '\0'
     for (s21_size_t i = 0; i < n && *src; i++, src++, dest_end++) {
       *dest_end = *src;
     }
-    // Добавляем завершающий нулевой символ
     *dest_end = '\0';
   }
-  return dest;  // Возвращаем указатель на dest
+  return dest;
 }
 
 char *s21_strchr(const char *str, int ch) {
@@ -274,8 +265,6 @@ int s21_strncmp(const char *str1, const char *str2, s21_size_t n) {
   int rtn = 0;
   int is_diff = 0;
   for (s21_size_t i = 0; i < n && !is_diff; i++) {
-    // if (str1[i] != str2[i] || str1[i] == '\0' || str2[i] == '\0') {
-    // //2025-02-25 18:49 Condition 'str2[i]=='\0'' is always false
     if (str1[i] != str2[i] || str1[i] == '\0') {
       is_diff++;
       rtn = (unsigned char)str1[i] - (unsigned char)str2[i];
@@ -300,7 +289,7 @@ char *s21_strncpy(char *dest, const char *src, s21_size_t n) {
 s21_size_t s21_strcspn(const char *str1, const char *str2) {
   s21_size_t count = 0;
 
-  if (str1 && str2) {  // Проверяем, что обе строки не NULL
+  if (str1 && str2) {
     while (*str1 && !contains_char(str2, *str1)) {
       count++;
       str1++;
@@ -385,8 +374,7 @@ char *s21_strstr(const char *haystack, const char *needle) {
       haystack++;
     }
   }
-  if (haystack ==
-      needle) {  // 2025-02-27 01:22:26 @morrigem:add from check empty test
+  if (haystack == needle) {
     res = (char *)haystack;
   }
   return res;
@@ -400,7 +388,7 @@ char *s21_strtok(char *str, const char *delim) {
     if (*str != '\0') {
       res = str;
       t = s21_strpbrk(str, delim);
-      if (t - str == 0) {  // delimiter in the begin of string
+      if (t - str == 0) {
         t = s21_strpbrk(++str, delim);
       }
       if (t - str > 0) {
@@ -419,7 +407,6 @@ char *s21_strtok(char *str, const char *delim) {
       pos = t + 1;
     }
   }
-  // pos = t + 1;
   return res;
 }
 

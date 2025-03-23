@@ -14,13 +14,11 @@ void handle_float(char **buffer, Specifiers flags, va_list argc);
 void handle_string(char **buffer, Specifiers flags, va_list argc);
 void handle_unsigned(char **buffer, Specifiers flags, va_list args);
 void handle_percent(char **buffer, Specifiers flags);
-
 void handle_exp(char **buffer, Specifiers flags, va_list args);
 void handle_hex(char **buffer, Specifiers flags, va_list args);
 void handle_octal(char **buffer, Specifiers flags, va_list args);
 void handle_pointer(char **buffer, Specifiers flags, va_list args);
 void handle_general(char **buffer, Specifiers flags, va_list args);
-
 void set_width_pading(char **buffer, const char *src, Specifiers flags,
                       int len);
 void set_width_pading_sign(char **buffer, const char *src, Specifiers flags,
@@ -28,19 +26,21 @@ void set_width_pading_sign(char **buffer, const char *src, Specifiers flags,
 int set_flag_sign(char **buffer, Specifiers flags, int is_negative, int len);
 int add_sign(char *buffer, Specifiers flags, int is_positive);
 int get_exp(long double ch);
+void set_width_argv(Specifiers *flags, va_list args);
+void set_precission_argv(Specifiers *flags, va_list args);
 
-void set_width_argv(Specifiers *flags, va_list args) {
-  if (flags->width == -1) {
-    int w = va_arg(args, int);
-    flags->width = w;
-  }
-}
-void set_precission_argv(Specifiers *flags, va_list args) {
-  if (flags->precision == -1) {
-    int p = va_arg(args, int);
-    flags->precision = p;
-  }
-}
+/**
+* @brief Formats and stores a series of characters and values in a string.
+*
+* This function takes a format string and a variable number of arguments, and stores
+* the formatted output in the provided string. The format string can contain
+* format specifiers that are replaced by the corresponding arguments.
+*
+* @param str The string where the formatted output will be stored.
+* @param format The format string that contains the format specifiers.
+* @param ... The variable number of arguments that will replace the format specifiers.
+* @return The number of characters written to the string, excluding the null-terminator.
+*/
 int s21_sprintf(char *str, const char *format, ...) {
   va_list args;
   va_start(args, format);
@@ -92,6 +92,20 @@ int s21_sprintf(char *str, const char *format, ...) {
   return (int)s21_strlen(str);
 }
 
+void set_width_argv(Specifiers *flags, va_list args) {
+  if (flags->width == -1) {
+    int w = va_arg(args, int);
+    flags->width = w;
+  }
+}
+void set_precission_argv(Specifiers *flags, va_list args) {
+  if (flags->precision == -1) {
+    int p = va_arg(args, int);
+    flags->precision = p;
+  }
+}
+
+
 void reverse_string(char *tmp, int len) {
   for (int i = 0, j = len - 1; i < j; i++, j--) {
     char temp = tmp[i];
@@ -100,14 +114,6 @@ void reverse_string(char *tmp, int len) {
   }
 }
 
-/**
- * @brief Handles the formatting of an integer according to the specified flags.
- *
- * @param buffer A pointer to the buffer where the formatted string will be
- * stored.
- * @param flags The flags specifying the formatting options.
- * @param d The integer to be formatted.
- */
 void handle_int(char **buffer, Specifiers flags, va_list args) {
   long int d;
   if (flags.length == 'h') {

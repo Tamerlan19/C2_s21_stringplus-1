@@ -185,10 +185,16 @@ int get_number(const char *p, long int *res) {
 
 char *get_arg_width(const char *str, int width) {
   char *arg_str = malloc(sizeof(char) * width + 1);
+  if (arg_str != S21_NULL) {
+ 
   if (*str != '\0') {
     s21_strncpy(arg_str, str, width);
     arg_str[width] = '\0';
+  } else {
+    arg_str[0] = '\0';  
   }
+  }
+  
   return arg_str;
 }
 

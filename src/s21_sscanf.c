@@ -322,7 +322,7 @@ int proc_spec_wchar(const char **p, wchar_t *ch) {
   DEBUG_PRINT("Start procesing and noop wide String\n");
   while (**p && !is_space(**p)) {
     s21_size_t mbr_res = mbrtowc(ch, *p, MB_CUR_MAX, NULL);
-    if (mbr_res == (size_t)-1 || mbr_res == (size_t)-2) {
+    if (mbr_res == (s21_size_t)-1 || mbr_res == (s21_size_t)-2) {
       DEBUG_PRINT("Error: Invalid multibyte sequence.\n");
       break;
     }
@@ -591,11 +591,8 @@ int proc_spec_x(const char *str, va_list args, const Specifiers st_spec) {
         *ch = result;
       } else {
         unsigned int *ch = va_arg(args, unsigned int *);
-        if (result > 4294967295) {
-          *ch = ((unsigned)result) % 4294967296;
-        } else {
-          *ch = (unsigned)result;
-        }
+        *ch = (unsigned)result;
+
       }
     }
     res = p - arg_str;

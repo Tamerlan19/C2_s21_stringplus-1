@@ -336,7 +336,7 @@ void handle_char(char **buffer, Specifiers flags, va_list args) {
   int len = 1;
 
   if (flags.length == 'l') {
-    wchar_t wc = va_arg(args, wchar_t);
+    wchar_t wc = va_arg(args, unsigned int);
     len = wctomb(tmp, wc);
     if (len == -1) {
       tmp[0] = '?';

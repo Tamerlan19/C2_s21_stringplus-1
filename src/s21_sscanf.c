@@ -18,24 +18,22 @@ int proc_spec_p(const char *str, va_list args, const Specifiers st_spec);
 int proc_spec(const char **p, const char *str, va_list args,
               const Specifiers st_spec, int *stop);
 int str_to_int(const char *p, long int *res, int base);
-void proc_str(const char **p, int step, Specifiers st_spec, int *res,  int *stop);
-
-
-
-
+void proc_str(const char **p, int step, Specifiers st_spec, int *res,
+              int *stop);
 
 /**
-* @brief Scan a string based on the given format and variable arguments.
-*
-* This function scans a string based on the given format and variable arguments.
-* It processes the format string and updates the variable arguments based on the specifiers.
-* It returns the number of input items successfully matched and assigned.
-*
-* @param str The string to scan.
-* @param format The format string.
-* @param ... The variable arguments.
-* @return The number of input items successfully matched and assigned.
-*/
+ * @brief Scan a string based on the given format and variable arguments.
+ *
+ * This function scans a string based on the given format and variable
+ * arguments. It processes the format string and updates the variable arguments
+ * based on the specifiers. It returns the number of input items successfully
+ * matched and assigned.
+ *
+ * @param str The string to scan.
+ * @param format The format string.
+ * @param ... The variable arguments.
+ * @return The number of input items successfully matched and assigned.
+ */
 int s21_sscanf(const char *str, const char *format, ...) {
   DEBUG_PRINT("\n\n\n Call s21_sscanf(): str=%s, format=%s\n", str, format);
   int res = 0;
@@ -97,68 +95,68 @@ int read_wchar(const char **p, wchar_t *wch) {
 }
 
 void proc_str(const char **p, int step, Specifiers st_spec, int *res,
-  int *stop) {
-DEBUG_PRINT("proc_str(): step=%d, res =%d, p=%s \n", step, *res, *p);
-if (step > 0) {
-*p = *p + step;
-if (st_spec.flag != '*') {
-*res = *res + 1;
-}
-} else if (step == -1) {
-*stop = 1;
-if (*res == 0 && **p == '\0') {
-*res = -1;
-}
-} else if (step < -1) {
-*stop = 1;
-*res = -1;
-} else if ((st_spec.specifier != 'n' && st_spec.specifier != '%')) {
-DEBUG_PRINT("Specifiers.flag=%c\n", st_spec.flag);
-*stop = 1;
-}
-DEBUG_PRINT("proc_str(): step=%d, res =%d, p=%s , stop=%d\n", step, *res, *p,
-  *stop);
+              int *stop) {
+  DEBUG_PRINT("proc_str(): step=%d, res =%d, p=%s \n", step, *res, *p);
+  if (step > 0) {
+    *p = *p + step;
+    if (st_spec.flag != '*') {
+      *res = *res + 1;
+    }
+  } else if (step == -1) {
+    *stop = 1;
+    if (*res == 0 && **p == '\0') {
+      *res = -1;
+    }
+  } else if (step < -1) {
+    *stop = 1;
+    *res = -1;
+  } else if ((st_spec.specifier != 'n' && st_spec.specifier != '%')) {
+    DEBUG_PRINT("Specifiers.flag=%c\n", st_spec.flag);
+    *stop = 1;
+  }
+  DEBUG_PRINT("proc_str(): step=%d, res =%d, p=%s , stop=%d\n", step, *res, *p,
+              *stop);
 }
 
 int proc_spec(const char **p, const char *str, va_list args,
-  const Specifiers st_spec, int *stop) {
-int step = 0;
-if (!(st_spec.specifier == 'c')) {
-noop_space(p);
-}
-if (st_spec.specifier == 'c') {
-step = proc_spec_c(*p, args, st_spec);
-} else if (st_spec.specifier == 'd') {
-step = proc_spec_d(*p, args, st_spec);
-} else if (st_spec.specifier == 'f' || st_spec.specifier == 'g' ||
- st_spec.specifier == 'G' || st_spec.specifier == 'e' ||
- st_spec.specifier == 'E') {
-step = proc_spec_f(*p, args, st_spec);
-} else if (st_spec.specifier == 's') {
-step = proc_spec_s(*p, args, st_spec);
-} else if (st_spec.specifier == 'u') {
-step = proc_spec_u(*p, args, st_spec);
-} else if (st_spec.specifier == 'n') {
-long int r = *p - str;
-proc_spec_n(r, args, st_spec);
-} else if (st_spec.specifier == 'i') {
-step = proc_spec_i(*p, args, st_spec);
-} else if (st_spec.specifier == 'o') {
-step = proc_spec_o(*p, args, st_spec);
-} else if (st_spec.specifier == 'x' || st_spec.specifier == 'X') {
-step = proc_spec_x(*p, args, st_spec);
-} else if (st_spec.specifier == 'p') {
-step = proc_spec_p(*p, args, st_spec);
-} else if (st_spec.specifier == '%') {
-if (*(*p) == '%') {
-*p += 1;
-} else {
-*stop = 1;
-}
-step = 0;
-}
-DEBUG_PRINT("proc_spec(): step=%d, stop=%d\n", step, *stop);
-return step;
+              const Specifiers st_spec, int *stop) {
+  int step = 0;
+  if (!(st_spec.specifier == 'c')) {
+    noop_space(p);
+  }
+  if (st_spec.specifier == 'c') {
+    step = proc_spec_c(*p, args, st_spec);
+  } else if (st_spec.specifier == 'd') {
+    step = proc_spec_d(*p, args, st_spec);
+  } else if (st_spec.specifier == 'f' || st_spec.specifier == 'g' ||
+             st_spec.specifier == 'G' || st_spec.specifier == 'e' ||
+             st_spec.specifier == 'E') {
+    step = proc_spec_f(*p, args, st_spec);
+  } else if (st_spec.specifier == 's') {
+    step = proc_spec_s(*p, args, st_spec);
+  } else if (st_spec.specifier == 'u') {
+    step = proc_spec_u(*p, args, st_spec);
+  } else if (st_spec.specifier == 'n') {
+    long int r = *p - str;
+    proc_spec_n(r, args, st_spec);
+  } else if (st_spec.specifier == 'i') {
+    step = proc_spec_i(*p, args, st_spec);
+  } else if (st_spec.specifier == 'o') {
+    step = proc_spec_o(*p, args, st_spec);
+  } else if (st_spec.specifier == 'x' || st_spec.specifier == 'X') {
+    step = proc_spec_x(*p, args, st_spec);
+  } else if (st_spec.specifier == 'p') {
+    step = proc_spec_p(*p, args, st_spec);
+  } else if (st_spec.specifier == '%') {
+    if (*(*p) == '%') {
+      *p += 1;
+    } else {
+      *stop = 1;
+    }
+    step = 0;
+  }
+  DEBUG_PRINT("proc_spec(): step=%d, stop=%d\n", step, *stop);
+  return step;
 }
 
 int get_number(const char *p, long int *res) {
@@ -186,15 +184,14 @@ int get_number(const char *p, long int *res) {
 char *get_arg_width(const char *str, int width) {
   char *arg_str = malloc(sizeof(char) * width + 1);
   if (arg_str != S21_NULL) {
- 
-  if (*str != '\0') {
-    s21_strncpy(arg_str, str, width);
-    arg_str[width] = '\0';
-  } else {
-    arg_str[0] = '\0';  
+    if (*str != '\0') {
+      s21_strncpy(arg_str, str, width);
+      arg_str[width] = '\0';
+    } else {
+      arg_str[0] = '\0';
+    }
   }
-  }
-  
+
   return arg_str;
 }
 
@@ -592,7 +589,6 @@ int proc_spec_x(const char *str, va_list args, const Specifiers st_spec) {
       } else {
         unsigned int *ch = va_arg(args, unsigned int *);
         *ch = (unsigned)result;
-
       }
     }
     res = p - arg_str;
@@ -617,7 +613,7 @@ int proc_spec_p(const char *str, va_list args, const Specifiers st_spec) {
           conv = str_to_luint(p, &address, 16);
           DEBUG_PRINT("Converted %d chars to pointer.\n", conv);
           if (conv != 0) {
-            *ch = (void *) address;
+            *ch = (void *)address;
             p += conv;
             res = p - str;
           }

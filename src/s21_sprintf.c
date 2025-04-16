@@ -30,17 +30,19 @@ void set_width_argv(Specifiers *flags, va_list args);
 void set_precission_argv(Specifiers *flags, va_list args);
 
 /**
-* @brief Formats and stores a series of characters and values in a string.
-*
-* This function takes a format string and a variable number of arguments, and stores
-* the formatted output in the provided string. The format string can contain
-* format specifiers that are replaced by the corresponding arguments.
-*
-* @param str The string where the formatted output will be stored.
-* @param format The format string that contains the format specifiers.
-* @param ... The variable number of arguments that will replace the format specifiers.
-* @return The number of characters written to the string, excluding the null-terminator.
-*/
+ * @brief Formats and stores a series of characters and values in a string.
+ *
+ * This function takes a format string and a variable number of arguments, and
+ * stores the formatted output in the provided string. The format string can
+ * contain format specifiers that are replaced by the corresponding arguments.
+ *
+ * @param str The string where the formatted output will be stored.
+ * @param format The format string that contains the format specifiers.
+ * @param ... The variable number of arguments that will replace the format
+ * specifiers.
+ * @return The number of characters written to the string, excluding the
+ * null-terminator.
+ */
 int s21_sprintf(char *str, const char *format, ...) {
   va_list args;
   va_start(args, format);
@@ -104,7 +106,6 @@ void set_precission_argv(Specifiers *flags, va_list args) {
     flags->precision = p;
   }
 }
-
 
 void reverse_string(char *tmp, int len) {
   for (int i = 0, j = len - 1; i < j; i++, j--) {

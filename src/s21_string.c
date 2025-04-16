@@ -187,7 +187,7 @@ S21_Error error_list[] = {
     {132, "Operation not possible due to RF-kill"},
     {133, "Memory page has hardware error"}};
   
-#elif // Windows
+#elif defined(_WIN32) // Windows
 S21_Error error_list[] = {
     {0, "Success"},
     {1, "Operation not permitted"},

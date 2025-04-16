@@ -201,7 +201,7 @@ void *s21_memchr(const void *str, int c, s21_size_t n) {
   return res;
 }
 
-int s21_memcmp(const void *str1, const void *str2, size_t n) {
+int s21_memcmp(const void *str1, const void *str2, s21_size_t n) {
   if (str1 && str2) {
     const unsigned char *s1 = (const unsigned char *)str1;
     const unsigned char *s2 = (const unsigned char *)str2;

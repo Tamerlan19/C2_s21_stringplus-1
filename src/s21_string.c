@@ -9,7 +9,7 @@ typedef struct {
 } S21_Error;
 
 #ifdef __APPLE__  // macOS
-static const S21_Error S21_ERROR_MESSAGES[] = {
+S21_Error error_list[] = {
     {0, "Undefined error: 0"},
     {1, "Operation not permitted"},
     {2, "No such file or directory"},

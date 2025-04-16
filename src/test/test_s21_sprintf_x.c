@@ -90,7 +90,7 @@ END_TEST
 START_TEST(test_s21_sprintf_lx_width_precision_large) {
   char buffer[1024] = {0};
   char original_buffer[1024] = {0};
-  unsigned long value = 18446744073709551608UL;
+  unsigned long long value = 18446744073709551608UL;
   const char *fmt = "Number: %20.5lx";
   int ret_s21 = s21_sprintf(buffer, fmt, value);
   int ret = sprintf(original_buffer, fmt, value);
@@ -102,7 +102,7 @@ END_TEST
 START_TEST(test_s21_sprintf_lX_width_precision_large) {
   char buffer[1024] = {0};
   char original_buffer[1024] = {0};
-  unsigned long value = 18446744073709551608UL;
+  unsigned long long value = 18446744073709551608UL;
   const char *fmt = "Number: %20.5lX";
   int ret_s21 = s21_sprintf(buffer, fmt, value);
   int ret = sprintf(original_buffer, fmt, value);

@@ -617,7 +617,7 @@ int proc_spec_p(const char *str, va_list args, const Specifiers st_spec) {
           conv = str_to_luint(p, &address, 16);
           DEBUG_PRINT("Converted %d chars to pointer.\n", conv);
           if (conv != 0) {
-            *ch = (void *)address;
+            *ch = (void *) address;
             p += conv;
             res = p - str;
           }

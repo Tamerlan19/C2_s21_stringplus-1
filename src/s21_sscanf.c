@@ -318,7 +318,7 @@ int proc_spec_wchar(const char **p, wchar_t *ch) {
   int res = 0;
   DEBUG_PRINT("Start procesing and noop wide String\n");
   while (**p && !is_space(**p)) {
-    s21_size_t mbr_res = mbrtowc(ch, *p, MB_CUR_MAX, NULL);
+    s21_size_t mbr_res = mbrtowc(ch, *p, MB_CUR_MAX, S21_NULL);
     if (mbr_res == (s21_size_t)-1 || mbr_res == (s21_size_t)-2) {
       DEBUG_PRINT("Error: Invalid multibyte sequence.\n");
       break;
@@ -408,7 +408,7 @@ int proc_spec_s(const char *str, va_list args, const Specifiers st_spec) {
           }
         } else {
           char *ch = va_arg(args, char *);
-          if (ch != NULL) {
+          if (ch != S21_NULL) {
             for (; *p && !(is_space(*p)); i++) {
               *ch++ = *p++;
             }
@@ -601,7 +601,7 @@ int proc_spec_x(const char *str, va_list args, const Specifiers st_spec) {
 
 int proc_spec_p(const char *str, va_list args, const Specifiers st_spec) {
   int res = -1;
-  if (str != NULL) {
+  if (str != S21_NULL) {
     const char *p = str;
     if (st_spec.flag != '*') {
       void **ch = va_arg(args, void **);

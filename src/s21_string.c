@@ -185,7 +185,7 @@ S21_Error error_list[] = {
     {131, "State not recoverable"},
     {132, "Operation not possible due to RF-kill"},
     {133, "Memory page has hardware error"}};
-#elif defined(_WIN32)     // Windows
+#elif defined(_WIN32)
 S21_Error error_list[] = {
     {0, "Success"},
     {1, "Operation not permitted"},
@@ -436,7 +436,7 @@ s21_size_t s21_strcspn(const char *str1, const char *str2) {
 char *s21_strerror(int errnum) {
   char *res = malloc(sizeof(char) * 50);
   s21_memset(res, '\0', 50);
-  if (res != NULL) {
+  if (res != S21_NULL) {
     for (int i = 0; i < (int)ERROR_LIST_SIZE; i++) {
       if (error_list[i].errnum == errnum) {
         s21_strncpy(res, error_list[i].message,

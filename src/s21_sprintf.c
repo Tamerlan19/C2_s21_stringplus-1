@@ -268,8 +268,8 @@ void handle_float(char **buffer, Specifiers flags, va_list args) {
 }
 
 void handle_string(char **buffer, Specifiers flags, va_list args) {
-  const char *s = NULL;
-  const wchar_t *ws = NULL;
+  const char *s = S21_NULL;
+  const wchar_t *ws = S21_NULL;
   int len = 0;
   char tmp[MAX_BUF_SIZE] = {0};
 

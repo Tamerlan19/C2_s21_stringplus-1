@@ -51,7 +51,7 @@ S21_Error error_list[] = {
     {38, "Socket operation on non-socket"}};
 
 #elif defined(__linux__)  // Linux
-S21_Error error_list[] = {
+  S21_Error error_list[] = {
     {0, "Success"},
     {1, "Operation not permitted"},
     {2, "No such file or directory"},
@@ -186,7 +186,6 @@ S21_Error error_list[] = {
     {131, "State not recoverable"},
     {132, "Operation not possible due to RF-kill"},
     {133, "Memory page has hardware error"}};
-  
 #elif defined(_WIN32) // Windows
 S21_Error error_list[] = {
     {0, "Success"},
@@ -324,8 +323,8 @@ S21_Error error_list[] = {
     {132, "Operation not possible due to RF-kill"},
     {133, "Memory page has hardware error"}};
 
-#define ERROR_LIST_SIZE (sizeof(error_list) / sizeof(error_list[0]))
 #endif
+#define ERROR_LIST_SIZE (sizeof(error_list) / sizeof(error_list[0]))
 
 void *s21_memchr(const void *str, int c, s21_size_t n) {
   void *res = S21_NULL;
